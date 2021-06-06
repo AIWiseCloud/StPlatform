@@ -124,6 +124,10 @@ export const constantRoutes = [
   }
 ]
 
+export const mallRoutes = [
+
+]
+
 /**
  * asyncRoutes
  * the routes that need to be dynamically loaded based on user roles
@@ -180,6 +184,19 @@ export const asyncRoutes = [
         component: () => import('@/views/icons/index'),
         name: 'Icons',
         meta: { title: 'Icons', icon: 'icon', noCache: true }
+      }
+    ]
+  },
+
+  {
+    path: '/mall',
+    component: Layout,
+    children: [
+      {
+        path: 'goodsCategory',
+        component: () => import('@/views/mall/goodsCategory'),
+        name: 'goodsCategory',
+        meta: { title: '商品分类', icon: 'icon', noCache: true }
       }
     ]
   },
