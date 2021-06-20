@@ -1,5 +1,5 @@
 module.exports = {
-  title: 'Vue Element Admin',
+  title: '盛天体育管理平台',
 
   /**
    * @type {boolean} true | false
