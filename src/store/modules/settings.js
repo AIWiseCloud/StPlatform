@@ -8,7 +8,8 @@ const state = {
   showSettings: showSettings,
   tagsView: tagsView,
   fixedHeader: fixedHeader,
-  sidebarLogo: sidebarLogo
+  sidebarLogo: sidebarLogo,
+  system_env: 'UAT' // 测试：UAT;正式:LIVE
 }
 
 const mutations = {

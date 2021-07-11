@@ -7,11 +7,12 @@
 <script>
 export default {
   data() {
-    return {}
+    return {
+      itms: []
+    }
   }
 }
 </script>
 
 <style lang='less' scoped>
-
 </style>

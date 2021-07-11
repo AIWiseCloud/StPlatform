@@ -97,6 +97,7 @@ export default {
     }
     return {
       loginForm: {
+        unionId: 'admin',
         username: 'admin',
         password: '111111'
       },
@@ -152,16 +153,20 @@ export default {
         this.$refs.password.focus()
       })
     },
+    // 登录
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
+          // 通过状态管理actions去调用登录接口
           this.$store.dispatch('user/login', this.loginForm)
             .then(() => {
+              console.log('登录成功')
               this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
               this.loading = false
             })
             .catch(() => {
+              console.log('登录失败')
               this.loading = false
             })
         } else {
