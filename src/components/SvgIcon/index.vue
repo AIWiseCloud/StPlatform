@@ -47,8 +47,8 @@ export default {
 
 <style scoped>
 .svg-icon {
-  width: 1em;
-  height: 1em;
+  width: 1.2em; /*修改图标尺寸 roy*/
+  height: 1.2em;/*修改图标尺寸 roy*/
   vertical-align: -0.15em;
   fill: currentColor;
   overflow: hidden;

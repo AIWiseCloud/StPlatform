@@ -1,11 +1,24 @@
 <template>
   <div style="margin-top: 15px" class="app-container">
-    <el-button
-      title="保存"
-      type="success"
-      plain
-      @click.native="SaveSettings()"
-    >保存</el-button>
+    <el-collapse v-model="activenames">
+      <el-collapse-item name="1">
+        <template slot="title">
+          <span>商城配置 <i class="el-icon-setting" style="color: red" /></span>
+        </template>
+        <el-form label-position="left" label-width="74px" class="demo-ruleForm">
+          <el-form-item>
+            <el-button
+              title="保存"
+              type="success"
+              plain
+              @click.native="SaveSettings()"
+              >保存</el-button
+            >
+          </el-form-item>
+        </el-form>
+      </el-collapse-item>
+    </el-collapse>
+
     <el-form
       label="商城配置"
       class="demo-ruleForm"
@@ -19,6 +32,7 @@
               v-model="settingsData.id"
               placeholder="编号"
               clearable
+              disabled
               size="small"
             />
           </el-form-item>
@@ -47,7 +61,7 @@
         </el-col>
       </el-row>
       <el-row :gutter="10">
-        <el-col :sm="12" :md="12" :lg="12" :xl="12">
+        <el-col :sm="12" :md="8" :lg="8" :xl="8">
           <el-form-item label="轮播图1" title="轮播图1">
             <el-upload
               class="avatar-uploader"
@@ -67,19 +81,7 @@
             </el-upload>
           </el-form-item>
         </el-col>
-        <el-col :sm="12" :md="12" :lg="12" :xl="12">
-          <el-form-item label="图1跳转" title="图1跳转">
-            <el-input
-              v-model="settingsData.nav1"
-              placeholder="图1跳转"
-              clearable
-              size="small"
-            />
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row :gutter="10">
-        <el-col :sm="12" :md="12" :lg="12" :xl="12">
+        <el-col :sm="12" :md="8" :lg="8" :xl="8">
           <el-form-item label="轮播图2" title="轮播图2">
             <el-upload
               class="avatar-uploader"
@@ -99,19 +101,7 @@
             </el-upload>
           </el-form-item>
         </el-col>
-        <el-col :sm="12" :md="12" :lg="12" :xl="12">
-          <el-form-item label="图2跳转" title="图2跳转">
-            <el-input
-              v-model="settingsData.nav2"
-              placeholder="图2跳转"
-              clearable
-              size="small"
-            />
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row :gutter="10">
-        <el-col :sm="12" :md="12" :lg="12" :xl="12">
+        <el-col :sm="12" :md="8" :lg="8" :xl="8">
           <el-form-item label="轮播图3" title="轮播图3">
             <el-upload
               class="avatar-uploader"
@@ -131,7 +121,29 @@
             </el-upload>
           </el-form-item>
         </el-col>
-        <el-col :sm="12" :md="12" :lg="12" :xl="12">
+      </el-row>
+      <el-row :gutter="10">
+        <el-col :sm="12" :md="8" :lg="8" :xl="8">
+          <el-form-item label="图1跳转" title="图1跳转">
+            <el-input
+              v-model="settingsData.nav1"
+              placeholder="图1跳转"
+              clearable
+              size="small"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :sm="12" :md="8" :lg="8" :xl="8">
+          <el-form-item label="图2跳转" title="图2跳转">
+            <el-input
+              v-model="settingsData.nav2"
+              placeholder="图2跳转"
+              clearable
+              size="small"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :sm="12" :md="8" :lg="8" :xl="8">
           <el-form-item label="图3跳转" title="图3跳转">
             <el-input
               v-model="settingsData.nav3"
@@ -143,7 +155,6 @@
         </el-col>
       </el-row>
     </el-form>
-
   </div>
 </template>
 
@@ -156,6 +167,7 @@ export default {
   // name: "basicsetting",
   data() {
     return {
+      activenames: ["1"],
       baseUrl: "", //图片根目录
       ErrorImg: 'this.src="' + require("@/assets/images/noimg.jpg") + '"', //图片错误地址
       settingsData: {
@@ -215,13 +227,13 @@ export default {
         .then((res) => {
           console.log(JSON.stringify(res));
           if (res.code == 200) {
-            console.log("保存成功");
+            this.$message({message:"保存成功",type:'success'});
           } else {
-            console.log("保存出错");
+            this.$message.error("保存出错");
           }
         })
         .catch((err) => {
-          console.log(err);
+           this.$message.error(JSON.stringify(err));
         });
     },
   },
