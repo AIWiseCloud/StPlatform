@@ -49,11 +49,13 @@ service.interceptors.response.use(
    */
   response => {
     const res = response.data
-    // console.log("接口返回数据", JSON.stringify(res))
+    // console.log(JSON.stringify(res));
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== 200) {
+     
+      //此处统一弹出错误框，各模块调用时catch就可以不用Message弹框了(roy注)
       Message({
-        message: res.message || 'Error',
+        message: res.msg || 'Error',
         type: 'error',
         duration: 5 * 1000
       })
@@ -71,7 +73,7 @@ service.interceptors.response.use(
           })
         })
       }
-      return Promise.reject(new Error(res.message || 'Error'))
+      return Promise.reject(new Error(res.msg || 'Error'))
     } else {
       return res
     }

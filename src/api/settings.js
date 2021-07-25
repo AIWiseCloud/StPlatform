@@ -42,7 +42,7 @@ function DeleteSubMesType(id) {
   return request({
     url: `/api/Sys/DeleteSubMesType?id=${id}`,
     method: 'delete'
-  });
+  })
 }
 
 function SaveSubMessage(data) {
@@ -89,17 +89,17 @@ function GetShop(shopId) {
   })
 }
 
-function GetShops(){
+function GetShops() {
   return request({
-    url:`/api/Sys/GetShops`,
-    method:'GET'
+    url: `/api/Sys/GetShops`,
+    method: 'GET'
   })
 }
 
-function DeleteShop(shopId){
+function DeleteShop(shopId) {
   return request({
-    url:`/api/Sys/DeleteShop?shopId=${shopId}`,
-    method:'DELETE'
+    url: `/api/Sys/DeleteShop?shopId=${shopId}`,
+    method: 'DELETE'
   })
 }
 

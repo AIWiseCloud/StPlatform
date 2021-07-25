@@ -12,8 +12,7 @@
               type="success"
               plain
               @click.native="SaveSettings()"
-              >保存</el-button
-            >
+            >保存</el-button>
           </el-form-item>
         </el-form>
       </el-collapse-item>
@@ -169,7 +168,7 @@ export default {
     return {
       activenames: ["1"],
       baseUrl: "", //图片根目录
-      ErrorImg: 'this.src="' + require("@/assets/images/noimg.jpg") + '"', //图片错误地址
+      ErrorImg: 'this.src="' + require("@/assets/images/blankimg.png") + '"', //图片错误地址
       settingsData: {
         id: "A002",
         isMaintain: 0,

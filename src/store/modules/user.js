@@ -56,7 +56,7 @@ const actions = {
           reject('Verification failed, please Login again.')
         }
 
-        const { roles, nickName, avatar,province } = result
+        const { roles, nickName, avatar, province } = result
 
         // roles must be a non-empty array
         if (!roles || roles.length <= 0) {

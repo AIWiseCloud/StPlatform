@@ -2,8 +2,9 @@
   <div class="app-container">
     <el-row :gutter="20">
       <el-col>
-        <el-button-group>
+        <el-button-group class="btngroup">
           <el-button
+            class="btnadd"
             type="primary"
             size="small"
             icon="el-icon-plus"
@@ -24,7 +25,7 @@
       </el-col>
     </el-row>
     <el-container>
-      <el-aside width="400px">
+      <el-aside width="400px" class="aside">
         <el-tree
           :data="subMesTypes"
           node-key="id"
@@ -34,10 +35,11 @@
           :expand-on-click-node="false"
           @current-change="currentChange"
         >
-          <span class="custom-tree-node" slot-scope="{ node, data }">
+          <span slot-scope="{ node, data }" class="custom-tree-node">
             <span
-              ><i class="el-icon-folder" style="margin-right: 10px"></i
-              >{{ node.label }}</span
+              ><i class="el-icon-folder" style="margin-right: 10px" />{{
+                node.label
+              }}</span
             >
             <span>
               <el-button
@@ -66,11 +68,16 @@
         <el-table
           :data="subitems"
           style="width: 100%"
-          :header-cell-style="{ 'text-align': 'center' }"
+          :header-cell-style="{
+            'text-align': 'center',
+            background: '#F3F4F7',
+            color: '#555',
+          }"
+          v-if="subitems.length"
         >
           <el-table-column prop="fNumber" label="子项编号" width="160">
             <template slot-scope="scope">
-              <i class="el-icon-document"></i>
+              <i class="el-icon-document" />
               <span style="margin-left: 10px">{{ scope.row.fNumber }}</span>
             </template>
           </el-table-column>
@@ -79,20 +86,18 @@
             label="子项名称"
             width="160"
             :show-overflow-tooltip="true"
-          ></el-table-column>
+          />
           <el-table-column prop="iscancellation" label="作废" width="100">
             <template slot-scope="scope">
-              <el-switch v-model="scope.row.iscancellation"></el-switch>
+              <el-switch v-model="scope.row.iscancellation" />
             </template>
           </el-table-column>
-          <el-table-column prop="fIndex" label="排序索引" width="100">
-          </el-table-column>
+          <el-table-column prop="fIndex" label="排序索引" width="100" />
           <el-table-column
             prop="fNote"
             label="备注"
             :show-overflow-tooltip="true"
-          >
-          </el-table-column>
+          />
           <el-table-column label="操作" align="center">
             <template slot-scope="scope">
               <el-button
@@ -114,9 +119,9 @@
     <!-- 辅助资料分类对话框 -->
     <el-dialog title="辅助资料分类" :visible.sync="visibleTypeForm">
       <el-form
+        ref="ruleForm"
         :model="subMesType"
         :rules="rules"
-        ref="ruleForm"
         size="mini"
         label-width="150px"
       >
@@ -125,10 +130,10 @@
             v-model="subMesType.id"
             auto-complete="off"
             :disabled="!isAddDialog"
-          ></el-input>
+          />
         </el-form-item>
         <el-form-item label="辅助资料分类名称" prop="fName">
-          <el-input v-model="subMesType.fName"></el-input>
+          <el-input v-model="subMesType.fName" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -141,35 +146,32 @@
     <!-- 子项编辑对话框 -->
     <el-dialog title="辅助资料子项" :visible.sync="visibleItemForm">
       <el-form
+        ref="ruleItemForm"
         :model="subMessage"
         :rules="rulesItem"
-        ref="ruleItemForm"
         size="mini"
         label-width="110px"
       >
         <el-form-item label="ID" prop="id">
-          <el-input v-model="subMessage.id" disabled></el-input>
+          <el-input v-model="subMessage.id" disabled />
         </el-form-item>
         <el-form-item label="所属分类" prop="parentId">
-          <el-input v-model="subMessage.parentId"></el-input>
+          <el-input v-model="subMessage.parentId" />
         </el-form-item>
         <el-form-item label="子项编号" prop="fNumber">
-          <el-input
-            v-model="subMessage.fNumber"
-            :disabled="!isAddItemDialog"
-          ></el-input>
+          <el-input v-model="subMessage.fNumber" :disabled="!isAddItemDialog" />
         </el-form-item>
         <el-form-item label="子项名称" prop="fName">
-          <el-input v-model="subMessage.fName"></el-input>
+          <el-input v-model="subMessage.fName" />
         </el-form-item>
         <el-form-item label="作废" prop="iscancellation">
-          <el-switch v-model="subMessage.iscancellation"></el-switch>
+          <el-switch v-model="subMessage.iscancellation" />
         </el-form-item>
         <el-form-item label="排序索引" prop="fIndex">
-          <el-input v-model="subMessage.fIndex"></el-input>
+          <el-input v-model="subMessage.fIndex" />
         </el-form-item>
         <el-form-item label="备注" prop="fNote">
-          <el-input v-model="subMessage.fNote"></el-input>
+          <el-input v-model="subMessage.fNote" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -191,9 +193,9 @@ export default {
         label: "fName",
         children: "children",
       },
-      isAddDialog: true, //分类对话框是否为新增状态
-      isAddItemDialog: true, //子项对话框是否为新增状态
-      itemIndex: -1, //当前子项索引（用于修改时更新对应元素)
+      isAddDialog: true, // 分类对话框是否为新增状态
+      isAddItemDialog: true, // 子项对话框是否为新增状态
+      itemIndex: -1, // 当前子项索引（用于修改时更新对应元素)
       subMesTypes: [
         { id: "pdcolor", fName: "产品颜色", age: 30 },
         { id: "pdspec", fName: "产品规格", age: 59 },
@@ -202,7 +204,7 @@ export default {
         id: "",
         fName: "",
       },
-      subitems: [], //选中分类的子项列表
+      subitems: [], // 选中分类的子项列表
       subMessage: {
         id: "",
         parentId: "",
@@ -212,8 +214,8 @@ export default {
         fIndex: 100,
         fNote: "",
       },
-      visibleTypeForm: false, //显示分类编辑对话框
-      visibleItemForm: false, //显示子项编辑对话框
+      visibleTypeForm: false, // 显示分类编辑对话框
+      visibleItemForm: false, // 显示子项编辑对话框
       rules: {
         id: [
           { required: true, message: "请输入编号", trigger: "blur" },
@@ -254,8 +256,11 @@ export default {
       },
     };
   },
+  mounted() {
+    this.loadData();
+  },
   methods: {
-    //载入数据
+    // 载入数据
     loadData() {
       this.subMesTypes = [];
       apiSettings
@@ -263,7 +268,7 @@ export default {
         .then((res) => {
           if (res.code == 200 && res.returnStatus == 1) {
             this.subMesTypes = res.result;
-            //默认加载第一个分类下的子项
+            // 默认加载第一个分类下的子项
           } else {
             this.$message.error(JSON.stringify(res.msg));
           }
@@ -272,7 +277,7 @@ export default {
           this.$message.error(JSON.stringify(err));
         });
     },
-    //打开分类编辑对话框
+    // 打开分类编辑对话框
     openSubMesTypeDialog(isAdd, node, data) {
       this.isAddDialog = isAdd;
       if (isAdd) {
@@ -283,7 +288,7 @@ export default {
       }
       this.visibleTypeForm = true;
     },
-    //保存类别
+    // 保存类别
     confirmSubMesType(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
@@ -297,7 +302,7 @@ export default {
                   this.subitems = [];
                   this.subitems.rem;
                 } else {
-                  let index = this.subMesTypes.findIndex(
+                  const index = this.subMesTypes.findIndex(
                     (x) => x.id == this.subMesType.id
                   );
                   if (index != -1) {
@@ -318,7 +323,7 @@ export default {
         }
       });
     },
-    //删除分类
+    // 删除分类
     deleteSubMesType(node, data) {
       apiSettings.GetSubMessageList(data.id).then((res) => {
         if (res.code == 200 && res.returnStatus == 1) {
@@ -330,7 +335,7 @@ export default {
               cancelButtonText: "取消",
               type: "warning",
             })
-              .then(r => {
+              .then((r) => {
                 return apiSettings.DeleteSubMesType(data.id);
               })
               .then((ires) => {
@@ -345,12 +350,12 @@ export default {
         }
       });
     },
-    //打开添加/编辑子项的对话框 (编辑时第2个参数代表index, 第3个参数代表row)
+    // 打开添加/编辑子项的对话框 (编辑时第2个参数代表index, 第3个参数代表row)
     openSubMessageDialog(isAdd, node, data) {
       this.isAddItemDialog = isAdd;
-      this.itemIndex = node; //修改时node参数为索引(用于更新对应元素)
+      this.itemIndex = node; // 修改时node参数为索引(用于更新对应元素)
       if (isAdd) {
-        this.subMessage.id = ""; //后端提供uuid值
+        this.subMessage.id = ""; // 后端提供uuid值
         this.subMessage.parentId = data.id;
         this.subMessage.fNumber = "";
         this.subMessage.fName = "";
@@ -358,18 +363,18 @@ export default {
         this.subMessage.fIndex = 100;
         this.subMessage.fNote = "";
       } else {
-        this.subMessage = data; //行数据
+        this.subMessage = data; // 行数据
       }
       this.visibleItemForm = true;
     },
-    //确认(保存）新增/修改子项
+    // 确认(保存）新增/修改子项
     confirmSubMessage(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           apiSettings.SaveSubMessage(this.subMessage).then((res) => {
             if (res.code == 200 && res.returnStatus == 1) {
               this.visibleItemForm = false;
-              //若是添加
+              // 若是添加
               if (this.isAddItemDialog) {
                 this.subMessage.id = res.result.identityKey;
                 this.subitems.push(this.subMessage);
@@ -384,17 +389,17 @@ export default {
         }
       });
     },
-    //当前选中节点变化时触发的事件
+    // 当前选中节点变化时触发的事件
     currentChange(data, node) {
       this.subMesType = data;
-      //显示当前节点下的子项
+      // 显示当前节点下的子项
       apiSettings.GetSubMessageList(this.subMesType.id).then((res) => {
         if (res.code == 200 && res.returnStatus == 1) {
           this.subitems = res.result;
         }
       });
     },
-    //删除子项
+    // 删除子项
     deleteSubMessage(index, row) {
       this.$confirm("确定要删除吗？", "询问", {
         confirmButtonText: "确定",
@@ -415,9 +420,6 @@ export default {
           this.$message.error(JSON.stringify(err));
         });
     },
-  },
-  mounted() {
-    this.loadData();
   },
 };
 </script>
@@ -440,5 +442,15 @@ export default {
   background: transparent;
   padding-left: 0;
   padding-right: 0;
+}
+.btngroup {
+  padding: 10px;
+  .btnadd{
+    margin-right: 2px;
+  }
+}
+.aside {
+  background-color: #fff;
+  margin-top: 10px;
 }
 </style>

@@ -91,7 +91,7 @@ export const asyncRoutes = [
   {
     path: '/settings',
     component: Layout,
-    meta:{title:'商城配置',icon:'settings',},
+    meta: { title: '商城配置', icon: 'settings' },
     children: [
       {
         path: 'index',
@@ -100,28 +100,47 @@ export const asyncRoutes = [
         meta: { title: '商城配置', icon: 'settings', noCache: true }
       },
       {
-        path:'submessage',
-        component:()=>import('@/views/settings/submessage'),
-        name:'submessage',
-        meta:{title:'辅助资料',icon:'tree-table',noCache:true}
+        path: 'submessage',
+        component: () => import('@/views/settings/submessage'),
+        name: 'submessage',
+        meta: { title: '辅助资料', icon: 'tree-table', noCache: true }
       },
       {
-        path:'shop',
-        component:()=>import('@/views/settings/shop'),
-        name:'shop',
-        meta:{title:'店铺设置',icon:'shop',noCache:true}
+        path: 'shop',
+        component: () => import('@/views/settings/shop'),
+        name: 'shop',
+        meta: { title: '店铺设置', icon: 'shop', noCache: true }
       }
     ]
   },
   {
-    path: '/mall',
+    path: '/goods',
     component: Layout,
+    meta: { title: '商品管理', icon: 'goods' },
     children: [
       {
         path: 'goodsCategory',
-        component: () => import('@/views/mall/goodsCategory'),
+        component: () => import('@/views/goods/goodsCategory'),
         name: 'goodsCategory',
-        meta: { title: '商品分类', icon: 'icon', noCache: true }
+        meta: { title: '商品分类', icon: 'tree-table', noCache: true }
+      },
+      {
+        path: 'goods',
+        component: () => import('@/views/goods/goodsList'),
+        name: 'goodslist',// 这个name必须和vue页面中的name一致,keep-alive才有效
+        meta: { title: '商品管理', icon: 'goods' }
+      },
+      {
+        path: 'goodsInfo/:goodsId',
+        component: () => import('@/views/goods/goodsInfo/'),
+        name: 'goodsInfo',
+        meta: { title: '商品信息', icon: 'goods', noCache: true },
+        hidden: true,
+      },
+      {
+        path: 'inventory',
+        component: () => import('@/views/goods/inventory'),
+        meta: { title: '库存管理', icon: 'inventory' }
       }
     ]
   },
@@ -130,7 +149,7 @@ export const asyncRoutes = [
     component: Layout,
     redirect: 'noRedirect',
     name: 'ErrorPages',
-    hidden:true,//不在主界面显示roy
+    hidden: true, // 不在主界面显示roy
     meta: {
       title: 'Error Pages',
       icon: '404'
@@ -154,7 +173,7 @@ export const asyncRoutes = [
   {
     path: '/error-log',
     component: Layout,
-    hidden:true, //不在主界面显示roy
+    hidden: true, // 不在主界面显示roy
     children: [
       {
         path: 'log',
