@@ -25,3 +25,14 @@
     }
   }
 }
+
+/*内容超出指定行数显示省略号*/
+.overLines(@linecount) {
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+  white-space: normal !important;
+  -webkit-line-clamp: @linecount;
+  -webkit-box-orient: vertical;
+}

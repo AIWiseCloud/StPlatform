@@ -127,15 +127,27 @@ export const asyncRoutes = [
       {
         path: 'goods',
         component: () => import('@/views/goods/goodsList'),
-        name: 'goodslist',// 这个name必须和vue页面中的name一致,keep-alive才有效
+        name: 'goodslist', // 这个name必须和vue页面中的name一致,keep-alive才有效
         meta: { title: '商品管理', icon: 'goods' }
       },
       {
         path: 'goodsInfo/:goodsId',
-        component: () => import('@/views/goods/goodsInfo/'),
+        component: () => import('@/views/goods/goodsInfo'),
         name: 'goodsInfo',
         meta: { title: '商品信息', icon: 'goods', noCache: true },
-        hidden: true,
+        hidden: true
+      },
+      {
+        path:'stockBill',
+        component:()=>import('@/views/goods/stockBill'),
+        meta:{title:'出入库', icon:'stock'}
+      },
+      {
+        path:'stockBillDetail/:billId',
+        name:'stockBillDetail',
+        component:()=>import('@/views/goods/stockBillDetail'),
+        meta:{title:'单据编辑',icon:'stock'},
+        hidden:true
       },
       {
         path: 'inventory',

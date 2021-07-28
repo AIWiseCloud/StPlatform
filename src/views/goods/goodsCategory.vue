@@ -7,21 +7,19 @@
         <el-col>
           <el-button
             type="primary"
-            @click="showDialog(true)"
             size="mini"
             icon="el-icon-plus"
             style="margin-right: 1px"
             plain
-            >添加分类</el-button
-          >
+            @click="showDialog(true)"
+          >添加分类</el-button>
           <el-button
             type="default"
-            @click="getCategories('*')"
             size="mini"
             icon="el-icon-refresh"
             plain
-            >刷新列表</el-button
-          >
+            @click="getCategories('*')"
+          >刷新列表</el-button>
         </el-col>
       </el-row>
       <tree-table
@@ -36,15 +34,15 @@
         :show-row-hover="false"
       >
         <template slot="isstop" scope="scope">
-          <i v-if="!scope.row.isCancellation" class="el-icon-success"></i>
-          <i v-else class="el-icon-error"></i>
+          <i v-if="!scope.row.isCancellation" class="el-icon-success" />
+          <i v-else class="el-icon-error" />
         </template>
         <template slot="pic" scope="scope">
           <el-image
             :src="scope.row.imgUrl ? baseUrl + scope.row.imgUrl : ''"
             :onerror="ErrorImg"
             style="width: 80px; height: 80px"
-          ></el-image>
+          />
         </template>
         <template slot="operate" scope="scope">
           <el-button
@@ -52,15 +50,13 @@
             size="mini"
             icon="el-icon-edit"
             @click="showDialog(false, scope.row)"
-            >编辑</el-button
-          >
+          >编辑</el-button>
           <el-button
             type="danger"
             size="mini"
             icon="el-icon-delete"
             @click="deleteCategory(scope.row)"
-            >删除</el-button
-          >
+          >删除</el-button>
         </template>
       </tree-table>
     </el-card>
@@ -71,11 +67,11 @@
       @close="dialogClosed"
     >
       <el-form
+        ref="cateform"
         :model="cateData"
         label-width="95px"
         size="mini"
         :rules="rules"
-        ref="cateform"
       >
         <el-row>
           <el-col :sm="12" :md="12" :lg="12" :xl="12">
@@ -83,12 +79,12 @@
               <el-input
                 v-model="cateData.categoryId"
                 :disabled="!isAddDialog"
-              ></el-input>
+              />
             </el-form-item>
           </el-col>
           <el-col :sm="12" :md="12" :lg="12" :xl="12">
             <el-form-item label="分类名称" prop="categoryName">
-              <el-input v-model="cateData.categoryName"></el-input>
+              <el-input v-model="cateData.categoryName" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -106,8 +102,7 @@
                   value: 'categoryId',
                   checkStrictly: 'false',
                 }"
-              >
-              </el-cascader>
+              />
             </el-form-item>
           </el-col>
           <el-col :sm="12" :md="12" :lg="12" :xl="12">
@@ -118,7 +113,7 @@
                   :key="item.shopId"
                   :label="item.shopName"
                   :value="item.shopId"
-                ></el-option>
+                />
               </el-select>
             </el-form-item>
           </el-col>
@@ -126,12 +121,12 @@
         <el-row>
           <el-col :sm="12" :md="12" :lg="12" :xl="12">
             <el-form-item label="排序索引" prop="findex">
-              <el-input v-model="cateData.findex" type="number"></el-input>
+              <el-input v-model="cateData.findex" type="number" />
             </el-form-item>
           </el-col>
           <el-col :sm="12" :md="12" :lg="12" :xl="12">
             <el-form-item label="作废" prop="isCancellation">
-              <el-switch v-model="cateData.isCancellation" :inactive-value="0" :active-value="1"></el-switch>
+              <el-switch v-model="cateData.isCancellation" :inactive-value="0" :active-value="1" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -147,206 +142,207 @@
               v-if="cateData.imgUrl"
               :src="cateData.imgUrl ? baseUrl + cateData.imgUrl : ''"
               class="avatar"
-            ></el-image>
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            />
+            <i v-else class="el-icon-plus avatar-uploader-icon" />
           </el-upload>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="visibleDialog = false">取消</el-button>
-        <el-button type="danger" @click="submitGoodsCategory('cateform')"
-          >确定</el-button
-        >
+        <el-button
+          type="danger"
+          @click="submitGoodsCategory('cateform')"
+        >确定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import apiGoods from "@/api/goods";
-import apiSettings from "@/api/settings";
-import apiBase from "@/api/base";
-import common from "@/utils/common";
+import apiGoods from '@/api/goods'
+import apiSettings from '@/api/settings'
+import apiBase from '@/api/base'
+import common from '@/utils/common'
 export default {
   data() {
     return {
-      categoriesData: [], //树形分类数据源
+      categoriesData: [], // 树形分类数据源
       shops: [],
-      fileName: "", //是传图片名
-      baseUrl: "", //图片根目录
-      ErrorImg: 'this.src="' + require("@/assets/images/blankimg.png") + '"', //图片错误地址
+      fileName: '', // 是传图片名
+      baseUrl: '', // 图片根目录
+      ErrorImg: 'this.src="' + require('@/assets/images/blankimg.png') + '"', // 图片错误地址
       cateData: {
-        categoryId: "",
-        categoryName: "",
-        parentId: "",
-        shopId: "",
-        imgUrl: "",
+        categoryId: '',
+        categoryName: '',
+        parentId: '',
+        shopId: '',
+        imgUrl: '',
         findex: 100,
-        isCancellation: 0,
+        isCancellation: 0
       },
-      visibleDialog: false, //显示对话框
-      isAddDialog: true, //当前是新增对话框
+      visibleDialog: false, // 显示对话框
+      isAddDialog: true, // 当前是新增对话框
       columns: [
-        { label: "类别代码", prop: "categoryId" },
-        { label: "类别名称", prop: "categoryName" },
-        { label: "作废", type: "template", template: "isstop" },
+        { label: '类别代码', prop: 'categoryId' },
+        { label: '类别名称', prop: 'categoryName' },
+        { label: '作废', type: 'template', template: 'isstop' },
         {
-          label: "分类图片",
-          type: "template",
-          template: "pic",
-          align: "center",
+          label: '分类图片',
+          type: 'template',
+          template: 'pic',
+          align: 'center'
         },
-        { label: "上级代码", prop: "parentId" },
-        { label: "排序索引", prop: "findex" },
-        { label: "操作", type: "template", template: "operate", width: "200" },
+        { label: '上级代码', prop: 'parentId' },
+        { label: '排序索引', prop: 'findex' },
+        { label: '操作', type: 'template', template: 'operate', width: '200' }
       ],
       rules: {
         categoryId: {
           required: true,
-          message: "请输入分类代码",
-          trigger: "blur",
+          message: '请输入分类代码',
+          trigger: 'blur'
         },
         categoryName: {
           required: true,
-          message: "请输入分类名称",
-          trigger: "blur",
-        },
-      },
-    };
+          message: '请输入分类名称',
+          trigger: 'blur'
+        }
+      }
+    }
+  },
+  created() {
+    this.getCategories('*')
+    this.baseUrl = common.getBaseURL()
+    apiSettings.GetShops().then((res) => {
+      if (res.code == 200 && res.returnStatus == 1) {
+        this.shops = res.result
+      }
+    })
   },
   methods: {
-    //获取商品分类数据(参数：parentId 为空时获取1级分类，为*时所有分类, 其余情况为获取下级分类)
+    // 获取商品分类数据(参数：parentId 为空时获取1级分类，为*时所有分类, 其余情况为获取下级分类)
     getCategories(parentId) {
       apiGoods.GetGoodsCategories(parentId).then((res) => {
         if (res.code == 200 && res.returnStatus == 1) {
-          this.categoriesData = res.result;
+          this.categoriesData = res.result
         }
-      });
+      })
     },
-    //打开新增对话框
+    // 打开新增对话框
     showDialog(isAdd, row) {
-      this.visibleDialog = true;
-      this.isAddDialog = isAdd;
+      this.visibleDialog = true
+      this.isAddDialog = isAdd
       if (isAdd) {
-        this.cateData.categoryId = "";
-        this.cateData.shopId = "";
-        this.cateData.categoryName = "";
-        this.cateData.parentId = "";
-        this.cateData.imgUrl = "";
-        this.cateData.isCancellation = 0;
-        this.cateData.findex = 200;
+        this.cateData.categoryId = ''
+        this.cateData.shopId = ''
+        this.cateData.categoryName = ''
+        this.cateData.parentId = ''
+        this.cateData.imgUrl = ''
+        this.cateData.isCancellation = 0
+        this.cateData.findex = 200
       } else {
-        this.cateData.categoryId = row.categoryId;
-        this.cateData.categoryName = row.categoryName;
-        this.cateData.shopId = row.shopId;
-        this.cateData.parentId = row.parentId ? [row.parentId] : "";
-        this.cateData.imgUrl = row.imgUrl;
-        this.cateData.isCancellation = row.isCancellation;
-        this.cateData.findex = row.findex;
+        this.cateData.categoryId = row.categoryId
+        this.cateData.categoryName = row.categoryName
+        this.cateData.shopId = row.shopId
+        this.cateData.parentId = row.parentId ? [row.parentId] : ''
+        this.cateData.imgUrl = row.imgUrl
+        this.cateData.isCancellation = row.isCancellation
+        this.cateData.findex = row.findex
       }
     },
-    //提交商品分类
+    // 提交商品分类
     submitGoodsCategory(ruleForm) {
       this.$refs[ruleForm].validate((valid) => {
         if (valid) {
-          let data = JSON.parse(JSON.stringify(this.cateData));
-          data.parentId = data.parentId ? data.parentId[0] : "";
+          const data = JSON.parse(JSON.stringify(this.cateData))
+          data.parentId = data.parentId ? data.parentId[0] : ''
           apiGoods
             .SaveGoodsCategory(data)
             .then((res) => {
               if (res.code == 200 && res.returnStatus == 1) {
-                this.visibleDialog = false;
-                this.getCategories("*");
+                this.visibleDialog = false
+                this.getCategories('*')
               } else {
-                this.$message.error(JSON.stringify(res.msg));
+                this.$message.error(JSON.stringify(res.msg))
               }
             })
             .catch((err) => {
               // this.$message.error(JSON.stringify(err));
-            });
+            })
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
-    //关闭对话框进行相关重置
+    // 关闭对话框进行相关重置
     dialogClosed() {
-      console.log("close");
+      console.log('close')
       // 表单内容重置为空
-      this.$refs.cateform.resetFields(); // 通过ref引用调用resetFields方法
+      this.$refs.cateform.resetFields() // 通过ref引用调用resetFields方法
     },
-    //删除
+    // 删除
     deleteCategory(row) {
       if (row.children) {
-        this.$message.error("存在子分类");
-        return false;
+        this.$message.error('存在子分类')
+        return false
       }
-      this.$confirm("确定要删除吗？", "询问", {
-        cancelButtonText: "取消",
-        confirmButtonText: "确定",
+      this.$confirm('确定要删除吗？', '询问', {
+        cancelButtonText: '取消',
+        confirmButtonText: '确定'
       })
         .then((r) => {
-          return apiGoods.DeleteGoodsCategory(row.categoryId);
+          return apiGoods.DeleteGoodsCategory(row.categoryId)
         })
         .then((res) => {
           if (res.code == 200 && res.returnStatus == 1) {
-            this.$message({ message: "删除成功", type: "success" });
-            this.getCategories("*");
+            this.$message({ message: '删除成功', type: 'success' })
+            this.getCategories('*')
           } else {
-            this.$message.error(JSON.stringify(res.msg));
+            this.$message.error(JSON.stringify(res.msg))
           }
         })
         .catch((err) => {
-          this.$message.error(JSON.stringify(err));
-        });
+          this.$message.error(JSON.stringify(err))
+        })
     },
-    //上传前
+    // 上传前
     handleImgBefore(file) {
-      this.fileName = file.name; //记录文件名称
+      this.fileName = file.name // 记录文件名称
       const isJPG =
-        file.type === "image/jpeg" ||
-        file.type == "image/png" ||
-        file.type == "image/JPG";
-      const isLt2M = file.size / 1024 / 1024 < 2;
+        file.type === 'image/jpeg' ||
+        file.type == 'image/png' ||
+        file.type == 'image/JPG'
+      const isLt2M = file.size / 1024 / 1024 < 2
 
       if (!isJPG) {
-        this.$message.error("上传头像图片只能是 JPG/PNG/JPEG 格式!");
+        this.$message.error('上传头像图片只能是 JPG/PNG/JPEG 格式!')
       }
       if (!isLt2M) {
-        this.$message.error("上传头像图片大小不能超过 2MB!");
+        this.$message.error('上传头像图片大小不能超过 2MB!')
       }
-      return isJPG && isLt2M;
+      return isJPG && isLt2M
     },
-    //选择图片并调用api上传
+    // 选择图片并调用api上传
     requestImgUpload(params) {
-      const file = params.file;
+      const file = params.file
       // 根据后台需求数据格式
-      const form = new FormData();
+      const form = new FormData()
       // 文件对象
-      form.append("file", file);
+      form.append('file', file)
       apiBase
         .UploadFiles(form)
         .then((res) => {
           // console.log("上传返回：", JSON.stringify(res));
-          const { result } = res;
-          this.cateData.imgUrl = result.diclist[this.fileName];
+          const { result } = res
+          this.cateData.imgUrl = result.diclist[this.fileName]
           // console.log(this.settingsData[imgField]);
         })
         .catch((error) => {
-          this.$message.error(JSON.stringify(err));
-        });
-    },
-  },
-  created() {
-    this.getCategories("*");
-    this.baseUrl = common.getBaseURL();
-    apiSettings.GetShops().then((res) => {
-      if (res.code == 200 && res.returnStatus == 1) {
-        this.shops = res.result;
-      }
-    });
-  },
-};
+          this.$message.error(JSON.stringify(err))
+        })
+    }
+  }
+}
 </script>
 
 <style lang='less' scoped>

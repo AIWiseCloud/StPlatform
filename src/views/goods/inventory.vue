@@ -1,12 +1,12 @@
 <template>
-    <div class="container"></div>
+  <div class="container" />
 </template>
 
 <script>
 export default {
-    data(){
-        return{}
-    }
+  data() {
+    return {}
+  }
 }
 </script>
 

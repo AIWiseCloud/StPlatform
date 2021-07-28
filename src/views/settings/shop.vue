@@ -17,7 +17,7 @@
         @click="loadData"
       >刷新列表</el-button>
     </el-button-group>
-    <el-table :data="shopArr" style="width: 100%" border fit   :header-cell-style="{ 'text-align': 'center' , background: '#F3F4F7', color: '#555'}">
+    <el-table :data="shopArr" style="width: 100%" border fit :header-cell-style="{ 'text-align': 'center' , background: '#F3F4F7', color: '#555'}">
       <el-table-column
         width="100"
         prop="shopId"
@@ -191,7 +191,7 @@ export default {
                 }
                 this.visibleDialog = false
               } else {
-                this.$message.error(JSON.stringify(res.msg));
+                this.$message.error(JSON.stringify(res.msg))
               }
             })
             .catch((err) => {
