@@ -4,7 +4,7 @@
       <el-row :gutter="10">
         <el-col :span="8">
           <el-input
-            v-model="queryInfo.keywords"
+            v-model="queryInfo.queryValue"
             placeholder="请输入内容"
             clearable
             @keyup.enter.native="searchGoods"
@@ -88,6 +88,14 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="queryInfo.totalCount"
+        :current-page="queryInfo.pageModel.pageNo"
+        @current-change="loadData"
+      >
+      </el-pagination>
     </el-card>
   </div>
 </template>
@@ -99,24 +107,19 @@ export default {
   data() {
     return {
       queryInfo: {
-        keywords: "",
+        queryScheme: 0, //0表示按关键字搜索
+        hideUnderGoods: 0, //不隐藏下架商品
+        queryValue: "", //查询值
+        pageModel: {
+          pageNo: 1,
+          pageSize: 20,
+          orderField: "",
+          orderWay: "",
+        },
         totalCount: 0,
-        pageNo: 0,
-        pageSize: 20,
-        isLoad: false, // 是否加载过的标记
       },
       goodsList: [],
     };
-  },
-  computed: {
-    // 分页是否加载完成
-    finishLoad() {
-      return (
-        this.queryInfo.isLoad &&
-        this.queryInfo.pageNo * this.queryInfo.pageSize >=
-          this.queryInfo.totalCount
-      );
-    },
   },
   methods: {
     goGoodsInfo(id) {
@@ -124,35 +127,22 @@ export default {
     },
     // 分页加载数据
     loadData() {
-      if (this.finishLoad) {
-        // return this.$message.error("没有更多数据了");
-        return false;
-      }
-      this.queryInfo.pageNo++;
-      apiGoods
-        .SearchGoods(
-          this.queryInfo.keywords,
-          this.queryInfo.pageNo,
-          this.queryInfo.pageSize
-        )
-        .then((res) => {
-          if (res.code == 200 && res.returnStatus == 1) {
-            const { items } = res.result;
-            this.queryInfo.isLoad = true;
-            this.queryInfo.totalCount = res.result.totalCount;
-            this.goodsList = [...this.goodsList, ...items];
-          } else {
-            this.$message.error(JSON.stringify(res.msg));
-          }
-        });
+      apiGoods.QueryGoods(this.queryInfo).then((res) => {
+        if (res.code == 200 && res.returnStatus == 1) {
+          const { items } = res.result;
+          this.queryInfo.totalCount = res.result.totalCount;
+          this.goodsList = items;
+        } else {
+          this.$message.error(JSON.stringify(res.msg));
+        }
+      });
     },
     // 商品搜索
     searchGoods() {
       // 初始化搜索
-      this.queryInfo.pageNo = 0;
-      this.queryInfo.pageSize = 20;
+      this.queryInfo.pageModel.pageNo = 1;
+      this.queryInfo.pageModel.pageSize = 20;
       this.queryInfo.totalCount = 0;
-      this.queryInfo.isLoad = false;
       this.goodsList = [];
       this.loadData();
     },

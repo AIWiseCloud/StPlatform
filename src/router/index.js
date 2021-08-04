@@ -139,6 +139,7 @@ export const asyncRoutes = [
       },
       {
         path:'stockBill',
+        name:'stockBill',
         component:()=>import('@/views/goods/stockBill'),
         meta:{title:'出入库', icon:'stock'}
       },

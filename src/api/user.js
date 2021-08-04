@@ -10,7 +10,7 @@ export function login(data) {
 
 export function getInfo(token) {
   return request({
-    url: `/api/sys/GetUserInfo?accessToken=${token}`,
+    url: `/api/sys/GetUserInfoByToken?token=${token}`,
     method: 'get'
   })
 }

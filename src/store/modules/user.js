@@ -34,8 +34,9 @@ const actions = {
     const { username, password, unionId } = userInfo
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password, unionId: unionId }).then(response => {
-        console.log(JSON.stringify(response))
-        const token = response.result
+        // console.log(JSON.stringify(response))
+        const token = response.result;
+        commit('SET_NAME',unionId);
         commit('SET_TOKEN', token)
         setToken(token)
         resolve()
@@ -49,21 +50,19 @@ const actions = {
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
-        console.log('store-user收到：', JSON.stringify(response))
         const { result } = response
 
         if (!result) {
           reject('Verification failed, please Login again.')
         }
-
-        const { roles, nickName, avatar, province } = result
+        const { userRoles, nickName, avatar, province } = result
 
         // roles must be a non-empty array
-        if (!roles || roles.length <= 0) {
+        if (!userRoles || userRoles.length <= 0) {
           reject('getInfo: roles must be a non-null array!')
         }
 
-        commit('SET_ROLES', roles)
+        commit('SET_ROLES', userRoles)
         commit('SET_NAME', nickName)
         commit('SET_AVATAR', avatar)
         commit('SET_INTRODUCTION', province)

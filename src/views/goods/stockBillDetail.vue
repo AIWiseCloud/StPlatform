@@ -41,6 +41,15 @@
         <el-button
           class="btn"
           plain
+          icon="el-icon-top-left"
+          size="mini"
+          @click="cancelEdit"
+          :disabled="!buttonStatus.cancelEdit"
+          >取消</el-button
+        >
+        <el-button
+          class="btn"
+          plain
           icon="el-icon-check"
           size="mini"
           @click="auditBill"
@@ -73,14 +82,14 @@
           icon="el-icon-back"
           size="mini"
           @click="$router.go(-1)"
-          :disabled="!isEditStatus"
+          :disabled="isEditStatus"
           >返回</el-button
         >
       </el-button-group>
       <!-- 单据区 -->
       <!-- 单据头 -->
       <el-form
-        v-model="stockBillData"
+        :model="stockBillData"
         ref="billform"
         :rules="billrules"
         label-position="right"
@@ -93,11 +102,12 @@
             </el-form-item>
           </el-col>
           <el-col :sm="12" :md="8" :lg="8" :xl="8">
-            <el-form-item label="业务类型">
+            <el-form-item label="业务类型" prop="transTypeId">
               <el-select
                 v-model="stockBillData.transTypeId"
                 size="mini"
                 placeholder="选择交易类型"
+                :disabled="!isEditStatus"
               >
                 <el-option
                   v-for="item in transTypes"
@@ -113,53 +123,66 @@
               <el-input
                 v-model="stockBillData.remark"
                 placeholder="请输入备注"
+                :disabled="!isEditStatus"
               ></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <!-- 出入库明细列表 -->
         <el-table
-          :data="stockBillData.stockBillDetails"
+          :data="stockBillData.stockBillDetail"
           size="mini"
           border
           :header-cell-style="{ background: '#F3F4F7', 'text-align': 'center' }"
           empty-text="无数据"
         >
-          <el-table-column
-            label="序号"
-            prop="fIndex"
-            width="60"
-          ></el-table-column>
-          <el-table-column
-            label="商品ID"
-            prop="goodsId"
-            v-if="false"
-          ></el-table-column>
+          <el-table-column label="序号" :width="isEditStatus ? 120 : 60">
+            <template scope="scope">
+              <el-input
+                v-if="isEditStatus"
+                v-model="scope.row.fIndex"
+                type="number"
+              ></el-input>
+              <span v-else>{{ scope.row.fIndex }}</span>
+            </template>
+          </el-table-column>
           <el-table-column
             label="商品名称"
             prop="goodsInfo.goodsName"
           ></el-table-column>
-
           <el-table-column
             label="颜色"
-            prop="colorInfo.fName"
+            prop="colorInfo.colorName"
           ></el-table-column>
-          <el-table-column label="规格" prop="spec.fName"></el-table-column>
-          <el-table-column
-            label="仓库"
-            prop="stock.fName"
-            width="120"
-          ></el-table-column>
+          <el-table-column label="规格" prop="spec.specName"></el-table-column>
+          <el-table-column label="仓库" width="140">
+            <template scope="scope">
+              <el-select v-if="isEditStatus" v-model="scope.row.stockNumber">
+                <el-option
+                  v-for="(item, i) in stocks"
+                  :key="i"
+                  :label="item.fName"
+                  :value="item.fNumber"
+                ></el-option>
+              </el-select>
+              <span v-else>{{ scope.row.stock.stockName }}</span>
+            </template>
+          </el-table-column>
           <el-table-column
             label="单位"
             prop="goodsInfo.unitName"
             width="80"
           ></el-table-column>
-          <el-table-column
-            label="数量"
-            prop="quantity"
-            width="80"
-          ></el-table-column>
+          <el-table-column label="数量" prop="quantity" width="120">
+            <template scope="scope">
+              <el-input
+                type="number"
+                v-if="isEditStatus"
+                v-model="scope.row.quantity"
+              ></el-input>
+              <span v-else>{{ scope.row.quantity }}</span>
+            </template>
+          </el-table-column>
           <el-table-column width="120">
             <template slot="header">
               <el-button
@@ -172,7 +195,12 @@
               >
             </template>
             <template slot-scope="scope">
-              <el-button type="danger" size="mini" icon="el-icon-delete"
+              <el-button
+                type="danger"
+                size="mini"
+                icon="el-icon-delete"
+                v-if="isEditStatus && stockBillData.billState == 0"
+                @click="deleteRow(scope.$index, scope.row.id)"
                 >删除行</el-button
               >
             </template>
@@ -255,14 +283,16 @@
 <script>
 import apiGoods from "@/api/goods";
 import apiSettings from "@/api/settings";
-import common from "@/utils/common";
+import apiInventory from "@/api/inventory";
 export default {
+  name: "stockBillDetail",
   data() {
     return {
       isAddBill: false,
       visibleSelectDialog: false,
-      transTypes: [],
-      isEditStatus: 0, //单据是否处于编辑状态
+      transTypes: [], //交易类型
+      stocks: [], //仓库列表
+      isEditStatus: true, //单据是否处于编辑状态
       //单据实体
       stockBillData: {
         billId: "",
@@ -270,39 +300,7 @@ export default {
         transTypeId: "",
         billState: 0,
         Remark: "",
-        stockBillDetails: [
-          {
-            fIndex: 100,
-            isNew: 0,
-            goodsId: "",
-            goodsInfo: {
-              goodsId: "21072410202072",
-              goodsName: "底漆",
-              unitName: "桶",
-            },
-            transTypeId: "transtype_othout",
-            transType: {
-              fNumber: "transtype_othout",
-              fName: "其他入库",
-            },
-            stockNumber: "stock_st",
-            stock: {
-              fNumber: "stock_st",
-              fName: "电商仓",
-            },
-            colorId: "",
-            colorInfo: {
-              fNumber: "red",
-              fName: "红",
-            },
-            specId: "",
-            spec: {
-              fNumber: "spec",
-              fName: "30公斤",
-            },
-            quantity: 2000,
-          },
-        ],
+        stockBillDetail: [],
       },
       //验证实体
       billrules: {
@@ -320,11 +318,7 @@ export default {
       //某最小类别下的goods列表
       goodsList: [],
       //选择列表
-      selectList: [
-        // { check: false, specName: "15KG/桶", colorName: "红色", price: 50.0 },
-        // { check: false, specName: "15KG/桶", colorName: "黄色", price: 50.0 },
-        // { check: false, specName: "15KG/桶", colorName: "蓝色", price: 50.0 },
-      ],
+      selectList: [],
       //所有商品分类(用于商品选择)
       goodsCategories: [],
       checkAll: false,
@@ -361,17 +355,19 @@ export default {
       this.checkAll = false;
       apiGoods.GetGoodsInfo(goodsId).then((res) => {
         if (res.code == 200 && res.returnStatus == 1) {
-          // console.log(JSON.stringify(res.result))
           let arr = [];
           for (let i of res.result.goodsSpecs) {
             for (let j of res.result.goodsColors) {
               arr.push({
                 check: false,
+                goodsId: res.result.goodsId,
                 goodsInfo: res.result,
+                specId: i.specId,
                 spec: i.spec,
-                specName: i.spec.fName,
+                specName: i.spec.specName,
+                colorId: j.colorId,
                 colorInfo: j.colorInfo,
-                colorName: j.colorInfo.fName,
+                colorName: j.colorInfo.colorName,
                 price: i.price,
               });
             }
@@ -382,7 +378,7 @@ export default {
     },
     //全选/全清
     changecheckall(e) {
-      console.log(e);
+      // console.log(e);
       this.selectList.forEach((p) => (p.check = e));
     },
     //确定选取勾选的商品到单据
@@ -394,38 +390,28 @@ export default {
           type: "info",
         });
       }
-      if (!this.canModify) {
-        return this.$message({
-          message: "当前单据所在状态禁止修改!",
-          type: "error",
-        });
-      }
       //默认带入到单据行中的信息
       let defaultInfo = {
+        billId: this.stockBillData.billId,
         fIndex: 100,
         isNew: 1,
-        transTypeId: "transtype_othout",
-        transType: {
-          fNumber: "transtype_othout",
-          fName: "其他入库",
-        },
         stockNumber: "stock_st",
         stock: {
-          fNumber: "stock_st",
-          fName: "电商仓",
+          stockNumber: "stock_st",
+          stockName: "电商仓",
         },
         quantity: 0,
       };
       for (let i of selects) {
-        this.stockBillData.stockBillDetails.push({
+        this.stockBillData.stockBillDetail.push({
           id: this.$common.guid(),
           ...i,
           ...defaultInfo,
         });
       }
       //添加一下序号
-      for (let i in this.stockBillData.stockBillDetails) {
-        this.stockBillData.stockBillDetails[i].fIndex = Number.parseInt(i) + 1;
+      for (let i in this.stockBillData.stockBillDetail) {
+        this.stockBillData.stockBillDetail[i].fIndex = Number.parseInt(i) + 1;
       }
       this.visibleSelectDialog = false;
     },
@@ -436,13 +422,13 @@ export default {
       this.stockBillData.transTypeId = "";
       this.stockBillData.billState = 0;
       this.stockBillData.Remark = "";
-      this.stockBillData.stockBillDetails = [];
+      this.stockBillData.stockBillDetail = [];
       this.isEditStatus = true;
     },
     //新增
     newBill() {
       //产生新单号并修改路由参数中的单号
-      let newId = "W" + common.getDigitSerial();
+      let newId = "W" + this.$common.getDigitSerial();
       this.$router.replace({
         name: "stockBillDetail",
         params: { isNew: true, billId: newId },
@@ -455,22 +441,100 @@ export default {
     },
     //保存
     saveBill() {
+      // console.log(JSON.stringify(this.stockBillData));
+      if (this.stockBillData.stockBillDetail.length == 0) {
+        return this.$message.error("请添加商品!");
+      }
+      for (let i of this.stockBillData.stockBillDetail) {
+        if (i.quantity == 0) {
+          return this.$message.warning(`出入库数量不能为0！`);
+        }
+      }
+
+      //去掉不必要跟随提交的数据
+      let data = JSON.parse(JSON.stringify(this.stockBillData));
+      data.goodsColors = [];
+      data.goodsSpecs = [];
+      data.stockBillDetail.map((x) => (x.stock = null));
+      //验证并提交
+      this.$refs.billform.validate((valid) => {
+        if (valid) {
+          apiInventory.SaveStockBill(data).then((res) => {
+            if (res.code == 200 && res.returnStatus == 1) {
+              this.isEditStatus = false;
+              this.$message({ message: "保存成功", type: "success" });
+            } else {
+              this.$message.error(JSON.stringify(res.msg));
+            }
+          });
+        } else {
+          return false;
+        }
+      });
+    },
+    cancelEdit() {
       this.isEditStatus = false;
     },
     //审核
-    auditBill() {},
+    auditBill() {
+      apiInventory.AuditStockBill(this.stockBillData.billId, 1).then((res) => {
+        if (res.code == 200 && res.returnStatus == 1 && res.result.status) {
+          this.stockBillData.billState = 1;
+        } else {
+          this.$message.error("审核失败" + JSON.stringify(res.msg));
+        }
+      });
+    },
     //反审
-    cancelAuditBill() {},
+    cancelAuditBill() {
+      apiInventory.AuditStockBill(this.stockBillData.billId, 0).then((res) => {
+        if (res.code == 200 && res.returnStatus == 1 && res.result.status) {
+          this.stockBillData.billState = 0;
+        } else {
+          this.$message.error("反审核失败" + JSON.stringify(res.msg));
+        }
+      });
+    },
+    //删除行
+    deleteRow(index, id) {
+      apiInventory.DeleteStockBillRow(id).then((res) => {
+        if (res.code == 200 && res.returnStatus == 1 && res.result) {
+          this.stockBillData.stockBillDetail.splice(index, 1);
+        } else {
+          this.$message.error(JSON.stringify(res.msg));
+        }
+      });
+    },
     //删除
-    deleteBill() {},
+    deleteBill() {
+      this.$confirm("确定要删除吗？", "询问", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+      }).then((r) => {
+        apiInventory.DeleteStockBill(this.stockBillData.billId).then((res) => {
+          if (res.code == 200 && res.returnStatus == 1) {
+            this.$message({ message: "删除成功!", type: "success" });
+            this.$router.go(-1);
+          } else {
+            this.$message.error(JSON.stringify(res.msg));
+          }
+        });
+      });
+    },
   },
   beforeMount() {
     this.isAddBill = this.$route.params.isNew;
     let billId = this.$route.params.billId;
     if (this.isAddBill) {
       this.initialBill(billId);
+    } else {
+      apiInventory.GetStockBill(billId).then((res) => {
+        if (res.code == 200 && res.returnStatus == 1) {
+          this.stockBillData = res.result;
+          this.isEditStatus = false;
+        }
+      });
     }
-    //从api获取单据完整信息
   },
   created() {
     //交易类型
@@ -485,21 +549,33 @@ export default {
         this.goodsCategories = res.result;
       }
     });
+    //仓库列表
+    apiSettings.GetSubMessageList("stock").then((res) => {
+      if (res.code == 200 && res.returnStatus == 1) {
+        this.stocks = res.result;
+      }
+    });
   },
   computed: {
-    //当前单据能否修改
-    canModify() {
-      return this.stockBillData.billState == 0;
-    },
     //按钮状态
     buttonStatus() {
       return {
         new: !this.isEditStatus,
-        edit: !this.isEditStatus && this.stockBillData.billState == 0,
+        edit:
+          !this.isEditStatus &&
+          this.stockBillData &&
+          this.stockBillData.billState == 0,
         save: this.isEditStatus,
-        audit: !this.isEditStatus && this.stockBillData.billState == 0,
-        cancel: this.stockBillData.billState == 1,
-        delete: !this.isEditStatus && this.stockBillData.billState == 0,
+        cancelEdit: this.isEditStatus,
+        audit:
+          !this.isEditStatus &&
+          this.stockBillData &&
+          this.stockBillData.billState == 0,
+        cancel: this.stockBillData && this.stockBillData.billState == 1,
+        delete:
+          !this.isEditStatus &&
+          this.stockBillData &&
+          this.stockBillData.billState == 0,
       };
     },
   },

@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
 function SaveGoodsCategory(data) {
-  console.log('提交：', JSON.stringify(data))
+  // console.log('提交：', JSON.stringify(data))
   // data.isCancellation=data.isCancellation?1:0;
   return request({
     url: `/api/Goods/SaveGoodsCategory`,
@@ -56,16 +56,17 @@ function GetGoodsInfo(goodsId) {
 //获取某最小分类下的商品列表
 function GetGoodsInfoOverviews(categoryId){
   return request({
-    url:`/api/Goods/GetGoodsInfoOverviews?categoryId=${categoryId}`,
+    url:`/api/Inventory/GetGoodsInfoOverviews?categoryId=${categoryId}`,
     method:'GET'
   })
 }
 
-// 搜索商品（分页)
-function SearchGoods(keywords, pageNo, pageSize) {
+// 查询商品（分页)
+function QueryGoods(data) {
   return request({
-    url: `/api/Goods/SearchGoods?keywords=${keywords}&pageNo=${pageNo}&pageSize=${pageSize}`,
-    method: 'GET'
+    url: `/api/Goods/QueryGoods`,
+    method: 'POST',
+    data
   })
 }
 
@@ -184,7 +185,7 @@ export default {
   SaveGoodsInfo,
   GetGoodsInfo,
   GetGoodsInfoOverviews,
-  SearchGoods,
+  QueryGoods,
   DeleteGoodsInfo,
   SaveGoodsColor,
   GetGoodsColor,
