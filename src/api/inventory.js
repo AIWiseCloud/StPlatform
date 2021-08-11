@@ -52,6 +52,22 @@ function SearchInventories(data){
     })
 }
 
+//获取指定商品在某仓库的实际库存
+function GetInventoryDetail(goodsId,colorId,specId,stockNumber){
+    return request({
+        url:`/api/Inventory/GetInventoryDetail?goodsId=${goodsId}&colorId=${colorId}&specId=${specId}&stockNumber=${stockNumber}`,
+        method:'GET'
+    })
+}
+
+//获取待发货订单列表
+function GetToBeShipped(orderId){
+    return request({
+        url:`/api/Inventory/GetToBeShipped?orderId=${orderId}`,
+        method:'GET'
+    })
+}
+
 export default{
     SaveStockBill,
     GetStockBill,
@@ -59,5 +75,7 @@ export default{
     DeleteStockBillRow,
     DeleteStockBill,
     AuditStockBill,
-    SearchInventories
+    SearchInventories,
+    GetInventoryDetail,
+    GetToBeShipped
 }

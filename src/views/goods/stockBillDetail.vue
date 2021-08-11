@@ -32,6 +32,15 @@
         <el-button
           class="btn"
           plain
+          icon="el-icon-folder-add"
+          size="mini"
+          :disabled="!buttonStatus.order"
+          @click="generateFromOrder"
+          >从订单生成
+        </el-button>
+        <el-button
+          class="btn"
+          plain
           icon="el-icon-folder"
           size="mini"
           @click="saveBill"
@@ -96,12 +105,12 @@
         label-width="92px"
       >
         <el-row :gutter="10">
-          <el-col :sm="12" :md="8" :lg="8" :xl="8">
+          <el-col :sm="12" :md="6" :lg="6" :xl="6">
             <el-form-item label="交易单号">
               <el-tag type="sucess">{{ stockBillData.billId }}</el-tag>
             </el-form-item>
           </el-col>
-          <el-col :sm="12" :md="8" :lg="8" :xl="8">
+            <el-col :sm="12" :md="6" :lg="6" :xl="6">
             <el-form-item label="业务类型" prop="transTypeId">
               <el-select
                 v-model="stockBillData.transTypeId"
@@ -118,7 +127,16 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :sm="12" :md="8" :lg="8" :xl="8">
+           <el-col :sm="12" :md="6" :lg="6" :xl="6">
+            <el-form-item label="订单号">
+              <el-input
+                v-model="stockBillData.orderId"
+                placeholder="请输入订单号"
+                disabled
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :sm="12" :md="6" :lg="6" :xl="6">
             <el-form-item label="备注">
               <el-input
                 v-model="stockBillData.remark"
@@ -336,13 +354,16 @@ export default {
       });
     },
 
+    //由订单生成
+    generateFromOrder() {},
+
     //选择商品类别
     categoryChange(selarr) {
       if (selarr) {
         let data = {
-          queryScheme: 1,//按商品分类
-          hideUnderGoods: 1,//隐藏下架
-          queryValue: selarr[selarr.length - 1],//商品分类
+          queryScheme: 1, //按商品分类
+          hideUnderGoods: 1, //隐藏下架
+          queryValue: selarr[selarr.length - 1], //商品分类
           pageModel: {
             pageNo: 1,
             pageSize: 30,
@@ -350,20 +371,18 @@ export default {
             orderWay: "",
           },
         };
-        apiGoods
-          .QueryGoods(data)
-          .then((res) => {
-            if (res.code == 200 && res.returnStatus == 1) {
-              this.goodsList=res.result.items.map(x=>{
-                return{
-                  goodsId:x.goodsId,
-                  goodsName:x.goodsName,
-                  imgUrl:x.goodsColors[0].imgFront,
-                }
-              });
-              this.$refs.goodscate.dropDownVisible = false; //关闭选择框
-            }
-          });
+        apiGoods.QueryGoods(data).then((res) => {
+          if (res.code == 200 && res.returnStatus == 1) {
+            this.goodsList = res.result.items.map((x) => {
+              return {
+                goodsId: x.goodsId,
+                goodsName: x.goodsName,
+                imgUrl: x.goodsColors[0].imgFront,
+              };
+            });
+            this.$refs.goodscate.dropDownVisible = false; //关闭选择框
+          }
+        });
       }
     },
     //点选对话框左侧商品
@@ -584,6 +603,7 @@ export default {
           this.stockBillData.billState == 0,
         save: this.isEditStatus,
         cancelEdit: this.isEditStatus,
+        order: this.isEditStatus,
         audit:
           !this.isEditStatus &&
           this.stockBillData &&
