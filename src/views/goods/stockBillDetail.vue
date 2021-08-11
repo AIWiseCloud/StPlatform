@@ -339,11 +339,28 @@ export default {
     //选择商品类别
     categoryChange(selarr) {
       if (selarr) {
+        let data = {
+          queryScheme: 1,//按商品分类
+          hideUnderGoods: 1,//隐藏下架
+          queryValue: selarr[selarr.length - 1],//商品分类
+          pageModel: {
+            pageNo: 1,
+            pageSize: 30,
+            orderField: "",
+            orderWay: "",
+          },
+        };
         apiGoods
-          .GetGoodsInfoOverviews(selarr[selarr.length - 1])
+          .QueryGoods(data)
           .then((res) => {
             if (res.code == 200 && res.returnStatus == 1) {
-              this.goodsList = res.result;
+              this.goodsList=res.result.items.map(x=>{
+                return{
+                  goodsId:x.goodsId,
+                  goodsName:x.goodsName,
+                  imgUrl:x.goodsColors[0].imgFront,
+                }
+              });
               this.$refs.goodscate.dropDownVisible = false; //关闭选择框
             }
           });

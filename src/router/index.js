@@ -94,6 +94,12 @@ export const asyncRoutes = [
     meta: { title: '商城配置', icon: 'settings' },
     children: [
       {
+        path: 'resourcesettings',
+        name: 'resourcesettings',
+        component: () => import('@/views/settings/resourcesettings'),
+        meta: { title: '资源配置', icon: 'settings' }
+      },
+      {
         path: 'index',
         component: () => import('@/views/settings/index'),
         name: 'settings',
@@ -138,20 +144,21 @@ export const asyncRoutes = [
         hidden: true
       },
       {
-        path:'stockBill',
-        name:'stockBill',
-        component:()=>import('@/views/goods/stockBill'),
-        meta:{title:'出入库', icon:'stock'}
+        path: 'stockBill',
+        name: 'stockBill',
+        component: () => import('@/views/goods/stockBill'),
+        meta: { title: '出入库', icon: 'stock' }
       },
       {
-        path:'stockBillDetail/:billId',
-        name:'stockBillDetail',
-        component:()=>import('@/views/goods/stockBillDetail'),
-        meta:{title:'单据编辑',icon:'stock'},
-        hidden:true
+        path: 'stockBillDetail/:billId',
+        name: 'stockBillDetail',
+        component: () => import('@/views/goods/stockBillDetail'),
+        meta: { title: '单据编辑', icon: 'stock' },
+        hidden: true
       },
       {
         path: 'inventory',
+        name: 'inventory',
         component: () => import('@/views/goods/inventory'),
         meta: { title: '库存管理', icon: 'inventory' }
       }

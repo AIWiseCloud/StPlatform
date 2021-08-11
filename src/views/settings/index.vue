@@ -209,7 +209,7 @@ export default {
       form.append("file", file);
       upload
         .UploadFiles(form)
-        .then((res) => {
+        .then((res) => {  
           // console.log("上传返回：", JSON.stringify(res));
           const { result } = res;
           this.settingsData[imgField] = result.diclist[this.fileName];

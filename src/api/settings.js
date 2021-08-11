@@ -1,5 +1,6 @@
 import request from '../utils/request'
 
+//弃用
 function getSettings() {
   return request({
     url: `api/Sys/GetSettings`,
@@ -8,10 +9,61 @@ function getSettings() {
   })
 }
 
+//弃用
 function saveSettings(data) {
   return request({
     url: `api/Sys/SaveSettings`,
     method: 'post',
+    data
+  })
+}
+
+//保存资源配置
+function SaveResourceSettings(data) {
+  return request({
+    url: `/api/Sys/SaveResourceSettings`,
+    method: 'POST',
+    data
+  })
+}
+
+//获取指定资源
+function GetResourceSettings(sourceId) {
+  return request({
+    url: `/api/Sys/GetResourceSettings?sourceId=${sourceId}`,
+    method: 'GET'
+  })
+}
+
+//按分组获取资源配置
+function GetResourceSettingsByGroup(groupNo) {
+  return request({
+    url: `/api/Sys/GetResourceSettingsByGroup?groupNo=${groupNo}`,
+    method: 'GET'
+  })
+}
+
+//获取资源分组码
+function GetGroups() {
+  return request({
+    url: `/api/Sys/GetGroups`,
+    method: 'GET'
+  })
+}
+
+//删除指定资源
+function DeleteResourceSettings(sourceId) {
+  return request({
+    url: `/api/Sys/DeleteResourceSettings?sourceId=${sourceId}`,
+    method: 'DELETE'
+  })
+}
+
+//资源查询
+function QueryResourceSettings(data) {
+  return request({
+    url: `/api/Sys/QueryResourceSettings`,
+    method: 'POST',
     data
   })
 }
@@ -76,7 +128,7 @@ function DeleteSubMessage(id) {
 
 function SaveShop(data) {
   return request({
-    url: `/api/Sys/SaveShop`,
+    url: `/api/shop/SaveShop`,
     method: 'post',
     data
   })
@@ -84,21 +136,21 @@ function SaveShop(data) {
 
 function GetShop(shopId) {
   return request({
-    url: `/api/Sys/GetShop?shopId=${shopId}`,
+    url: `/api/shop/GetShop?shopId=${shopId}`,
     method: 'GET'
   })
 }
 
 function GetShops() {
   return request({
-    url: `/api/Sys/GetShops`,
+    url: `/api/shop/GetShops`,
     method: 'GET'
   })
 }
 
 function DeleteShop(shopId) {
   return request({
-    url: `/api/Sys/DeleteShop?shopId=${shopId}`,
+    url: `/api/shop/DeleteShop?shopId=${shopId}`,
     method: 'DELETE'
   })
 }
@@ -117,5 +169,11 @@ export default {
   SaveShop,
   GetShop,
   GetShops,
-  DeleteShop
+  DeleteShop,
+  SaveResourceSettings,
+  GetResourceSettings,
+  GetResourceSettingsByGroup,
+  GetGroups,
+  DeleteResourceSettings,
+  QueryResourceSettings
 }

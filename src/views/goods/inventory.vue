@@ -7,7 +7,7 @@
         </template>
         <el-form
           :model="searchModel"
-          label-position="right"
+          label-position="right" 
           label-width="92px"
           size="mini"
         >
@@ -86,31 +86,25 @@
       <el-table-column label="锁定数量" prop="lockQuantity"></el-table-column>
       <el-table-column label="可用库存" prop="activeQuantity"></el-table-column>
       <el-table-column label="推荐">
-        <template scope="scope"
+        <template slot-scope="scope"
           ><el-checkbox
             v-model="scope.row.isRecommend"
-            true-label="1"
-            false-label="0"
-            disabled
+           disabled
           ></el-checkbox
         ></template>
       </el-table-column>
       <el-table-column label="最新">
-        <template scope="scope"
+        <template slot-scope="scope"
           ><el-checkbox
             v-model="scope.row.isNew"
-            true-label="1"
-            false-label="0"
             disabled
           ></el-checkbox
         ></template>
       </el-table-column>
       <el-table-column label="下架">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-checkbox
             v-model="scope.row.isUnder"
-            true-label="1"
-            false-label="0"
             disabled
           ></el-checkbox>
         </template>
@@ -131,6 +125,7 @@
 import apiInventory from "@/api/inventory";
 import apiGoods from "@/api/goods";
 export default {
+  name:'inventory',
   data() {
     return {
       activename: "0",
@@ -176,9 +171,9 @@ export default {
               goodsId: x.goodsId,
               goodsName: x.goodsInfo.goodsName,
               unitName: x.goodsInfo.unitName,
-              isUnder: x.goodsInfo.isUnder,
-              isRecommend: x.goodsInfo.isRecommend,
-              isNew: x.goodsInfo.isNew,
+              isUnder: x.goodsInfo.isUnder == 1,
+              isRecommend: x.goodsInfo.isRecommend == 1,
+              isNew: x.goodsInfo.isNew == 1,
               colorName: x.colorInfo.colorName,
               specName: x.specInfo.specName,
               quantity: x.quantity,
@@ -187,7 +182,6 @@ export default {
               activeQuantity: x.activeQuantity,
             };
           });
-          // console.log(JSON.stringify(res.result))
         }
       });
     },

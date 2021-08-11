@@ -212,7 +212,7 @@
                 <span v-if="scope.row.isSet">
                   <el-input
                     v-model="scope.row.price"
-                    type="number"
+                    oninput="value=value.replace(/[^0-9.]/g,'')"
                     size="mini"
                   />
                 </span>
@@ -224,7 +224,7 @@
                 <span v-if="scope.row.isSet">
                   <el-input
                     v-model="scope.row.discountPrice"
-                    type="number"
+                    oninput="value=value.replace(/[^0-9.]/g,'')"
                     size="mini"
                   />
                 </span>
@@ -260,7 +260,7 @@
                   type="primary"
                   plain
                   size="mini"
-                  @click="editGoodsSpecRow(scope.row)"
+                  @click="editGoodsSpecRow(scope.$index, scope.row)"
                   >编辑</el-button
                 >
                 <el-button
@@ -268,7 +268,7 @@
                   type="primary"
                   plain
                   size="mini"
-                  @click="saveGoodsSpecRow(scope.row)"
+                  @click="saveGoodsSpecRow(scope.$index, scope.row)"
                   >保存</el-button
                 >
                 <el-button
@@ -349,7 +349,7 @@
                   type="primary"
                   size="mini"
                   plain
-                  @click="editSpuImgRow(scope.row)"
+                  @click="editSpuImgRow(scope.$index,scope.row)"
                   >编辑</el-button
                 >
                 <el-button
@@ -357,7 +357,7 @@
                   type="primary"
                   size="mini"
                   plain
-                  @click="saveSpuImgRow(scope.row)"
+                  @click="saveSpuImgRow(scope.$index, scope.row)"
                   >保存</el-button
                 >
                 <el-button
@@ -584,7 +584,8 @@ export default {
           // 因为选择后返回的商品类别为数组类型，需要转为字符串，但又不能破坏现有实体类型，所以要复制为新对象
           const newinfo = JSON.parse(JSON.stringify(this.goodsInfo));
           if (Array.isArray(this.goodsInfo.categoryId)) {
-            newinfo.categoryId = this.goodsInfo.categoryId[this.goodsInfo.categoryId.length-1];
+            newinfo.categoryId =
+              this.goodsInfo.categoryId[this.goodsInfo.categoryId.length - 1];
           }
           apiGoods.SaveGoodsInfo(newinfo).then((res) => {
             if (res.code == 200 && res.returnStatus == 1) {
@@ -752,11 +753,12 @@ export default {
       this.goodsInfo.goodsSpecs.push(row);
     },
     // 编辑规格定价行
-    editGoodsSpecRow(row) {
+    editGoodsSpecRow(index,row) {
       row.isSet = true;
+      this.$set(this.goodsInfo.goodsSpecs, index, row);
     },
     // 保存规格定价行
-    saveGoodsSpecRow(row) {
+    saveGoodsSpecRow(index,row) {
       if (!row.specId) {
         return this.$message({ message: "请选择商品规格", type: "error" });
       }
@@ -766,6 +768,7 @@ export default {
       apiGoods.SaveGoodsSpec(row).then((res) => {
         if (res.code == 200 && res.returnStatus == 1) {
           row.isSet = false;
+          this.$set(this.goodsInfo.goodsSpecs, index, row);
         } else {
           this.$message.error(JSON.stringify(res.msg));
         }
@@ -814,11 +817,12 @@ export default {
       this.goodsInfo.spuImgs.push(spuImg);
     },
     // 编辑商品图片行
-    editSpuImgRow(row) {
+    editSpuImgRow(index,row) {
       row.isSet = true;
+      this.$set(this.goodsInfo.spuImgs,index,row);
     },
     // 保存商品图片行
-    saveSpuImgRow(row) {
+    saveSpuImgRow(index,row) {
       if (!row.imgUrl) {
         return this.$message.error("未设定图片！");
       }
@@ -826,6 +830,7 @@ export default {
         if (res.code == 200 && res.returnStatus == 1) {
           this.$message({ message: "保存成功!", type: "success" });
           row.isSet = false;
+          this.$set(this.goodsInfo.spuImgs,index,row);
         } else {
           this.$message.error(JSON.stringify(res.msg));
         }

@@ -73,16 +73,41 @@
       }"
     >
       <el-table-column type="index" label="#"></el-table-column>
-      <el-table-column label="交易单号" prop="billId" width="130"></el-table-column>
-      <el-table-column label="交易类型" prop="transTypeName" width="80"> </el-table-column>
-      <el-table-column label="状态" prop="billStateName" width="60"></el-table-column>
+      <el-table-column
+        label="交易单号"
+        prop="billId"
+        width="130"
+      ></el-table-column>
+      <el-table-column label="交易类型" prop="transTypeName" width="80">
+      </el-table-column>
+      <el-table-column
+        label="状态"
+        prop="billStateName"
+        width="60"
+      ></el-table-column>
       <el-table-column label="商品名称" prop="goodsName"></el-table-column>
       <el-table-column label="颜色" prop="colorName"></el-table-column>
       <el-table-column label="规格" prop="specName"></el-table-column>
-      <el-table-column label="仓库" prop="stockName" width="90"></el-table-column>
-      <el-table-column label="单位" prop="unitName" width="100"></el-table-column>
-      <el-table-column label="数量" prop="quantity" width="100"></el-table-column>
-      <el-table-column label="创建日期" prop="createDate" width="100"></el-table-column>
+      <el-table-column
+        label="仓库"
+        prop="stockName"
+        width="90"
+      ></el-table-column>
+      <el-table-column
+        label="单位"
+        prop="unitName"
+        width="100"
+      ></el-table-column>
+      <el-table-column
+        label="数量"
+        prop="quantity"
+        width="100"
+      ></el-table-column>
+      <el-table-column
+        label="创建日期"
+        prop="createDate"
+        width="100"
+      ></el-table-column>
       <el-table-column label="操作" width="80">
         <template slot="header">
           <el-button
@@ -104,6 +129,14 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      background
+      layout="prev, pager, next"
+      :total="totalCount"
+      :current-page="searchModel.pageModel.pageNo"
+      @current-change="loadData"
+    >
+    </el-pagination>
   </div>
 </template>
 
@@ -130,17 +163,9 @@ export default {
           orderWay: "",
         },
       },
-      //数据列表
+      //数据列表(主对象包括子对象的形式，以子项数作为记录数)
       billlistData: [
-        // {
-        //   billId: "A000001",
-        //   goodsName: "我们的跑道材料",
-        //   transTypeId: "243423",
-        //   billState: "2",
-        //   remark: "没有需要备注的",
-        //   creator: "admin",
-        //   createDate: "2021-9-12",
-        // },
+      
       ],
     };
   },
@@ -157,7 +182,7 @@ export default {
     },
     //单据状态
     getBillState(stateId) {
-      switch (stateId) {
+      switch (Number.parseInt(stateId)) {
         case 0:
           return "待审";
         case 1:
@@ -168,13 +193,12 @@ export default {
           return "";
       }
     },
-    //查询
-    searchBill() {
+    //分页读取数据
+    loadData() {
       apiInventory.SearchStockBill(this.searchModel).then((res) => {
         if (res.code == 200 && res.returnStatus == 1) {
           const { totalCount, items } = res.result;
-          // this.billlistData = items;
-          // console.log(JSON.stringify(items));
+          this.totalCount = totalCount;
           this.billlistData = [];
           for (let bill of items) {
             for (let i of bill.stockBillDetail) {
@@ -189,13 +213,18 @@ export default {
                 stockName: i.stock.stockName,
                 quantity: i.quantity,
                 remark: bill.remark,
-                createDate: bill.createDate.substring(0,10)
+                createDate: bill.createDate.substring(0, 10),
               };
               this.billlistData.push(row);
             }
           }
         }
       });
+    },
+    //查询
+    searchBill() {
+      this.searchModel.pageModel.pageNo = 1;
+      this.loadData();
     },
   },
   created() {

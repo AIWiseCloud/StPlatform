@@ -53,14 +53,6 @@ function GetGoodsInfo(goodsId) {
   })
 }
 
-//获取某最小分类下的商品列表
-function GetGoodsInfoOverviews(categoryId){
-  return request({
-    url:`/api/Inventory/GetGoodsInfoOverviews?categoryId=${categoryId}`,
-    method:'GET'
-  })
-}
-
 // 查询商品（分页)
 function QueryGoods(data) {
   return request({
@@ -184,7 +176,6 @@ export default {
   DeleteGoodsCategory,
   SaveGoodsInfo,
   GetGoodsInfo,
-  GetGoodsInfoOverviews,
   QueryGoods,
   DeleteGoodsInfo,
   SaveGoodsColor,
