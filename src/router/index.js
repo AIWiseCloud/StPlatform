@@ -137,7 +137,7 @@ export const asyncRoutes = [
         meta: { title: '商品管理', icon: 'goods' }
       },
       {
-        path: 'goodsInfo/:goodsId',
+        path: 'goodsInfo/:isNew/:goodsId',
         component: () => import('@/views/goods/goodsInfo'),
         name: 'goodsInfo',
         meta: { title: '商品信息', icon: 'goods', noCache: true },
@@ -150,7 +150,7 @@ export const asyncRoutes = [
         meta: { title: '出入库', icon: 'stock' }
       },
       {
-        path: 'stockBillDetail/:billId',
+        path: 'stockBillDetail/:isNew/:billId',
         name: 'stockBillDetail',
         component: () => import('@/views/goods/stockBillDetail'),
         meta: { title: '单据编辑', icon: 'stock' },

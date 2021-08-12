@@ -68,7 +68,7 @@
               type="primary"
               size="mini"
               icon="el-icon-plus"
-              @click="goAGoodsInfo('')"
+              @click="goGoodsInfo($common.getDigitSerial(), 1)"
               >添加</el-button
             >
           </template>
@@ -77,7 +77,7 @@
               size="mini"
               type="primary"
               icon="el-icon-edit"
-              @click="goGoodsInfo(scope.row.goodsId)"
+              @click="goGoodsInfo(scope.row.goodsId,0)"
             />
             <el-button
               size="mini"
@@ -122,8 +122,8 @@ export default {
     };
   },
   methods: {
-    goGoodsInfo(id) {
-      this.$router.push({ name: "goodsInfo", params: { goodsId: id } });
+    goGoodsInfo(id,isnew) {
+      this.$router.push({ name: "goodsInfo", params: { goodsId: id,isNew:isnew } });
     },
     // 分页加载数据
     loadData() {

@@ -35,7 +35,7 @@
           icon="el-icon-folder-add"
           size="mini"
           :disabled="!buttonStatus.order"
-          @click="generateFromOrder"
+          @click="openOrdersDialog"
           >从订单生成
         </el-button>
         <el-button
@@ -110,7 +110,7 @@
               <el-tag type="sucess">{{ stockBillData.billId }}</el-tag>
             </el-form-item>
           </el-col>
-            <el-col :sm="12" :md="6" :lg="6" :xl="6">
+          <el-col :sm="12" :md="6" :lg="6" :xl="6">
             <el-form-item label="业务类型" prop="transTypeId">
               <el-select
                 v-model="stockBillData.transTypeId"
@@ -127,7 +127,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-           <el-col :sm="12" :md="6" :lg="6" :xl="6">
+          <el-col :sm="12" :md="6" :lg="6" :xl="6">
             <el-form-item label="订单号">
               <el-input
                 v-model="stockBillData.orderId"
@@ -156,12 +156,7 @@
         >
           <el-table-column label="序号" :width="isEditStatus ? 120 : 60">
             <template scope="scope">
-              <el-input
-                v-if="isEditStatus"
-                v-model="scope.row.fIndex"
-                type="number"
-              ></el-input>
-              <span v-else>{{ scope.row.fIndex }}</span>
+              <span>{{ scope.row.fIndex }}</span>
             </template>
           </el-table-column>
           <el-table-column
@@ -214,12 +209,17 @@
             </template>
             <template slot-scope="scope">
               <el-button
+                size="mini"
+                @click="getInventoryInfo(scope.$index, scope.row)"
+                >库存</el-button
+              >
+              <el-button
                 type="danger"
                 size="mini"
                 icon="el-icon-delete"
                 v-if="isEditStatus && stockBillData.billState == 0"
                 @click="deleteRow(scope.$index, scope.row.id)"
-                >删除行</el-button
+                >删行</el-button
               >
             </template>
           </el-table-column>
@@ -294,6 +294,45 @@
           >
         </div>
       </el-dialog>
+      <!-- 订单选择对话框 -->
+      <el-dialog title="待发货订单选择" :visible.sync="visibleShipped">
+        <el-table
+          :data="toBeShipped"
+          size="mini"
+          highlight-current-row
+          border
+          empty-text="暂无数据"
+          @row-dblclick="confirmSelectOrder"
+          @current-change="handleCurrentChange"
+        >
+          <el-table-column label="订单号" prop="OrderId"></el-table-column>
+          <el-table-column label="订单日期" prop="OrderTime"></el-table-column>
+          <el-table-column
+            label="收货人"
+            prop="Receiver"
+            width="70"
+          ></el-table-column>
+          <el-table-column label="收货地址" prop="DeliveryAddress" width="300">
+            <template slot="header">
+              <el-input
+                v-model="searchKeywords"
+                placeholder="搜索框按enter执行查询"
+                size="mini"
+                @keyup.enter.native="searchOrders"
+                ><i slot="suffix" class="el-input__icon el-icon-search"></i
+              ></el-input>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div slot="footer" class="dialog-footer">
+          <el-button size="mini" @click="visibleShipped = false"
+            >取消</el-button
+          >
+          <el-button type="primary" size="mini" @click="confirmSelectOrder"
+            >确定</el-button
+          >
+        </div>
+      </el-dialog>
     </el-card>
   </div>
 </template>
@@ -302,11 +341,13 @@
 import apiGoods from "@/api/goods";
 import apiSettings from "@/api/settings";
 import apiInventory from "@/api/inventory";
+import apiOrder from "@/api/order";
 export default {
   name: "stockBillDetail",
   data() {
     return {
       isAddBill: false,
+      visibleShipped: false,
       visibleSelectDialog: false,
       transTypes: [], //交易类型
       stocks: [], //仓库列表
@@ -317,7 +358,8 @@ export default {
         Creator: "",
         transTypeId: "",
         billState: 0,
-        Remark: "",
+        orderId: "",
+        remark: "",
         stockBillDetail: [],
       },
       //验证实体
@@ -337,9 +379,13 @@ export default {
       goodsList: [],
       //选择列表
       selectList: [],
+      saletypeId: "transtype_sale", //销售出库类型代码
       //所有商品分类(用于商品选择)
       goodsCategories: [],
       checkAll: false,
+      searchKeywords: "", //搜索订单关键字
+      selectOrderId: 0, //选中订单号
+      toBeShipped: [], //待发货订单
     };
   },
   methods: {
@@ -353,10 +399,56 @@ export default {
         }
       });
     },
-
-    //由订单生成
-    generateFromOrder() {},
-
+    //显示获取订单对话框
+    openOrdersDialog() {
+      if (this.stockBillData.transTypeId != this.saletypeId) {
+        this.$message({
+          message: "业务类型请选择“销售出库",
+          type: "info",
+        });
+      } else {
+        this.visibleShipped = true;
+      }
+    },
+    //搜索待发货订单列表
+    searchOrders() {
+      apiInventory.GetToBeShipped(this.searchKeywords).then((res) => {
+        if (res.code == 200 && res.returnStatus == 1) {
+          this.toBeShipped = res.result;
+        }
+      });
+    },
+    handleCurrentChange(val) {
+      this.selectOrderId = val.OrderId;
+    },
+    //确定选择订单
+    confirmSelectOrder() {
+      if (this.selectOrderId) {
+        apiOrder.GetOrderInfo(this.selectOrderId).then((res) => {
+          this.visibleShipped = false;
+          this.stockBillData.orderId = this.selectOrderId;
+          this.stockBillData.remark = "由订单生成";
+          this.stockBillData.stockBillDetail = [];
+          for (let i of res.result.orderList) {
+            this.stockBillData.stockBillDetail.push({
+              ...this.rowDefaultInfo, //附上默认信息
+              id: this.$common.guid(),
+              goodsId: i.goodsId,
+              goodsInfo: i.goodsInfo,
+              specId: i.specId,
+              spec: i.goodsColorSpec,
+              specName: i.goodsSpec.specName,
+              colorId: i.colorId,
+              colorInfo: i.goodsColorSpec,
+              colorName: i.goodsColor.colorName,
+              quantity: i.quantity,
+            });
+          }
+        });
+      } else {
+        this.$message({ message: "请选择订单", type: "info" });
+      }
+    },
     //选择商品类别
     categoryChange(selarr) {
       if (selarr) {
@@ -426,23 +518,11 @@ export default {
           type: "info",
         });
       }
-      //默认带入到单据行中的信息
-      let defaultInfo = {
-        billId: this.stockBillData.billId,
-        fIndex: 100,
-        isNew: 1,
-        stockNumber: "stock_st",
-        stock: {
-          stockNumber: "stock_st",
-          stockName: "电商仓",
-        },
-        quantity: 0,
-      };
       for (let i of selects) {
         this.stockBillData.stockBillDetail.push({
           id: this.$common.guid(),
           ...i,
-          ...defaultInfo,
+          ...this.rowDefaultInfo, //新增行默认信息
         });
       }
       //添加一下序号
@@ -456,8 +536,9 @@ export default {
       this.stockBillData.billId = newBillId;
       this.stockBillData.Creator = "";
       this.stockBillData.transTypeId = "";
+      this.stockBillData.orderId = 0;
       this.stockBillData.billState = 0;
-      this.stockBillData.Remark = "";
+      this.stockBillData.remark = "";
       this.stockBillData.stockBillDetail = [];
       this.isEditStatus = true;
     },
@@ -477,7 +558,6 @@ export default {
     },
     //保存
     saveBill() {
-      // console.log(JSON.stringify(this.stockBillData));
       if (this.stockBillData.stockBillDetail.length == 0) {
         return this.$message.error("请添加商品!");
       }
@@ -485,6 +565,18 @@ export default {
         if (i.quantity == 0) {
           return this.$message.warning(`出入库数量不能为0！`);
         }
+      }
+      if (
+        this.stockBillData.transTypeId == this.saletypeId &&
+        !this.stockBillData.orderId
+      ) {
+        return this.$message.info(`销售出库没有对应的订单号！`);
+      }
+      if (
+        this.stockBillData.transTypeId != this.saletypeId &&
+        this.stockBillData.orderId
+      ) {
+        this.stockBillData.orderId = "";
       }
 
       //去掉不必要跟随提交的数据
@@ -557,20 +649,32 @@ export default {
         });
       });
     },
+    //点击显示库存
+    getInventoryInfo(index, row) {
+      apiInventory
+        .GetInventoryDetail(
+          row.goodsId,
+          row.colorId,
+          row.specId,
+          row.stockNumber
+        )
+        .then((res) => {
+          this.$message.info(`第${index + 1}行库存数量：${res.result}`);
+        });
+    },
   },
   beforeMount() {
     this.isAddBill = this.$route.params.isNew;
     let billId = this.$route.params.billId;
-    if (this.isAddBill) {
-      this.initialBill(billId);
-    } else {
-      apiInventory.GetStockBill(billId).then((res) => {
-        if (res.code == 200 && res.returnStatus == 1) {
-          this.stockBillData = res.result;
-          this.isEditStatus = false;
-        }
-      });
-    }
+    //路由参数中有isNew，当完成新增后刷新又会被initialBill, 为防这种情况所以用下面的写法，刷新后一律加载
+    apiInventory.GetStockBill(billId).then((res) => {
+      if (res.code == 200 && res.returnStatus == 0) {
+        this.initialBill(billId);
+      } else if (res.code == 200 && res.returnStatus == 1) {
+        this.stockBillData = res.result;
+        this.isEditStatus = false;
+      }
+    });
   },
   created() {
     //交易类型
@@ -613,6 +717,31 @@ export default {
           !this.isEditStatus &&
           this.stockBillData &&
           this.stockBillData.billState == 0,
+      };
+    },
+    //默认仓库
+    defaultStock() {
+      if (this.stocks.length) {
+        return {
+          stockNumber: this.stocks[0].fNumber,
+          stockName: this.stocks[0].fName,
+        };
+      } else {
+        return {
+          stockNumber: "",
+          stockName: "",
+        };
+      }
+    },
+    //新增行默认数据
+    rowDefaultInfo() {
+      return {
+        billId: this.stockBillData.billId,
+        fIndex: 100,
+        isNew: 1,
+        stockNumber: this.defaultStock.stockNumber,
+        stock: this.defaultStock,
+        quantity: 0,
       };
     },
   },

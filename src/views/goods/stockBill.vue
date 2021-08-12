@@ -81,6 +81,11 @@
       <el-table-column label="交易类型" prop="transTypeName" width="80">
       </el-table-column>
       <el-table-column
+        label="订单号"
+        prop="orderId"
+        width="120"
+      ></el-table-column>
+      <el-table-column
         label="状态"
         prop="billStateName"
         width="60"
@@ -96,12 +101,12 @@
       <el-table-column
         label="单位"
         prop="unitName"
-        width="100"
+        width="80"
       ></el-table-column>
       <el-table-column
         label="数量"
         prop="quantity"
-        width="100"
+        width="80"
       ></el-table-column>
       <el-table-column
         label="创建日期"
@@ -115,7 +120,7 @@
             type="success"
             plain
             icon="el-icon-plus"
-            @click="goDetailPage(true)"
+            @click="goDetailPage(true, '')"
             >新增</el-button
           >
         </template>
@@ -164,9 +169,7 @@ export default {
         },
       },
       //数据列表(主对象包括子对象的形式，以子项数作为记录数)
-      billlistData: [
-      
-      ],
+      billlistData: [],
     };
   },
   methods: {
@@ -204,6 +207,7 @@ export default {
             for (let i of bill.stockBillDetail) {
               let row = {
                 billId: bill.billId,
+                orderId:bill.orderId,
                 billStateName: this.getBillState(bill.billState),
                 transTypeName: bill.transType.transTypeName,
                 goodsName: i.goodsInfo.goodsName,

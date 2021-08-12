@@ -50,6 +50,7 @@
               <el-col :span="8">
                 <el-form-item label="商品类别" prop="categoryId">
                   <el-cascader
+                    ref="goodscate"
                     v-model="goodsInfo.categoryId"
                     :options="allCategories"
                     :show-all-levels="false"
@@ -60,7 +61,7 @@
                       value: 'categoryId',
                       checkStrictly: 'false',
                     }"
-                    change=""
+                    @change="categoryChange"
                   />
                 </el-form-item>
               </el-col>
@@ -108,13 +109,6 @@
               </el-col>
             </el-row>
             <el-form-item>
-              <el-button
-                type="primary"
-                icon="el-icon-check"
-                plain
-                @click="saveGoodsInfo('goodsform')"
-                >保存</el-button
-              >
             </el-form-item>
           </el-form>
         </el-tab-pane>
@@ -349,7 +343,7 @@
                   type="primary"
                   size="mini"
                   plain
-                  @click="editSpuImgRow(scope.$index,scope.row)"
+                  @click="editSpuImgRow(scope.$index, scope.row)"
                   >编辑</el-button
                 >
                 <el-button
@@ -381,6 +375,12 @@
           </el-table>
         </el-tab-pane>
       </el-tabs>
+      <el-button icon="el-icon-plus" plain @click="toAddGoods" size="mini" v-if="activeIndex=='0'"
+        >添加新商品</el-button
+      >
+       <el-button icon="el-icon-plus" plain  @click="saveGoodsInfo('goodsform')" size="mini" v-if="activeIndex=='0'"
+        >保存当前商品</el-button
+      >
     </el-card>
     <!-- 颜色及图片对话框 -->
     <el-dialog
@@ -546,15 +546,13 @@ export default {
   },
   beforeMount() {
     // 获取数据时，要将categoryId转为数组
-    if (this.$route.params.goodsId) {
+    let params = this.$route.params;
+    if (params.goodsId && params.isNew == 0) {
       this.loadData(this.$route.params.goodsId);
     } else {
-      this.goodsInfo.goodsId = common.getDigitSerial();
-      this.$router.replace({
-        name: "goodsInfo",
-        params: { goodsId: this.goodsInfo.goodsId },
-      });
+      this.goodsInfo.goodsId = params.goodsId;
     }
+    this.existGoods = !params.isNew;
   },
   created() {
     // 载入商品分类
@@ -577,6 +575,35 @@ export default {
     });
   },
   methods: {
+    // 载入商品信息（含附表数据)
+    loadData(goodsId) {
+      apiGoods
+        .GetGoodsInfo(goodsId)
+        .then((res) => {
+          if (res.code == 200 && res.returnStatus == 1) {
+            this.goodsInfo = res.result;
+            this.goodsInfo.goodsSpecs.map((x) => (x.isSet = false));
+            this.goodsInfo.spuImgs.map((x) => (x.isSet = false));
+            this.existGoods = true;
+          } else {
+          }
+        })
+        .catch((error) => {
+          console.log(JSON.stringify(err));
+        });
+    },
+    //转到新增页
+    toAddGoods() {
+      this.$confirm("确定要离开当前页继续添加商品？", "询问", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+      }).then((r) => {
+        this.$router.push({
+          name: "goodsInfo",
+          params: { goodsId: this.$common.getDigitSerial(), isNew: 1 },
+        });
+      });
+    },
     // 保存商品信息
     saveGoodsInfo(infoform) {
       this.$refs[infoform].validate((valid) => {
@@ -714,6 +741,10 @@ export default {
         }
       });
     },
+    //选择商品分类
+    categoryChange() {
+      this.$refs.goodscate.dropDownVisible = false; //关闭选择框
+    },
     // 删除一条颜色及图片设置记录
     deleteGoodsColor(id) {
       this.$confirm("您确定要删除该颜色记录吗？", "询问", {
@@ -753,12 +784,12 @@ export default {
       this.goodsInfo.goodsSpecs.push(row);
     },
     // 编辑规格定价行
-    editGoodsSpecRow(index,row) {
+    editGoodsSpecRow(index, row) {
       row.isSet = true;
       this.$set(this.goodsInfo.goodsSpecs, index, row);
     },
     // 保存规格定价行
-    saveGoodsSpecRow(index,row) {
+    saveGoodsSpecRow(index, row) {
       if (!row.specId) {
         return this.$message({ message: "请选择商品规格", type: "error" });
       }
@@ -817,12 +848,12 @@ export default {
       this.goodsInfo.spuImgs.push(spuImg);
     },
     // 编辑商品图片行
-    editSpuImgRow(index,row) {
+    editSpuImgRow(index, row) {
       row.isSet = true;
-      this.$set(this.goodsInfo.spuImgs,index,row);
+      this.$set(this.goodsInfo.spuImgs, index, row);
     },
     // 保存商品图片行
-    saveSpuImgRow(index,row) {
+    saveSpuImgRow(index, row) {
       if (!row.imgUrl) {
         return this.$message.error("未设定图片！");
       }
@@ -830,7 +861,7 @@ export default {
         if (res.code == 200 && res.returnStatus == 1) {
           this.$message({ message: "保存成功!", type: "success" });
           row.isSet = false;
-          this.$set(this.goodsInfo.spuImgs,index,row);
+          this.$set(this.goodsInfo.spuImgs, index, row);
         } else {
           this.$message.error(JSON.stringify(res.msg));
         }
@@ -860,19 +891,6 @@ export default {
             this.getSpuImgs(row.goodsId);
           }
         });
-      });
-    },
-    // 载入商品信息（含附表数据)
-    loadData(goodsId) {
-      apiGoods.GetGoodsInfo(goodsId).then((res) => {
-        if (res.code == 200 && res.returnStatus == 1) {
-          this.goodsInfo = res.result;
-          this.goodsInfo.goodsSpecs.map((x) => (x.isSet = false));
-          this.goodsInfo.spuImgs.map((x) => (x.isSet = false));
-          this.existGoods = true;
-        } else {
-          this.$message.error(JSON.stringify(res.msg));
-        }
       });
     },
   },
