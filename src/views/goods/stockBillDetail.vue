@@ -196,14 +196,14 @@
               <span v-else>{{ scope.row.quantity }}</span>
             </template>
           </el-table-column>
-          <el-table-column width="120">
+          <el-table-column width="160">
             <template slot="header">
               <el-button
                 type="primary"
                 size="mini"
                 plain
                 @click="visibleSelectDialog = true"
-                :disabled="!isEditStatus"
+                :disabled="!isEditStatus || stockBillData.transTypeId==saletypeId"
                 >选择商品</el-button
               >
             </template>
@@ -428,7 +428,7 @@ export default {
           this.visibleShipped = false;
           this.stockBillData.orderId = this.selectOrderId;
           this.stockBillData.remark = "由订单生成";
-          this.stockBillData.stockBillDetail = [];
+          this.stockBillData.stockBillDetail = [];//覆盖掉上次的
           for (let i of res.result.orderList) {
             this.stockBillData.stockBillDetail.push({
               ...this.rowDefaultInfo, //附上默认信息
@@ -577,6 +577,9 @@ export default {
         this.stockBillData.orderId
       ) {
         this.stockBillData.orderId = "";
+      }
+      for (let i in this.stockBillData.stockBillDetail) {
+        this.stockBillData.stockBillDetail[i].fIndex = i*1 + 1;
       }
 
       //去掉不必要跟随提交的数据

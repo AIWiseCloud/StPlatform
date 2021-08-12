@@ -36,7 +36,7 @@ service.interceptors.response.use(
       Message({
         message: res.msg || 'Error',
         type: 'error',
-        duration: 5 * 1000
+        duration: 20 * 1000
       })
 
 
@@ -51,7 +51,7 @@ service.interceptors.response.use(
       if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
         // to re-login
         MessageBox.confirm('您已注销，可以取消以停留在此页面，或重新登录', '确认登出', {
-          confirmButtonText: '重新登录',
+          confirmButtonText: '重新登录0',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
@@ -75,7 +75,7 @@ service.interceptors.response.use(
       switch (error.response.status) {
         case 401:
           MessageBox.confirm('您已注销，可以取消以停留在此页面，或重新登录', '确认登出', {
-            confirmButtonText: '重新登录',
+            confirmButtonText: '重新登录1',
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
