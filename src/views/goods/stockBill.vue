@@ -238,6 +238,7 @@ export default {
         this.transTypes = res.result;
       }
     });
+    this.searchBill();
   },
 };
 </script>

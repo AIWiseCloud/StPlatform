@@ -165,6 +165,19 @@ export const asyncRoutes = [
     ]
   },
   {
+    path: '/order',
+    component: Layout,
+    meta: { title: '售后服务', icon: 'documentation' },
+    children: [
+      {
+        path: 'order',
+        name: 'orders',
+        component: () => import('@/views/order/index'),//若用反引号会报错：TypeError: Cannot read property 'range' of null
+        meta: { title: '订单管理', icon: 'documentation' }
+      }
+    ]
+  },
+  {
     path: '/error',
     component: Layout,
     redirect: 'noRedirect',

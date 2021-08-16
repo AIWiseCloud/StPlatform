@@ -50,24 +50,26 @@
         align="center"
       />
       <el-table-column
-        width="100"
+        width="180"
         prop="createDate"
         label="创建日期"
       />
-      <el-table-column label="操作" align="center">
+      <el-table-column label="操作" align="center" width="140">
         <template slot-scope="scope">
           <el-button
             size="mini"
             type="primary"
             icon="el-icon-edit"
+            round
             @click="openDialog(false, scope.$index, scope.row)"
-          >修改</el-button>
+          ></el-button>
           <el-button
             type="danger"
             size="mini"
             icon="el-icon-delete"
+            round
             @click="deleteShop(scope.$index, scope.row)"
-          >删除</el-button>
+          ></el-button>
         </template>
       </el-table-column>
     </el-table>

@@ -429,7 +429,7 @@ export default {
           this.stockBillData.orderId = this.selectOrderId;
           this.stockBillData.remark = "由订单生成";
           this.stockBillData.stockBillDetail = [];//覆盖掉上次的
-          for (let i of res.result.orderList) {
+          for (let i of res.result.orderList) {``
             this.stockBillData.stockBillDetail.push({
               ...this.rowDefaultInfo, //附上默认信息
               id: this.$common.guid(),

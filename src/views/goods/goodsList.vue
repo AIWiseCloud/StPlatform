@@ -29,6 +29,7 @@
         border
         stripe
         empty-text="暂无数据"
+        size="mini"
         :header-cell-style="{ 'text-align': 'center', background: '#F3F4F7' }"
       >
         <el-table-column type="index" label="#" />
@@ -41,6 +42,7 @@
           ><template slot-scope="scope"
             ><el-switch
               v-model="scope.row.isRecommend"
+              active-color="rgb(55,55,55)"
               :active-value="1"
               :inactive-value="0"
               disabled /></template
@@ -49,6 +51,7 @@
           ><template slot-scope="scope">
             <el-switch
               v-model="scope.row.isNew"
+              active-color="rgb(55,55,55)"
               :active-value="1"
               :inactive-value="0"
               disabled
@@ -58,6 +61,7 @@
           ><template slot-scope="scope"
             ><el-switch
               v-model="scope.row.isUnder"
+              active-color="rgb(55,55,55)"
               :active-value="1"
               :inactive-value="0"
               disabled /></template
@@ -77,12 +81,14 @@
               size="mini"
               type="primary"
               icon="el-icon-edit"
-              @click="goGoodsInfo(scope.row.goodsId,0)"
+              round
+              @click="goGoodsInfo(scope.row.goodsId, 0)"
             />
             <el-button
               size="mini"
               type="danger"
               icon="el-icon-delete"
+              round
               @click="deleteGoodsInfo(scope.row.goodsId, scope.$index)"
             />
           </template>
@@ -122,8 +128,11 @@ export default {
     };
   },
   methods: {
-    goGoodsInfo(id,isnew) {
-      this.$router.push({ name: "goodsInfo", params: { goodsId: id,isNew:isnew } });
+    goGoodsInfo(id, isnew) {
+      this.$router.push({
+        name: "goodsInfo",
+        params: { goodsId: id, isNew: isnew },
+      });
     },
     // 分页加载数据
     loadData() {

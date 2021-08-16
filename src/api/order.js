@@ -9,10 +9,11 @@ function GetOrderInfo(orderId){
 }
 
 //订单发货
-function DeliveryOrder(orderId){
+function DeliveryOrder(data){
     return request({
-        url:`/api/Order/DeliveryOrder?orderId=${orderId}`,
-        method:'PUT'
+        url:`/api/Order/DeliveryOrder`,
+        method:'PUT',
+        data
     })
 }
 
@@ -35,10 +36,20 @@ function UpdateOrderAddress(data){
     })
 }
 
+
+//由订单号获取销售出库单号
+function GetBillId(orderId){
+    return request({
+        url:`/api/Order/GetBillId?orderId=${orderId}`,
+        method:'GET'
+    })
+}
+
 export default{
     GetOrderInfo,
     DeliveryOrder,
     QueryOrders,
     UpdateOrderAddress,
-    UpdateOrderAddress
+    UpdateOrderAddress,
+    GetBillId
 }
