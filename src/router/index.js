@@ -100,12 +100,6 @@ export const asyncRoutes = [
         meta: { title: '资源配置', icon: 'settings' }
       },
       {
-        path: 'index',
-        component: () => import('@/views/settings/index'),
-        name: 'settings',
-        meta: { title: '商城配置', icon: 'settings', noCache: true }
-      },
-      {
         path: 'submessage',
         component: () => import('@/views/settings/submessage'),
         name: 'submessage',

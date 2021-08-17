@@ -1,22 +1,5 @@
 import request from '../utils/request'
 
-//弃用
-function getSettings() {
-  return request({
-    url: `api/Sys/GetSettings`,
-    method: 'get'
-
-  })
-}
-
-//弃用
-function saveSettings(data) {
-  return request({
-    url: `api/Sys/SaveSettings`,
-    method: 'post',
-    data
-  })
-}
 
 //保存资源配置
 function SaveResourceSettings(data) {
@@ -156,8 +139,6 @@ function DeleteShop(shopId) {
 }
 
 export default {
-  getSettings,
-  saveSettings,
   SaveSubMesType,
   GetSubMesType,
   GetSubMesTypes,

@@ -7,7 +7,7 @@
         </template>
         <el-form
           :model="searchModel"
-          label-position="right" 
+          label-position="right"
           label-width="92px"
           size="mini"
         >
@@ -87,35 +87,27 @@
       <el-table-column label="可用库存" prop="activeQuantity"></el-table-column>
       <el-table-column label="推荐">
         <template slot-scope="scope"
-          ><el-checkbox
-            v-model="scope.row.isRecommend"
-           disabled
-          ></el-checkbox
+          ><el-checkbox v-model="scope.row.isRecommend" disabled></el-checkbox
         ></template>
       </el-table-column>
       <el-table-column label="最新">
         <template slot-scope="scope"
-          ><el-checkbox
-            v-model="scope.row.isNew"
-            disabled
-          ></el-checkbox
+          ><el-checkbox v-model="scope.row.isNew" disabled></el-checkbox
         ></template>
       </el-table-column>
       <el-table-column label="下架">
         <template slot-scope="scope">
-          <el-checkbox
-            v-model="scope.row.isUnder"
-            disabled
-          ></el-checkbox>
+          <el-checkbox v-model="scope.row.isUnder" disabled></el-checkbox>
         </template>
       </el-table-column>
     </el-table>
     <el-pagination
       background
-      layout="prev, pager, next"
+      layout="total, prev, pager, next"
       :total="totalCount"
-      :current-page="searchModel.pageModel.pageNo"
-      @current-change="searchData"
+      :current-page.sync="searchModel.pageModel.pageNo"
+      :page-size="searchModel.pageModel.pageSize"
+      @current-change="loadData"
     >
     </el-pagination>
   </div>
@@ -125,7 +117,7 @@
 import apiInventory from "@/api/inventory";
 import apiGoods from "@/api/goods";
 export default {
-  name:'inventory',
+  name: "inventory",
   data() {
     return {
       activename: "0",
@@ -160,30 +152,35 @@ export default {
         this.$refs.goodscate.dropDownVisible = false; //关闭选择框
       }
     },
+    //分页载入数据
+    loadData() {
+      if (res.code == 200 && res.returnStatus == 1) {
+        const { totalCount, items } = res.result;
+        this.totalCount = totalCount;
+        this.inventoryData = items.map((x) => {
+          return {
+            goodsId: x.goodsId,
+            goodsName: x.goodsInfo.goodsName,
+            unitName: x.goodsInfo.unitName,
+            isUnder: x.goodsInfo.isUnder == 1,
+            isRecommend: x.goodsInfo.isRecommend == 1,
+            isNew: x.goodsInfo.isNew == 1,
+            colorName: x.colorInfo.colorName,
+            specName: x.specInfo.specName,
+            quantity: x.quantity,
+            lockQuantity: x.lockQuantity,
+            transitQuantity: x.transitQuantity,
+            activeQuantity: x.activeQuantity,
+          };
+        });
+      }
+    },
     //执行查询
     searchData() {
-      apiInventory.SearchInventories(this.searchModel).then((res) => {
-        if (res.code == 200 && res.returnStatus == 1) {
-          const { totalCount, items } = res.result;
-          this.totalCount = totalCount;
-          this.inventoryData = items.map((x) => {
-            return {
-              goodsId: x.goodsId,
-              goodsName: x.goodsInfo.goodsName,
-              unitName: x.goodsInfo.unitName,
-              isUnder: x.goodsInfo.isUnder == 1,
-              isRecommend: x.goodsInfo.isRecommend == 1,
-              isNew: x.goodsInfo.isNew == 1,
-              colorName: x.colorInfo.colorName,
-              specName: x.specInfo.specName,
-              quantity: x.quantity,
-              lockQuantity: x.lockQuantity,
-              transitQuantity: x.transitQuantity,
-              activeQuantity: x.activeQuantity,
-            };
-          });
-        }
-      });
+      this.searchModel.pageModel.pageNo = 1;
+      this.totalCount = 0;
+      this.inventoryData = [];
+      this.loadData();
     },
   },
   created() {

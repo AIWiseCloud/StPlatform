@@ -344,6 +344,7 @@ export default {
       this.resourceItem.subject = "";
       this.resourceItem.groupNo = "";
       this.resourceItem.navigator = "";
+      this.resourceItem.imgUrl = "";
       this.resourceItem.remark = "";
       this.resourceItem.isCancellation = 0;
       this.resourceItem.fIndex = 100;

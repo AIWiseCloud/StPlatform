@@ -49,7 +49,7 @@ function guid() {
 //服务器地址（主要用于服务器图片存储，切换正式或测试环境时在store中修改，这里暂时不作请求地址)
 function getBaseURL() {
     const MallLiveUrl = "http://127.0.0.1:8088"; //正式的商城地址
-    const MallUatUrl = "http://127.0.0.1:8031";     //测试的商城地址
+    const MallUatUrl = "http://192.168.88.29:8031";     //测试的商城地址
     return state.state.system_env == "LIVE" ? MallLiveUrl : MallUatUrl;
 }
 

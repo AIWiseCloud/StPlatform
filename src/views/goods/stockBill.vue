@@ -136,9 +136,10 @@
     </el-table>
     <el-pagination
       background
-      layout="prev, pager, next"
+      layout="total, prev, pager, next"
       :total="totalCount"
-      :current-page="searchModel.pageModel.pageNo"
+      :current-page.sync="searchModel.pageModel.pageNo"
+      :page-size="searchModel.pageModel.pageSize"
       @current-change="loadData"
     >
     </el-pagination>
@@ -207,7 +208,7 @@ export default {
             for (let i of bill.stockBillDetail) {
               let row = {
                 billId: bill.billId,
-                orderId:bill.orderId,
+                orderId: bill.orderId,
                 billStateName: this.getBillState(bill.billState),
                 transTypeName: bill.transType.transTypeName,
                 goodsName: i.goodsInfo.goodsName,

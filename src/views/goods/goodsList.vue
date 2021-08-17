@@ -96,9 +96,10 @@
       </el-table>
       <el-pagination
         background
-        layout="prev, pager, next"
+        layout="total, prev, pager, next"
         :total="queryInfo.totalCount"
-        :current-page="queryInfo.pageModel.pageNo"
+        :current-page.sync="queryInfo.pageModel.pageNo"
+        :page-size="queryInfo.pageModel.pageSize"
         @current-change="loadData"
       >
       </el-pagination>
@@ -138,11 +139,11 @@ export default {
     loadData() {
       apiGoods.QueryGoods(this.queryInfo).then((res) => {
         if (res.code == 200 && res.returnStatus == 1) {
-          const { items } = res.result;
-          this.queryInfo.totalCount = res.result.totalCount;
+          const { totalCount, items } = res.result;
+          this.queryInfo.totalCount = totalCount;
           this.goodsList = items;
         } else {
-          this.$message.error(JSON.stringify(res.msg));
+          this.$message.error(res.msg);
         }
       });
     },
