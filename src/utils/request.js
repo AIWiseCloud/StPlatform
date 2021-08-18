@@ -6,7 +6,7 @@ import { getToken } from '@/utils/auth'
 // create an axios instance 
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
-  timeout: 5000 // request timeout
+  timeout: 20 * 1000 // request timeout
 })
 
 // request interceptor
@@ -33,31 +33,14 @@ service.interceptors.response.use(
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== 200) {
       // 此处统一弹出错误框，各模块调用时catch就可以不用Message弹框了(roy注)
-      if (res.msg.includes('GetUserInfoByToken')) {
-        Message({
-          message: 'access_token过期，请重新登录',
-          type: 'info',
-          duration: 20 * 1000
-        })
-      } else {
-        Message({
-          message: res.msg || 'Error',
-          type: 'error',
-          duration: 20 * 1000
-        })
-      }
-
-
-
-      // if (res.code == 400) {
-      //   console.log("400", JSON.stringify(res));
-      // }
-      if (res.code == 401) {
-        console.log("重新登录吧401")
-      }
+      Message({
+        message: res.msg || 'Error',
+        type: 'error',
+        duration: 5 * 1000
+      })
 
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
-      if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
+      if (res.code === 401 || res.code === 50012 || res.code === 50014) {
         // to re-login
         MessageBox.confirm('您已注销，可以取消以停留在此页面，或重新登录', '确认登出', {
           confirmButtonText: '重新登录0',
@@ -75,25 +58,25 @@ service.interceptors.response.use(
     }
   },
   error => {
-    // Message({
-    //   message: error.message,
-    //   type: 'error',
-    //   duration: 5 * 1000
-    // })
-    if (error.response) {
-      switch (error.response.status) {
-        case 401:
-          MessageBox.confirm('您已注销，可以取消以停留在此页面，或重新登录', '确认登出', {
-            confirmButtonText: '重新登录1',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            store.dispatch('user/resetToken').then(() => {
-              location.reload()
-            })
-          })
-      }
-    }
+    Message({
+      message: error.message,
+      type: 'error',
+      duration: 5 * 1000
+    })
+    // if (error.response) {
+    //   switch (error.response.status) {
+    //     case 401:
+    //       MessageBox.confirm('您已注销，可以取消以停留在此页面，或重新登录', '确认登出', {
+    //         confirmButtonText: '重新登录1',
+    //         cancelButtonText: '取消',
+    //         type: 'warning'
+    //       }).then(() => {
+    //         store.dispatch('user/resetToken').then(() => {
+    //           location.reload()
+    //         })
+    //       })
+    //   }
+    // }
     return Promise.reject(error)
   }
 )
