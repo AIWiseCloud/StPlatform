@@ -39,9 +39,9 @@
             @blur="capsTooltip = false"
             @keyup.enter.native="handleLogin"
           />
-          <span class="show-pwd" @click="showPwd">
+          <!-- <span class="show-pwd" @click="showPwd">
             <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
-          </span>
+          </span> -->
         </el-form-item>
       </el-tooltip>
 
@@ -82,27 +82,28 @@ export default {
   components: { SocialSign },
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
-      } else {
-        callback()
-      }
+       callback()
+      // if (!validUsername(value)) {
+      //   callback(new Error('Please enter the correct user name'))
+      // } else {
+      //   callback()
+      // }
     }
     const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+      if (value.length <4) {
+        callback(new Error('The password can not be less than 4 digits'))
       } else {
         callback()
       }
     }
     return {
       loginForm: {
-        unionId: 'admin',
-        username: 'admin',
-        password: '111111'
+        unionId: '',
+        username: '',
+        password: ''
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
+        username: [{ required: true, trigger: 'blur', }],// validator: validateUsername
         password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       passwordType: 'password',
@@ -144,14 +145,14 @@ export default {
       this.capsTooltip = key && key.length === 1 && (key >= 'A' && key <= 'Z')
     },
     showPwd() {
-      if (this.passwordType === 'password') {
-        this.passwordType = ''
-      } else {
-        this.passwordType = 'password'
-      }
-      this.$nextTick(() => {
-        this.$refs.password.focus()
-      })
+      // if (this.passwordType === 'password') {
+      //   this.passwordType = ''
+      // } else {
+      //   this.passwordType = 'password'
+      // }
+      // this.$nextTick(() => {
+      //   this.$refs.password.focus()
+      // })
     },
     // 登录
     handleLogin() {
@@ -161,12 +162,10 @@ export default {
           // 通过状态管理actions去调用登录接口
           this.$store.dispatch('user/login', this.loginForm)
             .then(() => {
-              console.log('登录成功')
               this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
               this.loading = false
             })
-            .catch(() => {
-              console.log('登录失败')
+            .catch(() => { 
               this.loading = false
             })
         } else {

@@ -282,9 +282,8 @@ export default {
     },
     // 删除
     deleteCategory(row) {
-      if (row.children) {
-        this.$message.error('存在子分类')
-        return false
+      if (row.children.length) {
+        return this.$message.error('存在子分类')
       }
       this.$confirm('确定要删除吗？', '询问', {
         cancelButtonText: '取消',

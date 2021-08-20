@@ -1,4 +1,4 @@
-import { login, getInfo,logout } from '@/api/user'
+import { login, getInfo, logout } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 
@@ -33,13 +33,16 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password, unionId } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password, unionId: unionId }).then(response => {
-        // console.log(JSON.stringify(response))
-        const token = response.result;
-        commit('SET_NAME',unionId);
-        commit('SET_TOKEN', token)
-        setToken(token)
-        resolve()
+      login({ username: username.trim(), password: password, unionId: unionId }).then(res => {
+        if (res.code == 200 && res.returnStatus == 1) {
+          const token = res.result;
+          commit('SET_NAME', unionId);
+          commit('SET_TOKEN', token)
+          setToken(token)
+          resolve()
+        }else{
+          reject('登录失败')
+        }
       }).catch(error => {
         reject(error)
       })
@@ -51,7 +54,6 @@ const actions = {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
         const { result } = response
-
         if (!result) {
           reject('Verification failed, please Login again.')
         }
@@ -76,7 +78,6 @@ const actions = {
   // user logout
   logout({ commit, state, dispatch }) {
     return new Promise((resolve, reject) => {
-      console.log("sdgsgsdsg")
       logout(state.token).then(() => {
         commit('SET_TOKEN', '')
         commit('SET_ROLES', [])
