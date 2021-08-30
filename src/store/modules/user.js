@@ -4,7 +4,8 @@ import router, { resetRouter } from '@/router'
 
 const state = {
   token: getToken(),
-  name: '',
+  name: '', //保存unionId
+  userName:'', //保存后台登录的用户我
   avatar: '',
   introduction: '',
   roles: []
@@ -20,6 +21,9 @@ const mutations = {
   SET_NAME: (state, name) => {
     state.name = name
   },
+  SET_USERNAME: (state, userName) => {
+    state.userName = userName
+  },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
   },
@@ -34,6 +38,7 @@ const actions = {
     const { username, password, unionId } = userInfo
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password, unionId: unionId }).then(res => {
+        // console.log(JSON.stringify(res))
         if (res.code == 200 && res.returnStatus == 1) {
           const token = res.result;
           commit('SET_NAME', unionId);
@@ -41,7 +46,7 @@ const actions = {
           setToken(token)
           resolve()
         }else{
-          reject('登录失败')
+          reject(res.msg)
         }
       }).catch(error => {
         reject(error)
@@ -54,10 +59,11 @@ const actions = {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
         const { result } = response
+        // console.log(JSON.stringify(result))
         if (!result) {
           reject('Verification failed, please Login again.')
         }
-        const { userRoles, nickName, avatar, province } = result
+        const {userName, userRoles, nickName, avatar, province } = result
 
         // roles must be a non-empty array
         if (!userRoles || userRoles.length <= 0) {
@@ -66,6 +72,7 @@ const actions = {
 
         commit('SET_ROLES', userRoles)
         commit('SET_NAME', nickName)
+        commit('SET_USERNAME', userName)
         commit('SET_AVATAR', avatar)
         commit('SET_INTRODUCTION', province)
         resolve(result)

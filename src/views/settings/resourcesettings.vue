@@ -46,21 +46,34 @@
           prop="sourceId"
           width="140"
         ></el-table-column>
+        <el-table-column label="图片" prop="imgUrl" width="60">
+          <template slot-scope="scope">
+            <el-popover
+              v-if="scope.row.imgUrl"
+              ref="pooover"
+              placement="top"
+              trigger="hover"
+            >
+              <el-image
+                style="width: 300px; height: 300px"
+                :src="$common.getBaseURL() + scope.row.imgUrl"
+                fit="scale-down"
+              />
+              <el-image
+                slot="reference"
+                :src="$common.getBaseURL() + scope.row.imgUrl"
+                style="width: 40px; height: 40px"
+              />
+            </el-popover>
+          </template>
+        </el-table-column>
         <el-table-column label="主旨" prop="subject"></el-table-column>
         <el-table-column
           label="分组码"
           prop="groupNo"
           width="100"
         ></el-table-column>
-        <el-table-column label="图片" prop="imgUrl" width="60">
-          <template slot-scope="scope">
-            <el-image
-              v-if="scope.row.imgUrl"
-              :src="$common.getBaseURL() + scope.row.imgUrl"
-              style="width: 40px; height: 40px"
-            ></el-image>
-          </template>
-        </el-table-column>
+
         <el-table-column
           label="路由"
           prop="navigator"
@@ -145,7 +158,15 @@
             </el-col>
             <el-col :sm="12" :md="8" :lg="8" :xl="8">
               <el-form-item label="分组码" prop="groupNo">
-                <el-input v-model="resourceItem.groupNo"></el-input>
+                <!-- <el-input v-model="resourceItem.groupNo"></el-input> -->
+                <el-select v-model="resourceItem.groupNo" filterable allow-create placeholder="输入或选择">
+                  <el-option
+                    v-for="(item, i) in groups"
+                    :key="i"
+                    :label="item"
+                    :value="item"
+                  ></el-option>
+                </el-select>
               </el-form-item>
             </el-col>
             <el-col :sm="12" :md="8" :lg="8" :xl="8">
@@ -180,22 +201,29 @@
                 </el-upload>
               </el-form-item>
             </el-col>
-            <el-col :sm="12" :md="8" :lg="8" :xl="8">
-              <el-form-item label="路由" prop="navigator">
-                <el-input
-                  v-model="resourceItem.navigator"
-                  placeholder="输入跳转的路由"
-                ></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :sm="12" :md="8" :lg="8" :xl="8">
-              <el-form-item label="作废" prop="isCancellation">
-                <el-switch
-                  v-model="resourceItem.isCancellation"
-                  active-value="1"
-                  inactive-value="0"
-                ></el-switch>
-              </el-form-item>
+
+            <el-col :sm="24" :md="16" :lg="16" :xl="16">
+              <el-row>
+                <el-col :sm="24" :md="24" :lg="24" :xl="24">
+                  <el-form-item label="路由" prop="navigator">
+                    <el-input
+                      v-model="resourceItem.navigator"
+                      placeholder="输入跳转的路由"
+                    ></el-input>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :sm="12" :md="8" :lg="8" :xl="8">
+                  <el-form-item label="作废" prop="isCancellation">
+                    <el-switch
+                      v-model="resourceItem.isCancellation"
+                      active-value="1"
+                      inactive-value="0"
+                    ></el-switch>
+                  </el-form-item>
+                </el-col>
+              </el-row>
             </el-col>
           </el-row>
           <el-form-item label="备注" prop="remark">
@@ -253,6 +281,7 @@ export default {
           orderWay: "",
         },
       },
+      groups: [],
       rules: {
         sourceId: {
           required: true,
@@ -288,6 +317,15 @@ export default {
     },
     openDialog(isnew, sourceId) {
       this.visibleDialog = true;
+      apiSettings.GetGroups().then((res) => {
+        if (res.code == 200 && res.returnStatus == 1) {
+          this.groups = res.result;
+          this.groups = [];
+          for (let i of res.result) {
+            this.groups.push(i.GroupNo);
+          }
+        }
+      });
       if (isnew) {
         this.resourceItem.sourceId = "S" + this.$common.getDigitSerial();
       } else {

@@ -297,7 +297,7 @@
             empty-text="暂无数据"
           >
             <el-table-column type="index" label="#" />
-            <el-table-column label="排序">
+            <el-table-column label="排序" width="100">
               <template scope="scope">
                 <span v-if="scope.row.isSet">
                   <el-input
@@ -763,6 +763,9 @@ export default {
     },
     // 新增规格定价行
     addGoodsSpecRow() {
+      if(!this.goodsInfo.goodsColors.length){
+        return this.$message.error('请先完成颜色及对应图片添加');
+      }
       for (const i of this.goodsInfo.goodsSpecs) {
         if (i.isSet) {
           return this.$message({

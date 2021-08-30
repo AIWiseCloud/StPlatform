@@ -154,26 +154,28 @@ export default {
     },
     //分页载入数据
     loadData() {
-      if (res.code == 200 && res.returnStatus == 1) {
-        const { totalCount, items } = res.result;
-        this.totalCount = totalCount;
-        this.inventoryData = items.map((x) => {
-          return {
-            goodsId: x.goodsId,
-            goodsName: x.goodsInfo.goodsName,
-            unitName: x.goodsInfo.unitName,
-            isUnder: x.goodsInfo.isUnder == 1,
-            isRecommend: x.goodsInfo.isRecommend == 1,
-            isNew: x.goodsInfo.isNew == 1,
-            colorName: x.colorInfo.colorName,
-            specName: x.specInfo.specName,
-            quantity: x.quantity,
-            lockQuantity: x.lockQuantity,
-            transitQuantity: x.transitQuantity,
-            activeQuantity: x.activeQuantity,
-          };
-        });
-      }
+      apiInventory.SearchInventories(this.searchModel).then((res) => {
+        if (res.code == 200 && res.returnStatus == 1) {
+          const { totalCount, items } = res.result;
+          this.totalCount = totalCount;
+          this.inventoryData = items.map((x) => {
+            return {
+              goodsId: x.goodsId,
+              goodsName: x.goodsInfo.goodsName,
+              unitName: x.goodsInfo.unitName,
+              isUnder: x.goodsInfo.isUnder == 1,
+              isRecommend: x.goodsInfo.isRecommend == 1,
+              isNew: x.goodsInfo.isNew == 1,
+              colorName: x.colorInfo.colorName,
+              specName: x.specInfo.specName,
+              quantity: x.quantity,
+              lockQuantity: x.lockQuantity,
+              transitQuantity: x.transitQuantity,
+              activeQuantity: x.activeQuantity,
+            };
+          });
+        }
+      });
     },
     //执行查询
     searchData() {

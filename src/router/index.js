@@ -110,6 +110,12 @@ export const asyncRoutes = [
         component: () => import('@/views/settings/shop'),
         name: 'shop',
         meta: { title: '店铺设置', icon: 'shop', noCache: true }
+      },
+      {
+        path:'version',
+        component:()=>import('@/views/settings/version'),
+        name:'version',
+        meta:{title:'版本管理',icon:'table'}
       }
     ]
   },

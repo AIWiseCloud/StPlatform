@@ -49,13 +49,20 @@ function guid() {
 //服务器地址（主要用于服务器图片存储，切换正式或测试环境时在store中修改，这里暂时不作请求地址)
 function getBaseURL() {
     const MallLiveUrl = "http://127.0.0.1:8088"; //正式的商城地址
-    const MallUatUrl = "http://8.134.78.5";     //测试的商城地址
+    const MallUatUrl = "http://8.134.78.5";     //测试的商城地址  （用作了正式的云服务器地址)
     return state.state.system_env == "LIVE" ? MallLiveUrl : MallUatUrl;
 }
+
+//报表服务器
+const REPORT_URL="http://8.134.78.5:8089/";  //报表云服务器地址
+// const REPORT_URL="http://127.0.0.1:8089/";//报表本地服务器地址
+
+
 
 export default {
     formatDate,
     getBaseURL,
     getDigitSerial,
-    guid
+    guid,
+    REPORT_URL,
 }

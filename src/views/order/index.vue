@@ -218,6 +218,7 @@
                     plain
                     size="small"
                     icon="el-icon-printer"
+                    @click.native="handlePrint(i, ordermain)"
                     >打印订单</el-button
                   >
                 </el-row>
@@ -360,6 +361,8 @@
 <script>
 /* eslint-disable */
 import apiOrder from "@/api/order";
+import apiReport from "@/api/report";
+import openwindow from "@/utils/open-window.js";
 export default {
   name: "orders",
   data() {
@@ -373,7 +376,7 @@ export default {
         endDate: "",
         unionId: "*", //*表示后端调用
         queryValue: "",
-        statusId: 9, //9表示所有订单状态
+        statusId: 1, //1待发货,9表示所有订单状态
         pageModel: {
           pageNo: 1,
           pageSize: 10,
@@ -382,9 +385,9 @@ export default {
         },
       },
       orderStatus: [
-        { statusId: 1, name: "待发货" },
         { statusId: 9, name: "全部" },
         { statusId: 0, name: "待付款" },
+        { statusId: 1, name: "待发货" },
         { statusId: 2, name: "待签收" },
         { statusId: 3, name: "待评论" },
         { statusId: -1, name: "已取消" },
@@ -448,7 +451,7 @@ export default {
     handleDeliver(index, ordermain) {
       this.orderInfo = ordermain;
       this.deliveryInfo.orderId = ordermain.orderId;
-      this.deliveryInfo.expressId='';
+      this.deliveryInfo.expressId = "";
       apiOrder
         .GetBillId(this.orderInfo.orderId)
         .then((res) => {
@@ -511,6 +514,57 @@ export default {
           } else {
             this.$message.info(res.msg);
           }
+        });
+    },
+    //打印订单
+    handlePrint(i, ordermain) {
+      let printOrderData = {
+        orderId: ordermain.orderId,
+        distributionMethod: ordermain == "1" ? "快递" : "自取",
+        receiver: ordermain.receiver,
+        phoneNumber: ordermain.phoneNumber,
+        deliveryAddress: ordermain.deliveryAddress,
+        statusId: ordermain.statusId,
+        amount: ordermain.amount,
+        freight: ordermain.freight,
+        discount: ordermain.discount,
+        realPay: ordermain.realPay,
+        logisticsId: ordermain.logisticsId,
+        expressId: ordermain.expressId,
+        paymentChannel: ordermain.paymentChannel,
+        orderTime: ordermain.orderTime,
+        orderList: [],
+      };
+      for (let i of ordermain.orderList) {
+        printOrderData.orderList.push({
+          lineId: i.lineId,
+          goodsName: `${i.goodsInfo.goodsName} ${i.goodsInfo.goodsDesc} ${i.goodsColorSpec.colorName} ${i.goodsColorSpec.specName}`,
+          localId: "ST-002",
+          unitPrice: i.unitPrice,
+          quantity: i.quantity,
+          amount: i.amount,
+          unitName: i.goodsInfo.unitName,
+        });
+      }
+      let data = {
+        reportId: "001",
+        billId: ordermain.orderId,
+        source: printOrderData,
+      };
+      // console.log(JSON.stringify(data));
+      // return;
+      apiReport
+        .StringSaveAsJsonFile(data)
+        .then((res) => {
+          if(res.code==200 && res.returnStatus==1 && res.result.status){
+             //返回的id作为调用报表的参数
+            openwindow(this.$common.REPORT_URL+`preview?id=${res.result.id}`);
+          }else{
+            this.$message.error(res.msg);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
         });
     },
   },
