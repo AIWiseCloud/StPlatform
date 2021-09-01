@@ -122,7 +122,7 @@
             }"
             empty-text="暂无数据"
           >
-            <el-table-column label="颜色" prop="colorId" width="60" />
+            <el-table-column label="颜色" prop="colorId" width="120" />
             <!-- 动态创建四个色的模板，避免重复性工作 -->
             <el-table-column
               v-for="(item, i) in imgrow"
@@ -143,7 +143,7 @@
               </template>
             </el-table-column>
             <el-table-column label="排序" prop="findex" width="60" />
-            <el-table-column label="日期" prop="createDate" />
+            <el-table-column label="日期" prop="createDate" width="160" />
             <el-table-column label="操作" width="160">
               <template slot="header">
                 <el-button
