@@ -38,6 +38,7 @@ module.exports = {
       errors: true
     },
     proxy: {
+      //这里的代理只对开发环境有用
       [process.env.VUE_APP_BASE_API]: {
         target: "http://127.0.0.1:8031",//实际的接口请求地址
         changeOrigin: true, //是否跨域

@@ -112,10 +112,23 @@ export const asyncRoutes = [
         meta: { title: '店铺设置', icon: 'shop', noCache: true }
       },
       {
-        path:'version',
-        component:()=>import('@/views/settings/version'),
-        name:'version',
-        meta:{title:'版本管理',icon:'table'}
+        path: 'version',
+        component: () => import('@/views/settings/version'),
+        name: 'version',
+        meta: { title: '版本管理', icon: 'table' }
+      },
+      {
+        path: 'news',
+        name: 'news',
+        component: () => import('@/views/settings/news'),
+        meta: { title: '新闻动态', icon: 'list' }
+      },
+      {
+        name: 'newsDetails',
+        path: 'newsDetails/:isnew/:newsid',
+        component: () => import('@/views/settings/newsDetails'),
+        meta: { title: '编辑新闻动态', icon: 'table' },
+        hidden: true,
       }
     ]
   },
