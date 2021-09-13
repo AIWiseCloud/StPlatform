@@ -10,7 +10,8 @@
             icon="el-icon-plus"
             plain
             @click="openSubMesTypeDialog(true)"
-          >添加分类</el-button>
+            >添加分类</el-button
+          >
           <el-button
             type="primary"
             size="small"
@@ -35,25 +36,30 @@
           @current-change="currentChange"
         >
           <span slot-scope="{ node, data }" class="custom-tree-node">
-            <span><i class="el-icon-folder" style="margin-right: 10px" />{{
-              node.label
-            }}</span>
+            <span
+              ><i class="el-icon-folder" style="margin-right: 10px" />{{
+                node.label
+              }}</span
+            >
             <span>
               <el-button
                 type="text"
                 size="mini"
                 @click="() => openSubMesTypeDialog(false, node, data)"
-              >修改分类</el-button>
+                >修改分类</el-button
+              >
               <el-button
                 type="text"
                 size="mini"
                 @click="() => deleteSubMesType(node, data)"
-              >删除分类</el-button>
+                >删除分类</el-button
+              >
               <el-button
                 type="text"
                 size="mini"
                 @click="() => openSubMessageDialog(true, node, data)"
-              >添加子项</el-button>
+                >添加子项</el-button
+              >
             </span>
           </span>
         </el-tree>
@@ -97,12 +103,14 @@
               <el-button
                 size="mini"
                 @click="openSubMessageDialog(false, scope.$index, scope.row)"
-              >修改</el-button>
+                >修改</el-button
+              >
               <el-button
                 type="danger"
                 size="mini"
                 @click="deleteSubMessage(scope.$index, scope.row)"
-              >删除</el-button>
+                >删除</el-button
+              >
             </template>
           </el-table-column>
         </el-table>
@@ -130,14 +138,17 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="visibleTypeForm = false">取 消</el-button>
-        <el-button
-          type="primary"
-          @click="confirmSubMesType('ruleForm')"
-        >确 定</el-button>
+        <el-button type="primary" @click="confirmSubMesType('ruleForm')"
+          >确 定</el-button
+        >
       </div>
     </el-dialog>
     <!-- 子项编辑对话框 -->
-    <el-dialog title="辅助资料子项" :visible.sync="visibleItemForm">
+    <el-dialog
+      title="辅助资料子项"
+      :visible.sync="visibleItemForm"
+      @close="closedialog"
+    >
       <el-form
         ref="ruleItemForm"
         :model="subMessage"
@@ -169,197 +180,205 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="visibleItemForm = false">取 消</el-button>
-        <el-button
-          type="primary"
-          @click="confirmSubMessage('ruleItemForm')"
-        >确 定</el-button>
+        <el-button type="primary" @click="confirmSubMessage('ruleItemForm')"
+          >确 定</el-button
+        >
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import apiSettings from '@/api/settings'
+import apiSettings from "@/api/settings";
 export default {
   data() {
     return {
       defaultProps: {
-        label: 'fName',
-        children: 'children'
+        label: "fName",
+        children: "children",
       },
       isAddDialog: true, // 分类对话框是否为新增状态
       isAddItemDialog: true, // 子项对话框是否为新增状态
       itemIndex: -1, // 当前子项索引（用于修改时更新对应元素)
       subMesTypes: [
-        { id: 'pdcolor', fName: '产品颜色', age: 30 },
-        { id: 'pdspec', fName: '产品规格', age: 59 }
+        { id: "pdcolor", fName: "产品颜色", age: 30 },
+        { id: "pdspec", fName: "产品规格", age: 59 },
       ],
       subMesType: {
-        id: '',
-        fName: ''
+        id: "",
+        fName: "",
       },
       subitems: [], // 选中分类的子项列表
       subMessage: {
-        id: '',
-        parentId: '',
-        fNumber: '',
-        fName: '',
+        id: "",
+        parentId: "",
+        fNumber: "",
+        fName: "",
         isCancalelation: 0,
         fIndex: 100,
-        fNote: ''
+        fNote: "",
       },
       visibleTypeForm: false, // 显示分类编辑对话框
       visibleItemForm: false, // 显示子项编辑对话框
       rules: {
         id: [
-          { required: true, message: '请输入编号', trigger: 'blur' },
+          { required: true, message: "请输入编号", trigger: "blur" },
           {
             min: 3,
             max: 30,
-            message: '长度在 3 到 30 个字符',
-            trigger: 'blur'
-          }
+            message: "长度在 3 到 30 个字符",
+            trigger: "blur",
+          },
         ],
         fName: {
           required: true,
-          message: '请输入名称',
-          trigger: 'blur'
-        }
+          message: "请输入名称",
+          trigger: "blur",
+        },
       },
       rulesItem: {
         parentId: {
           required: true,
-          message: '必须提供所属分类',
-          trigger: 'blur'
+          message: "必须提供所属分类",
+          trigger: "blur",
         },
         fNumber: {
           required: true,
-          message: '请提供子项编号',
-          trigger: 'blur'
+          message: "请提供子项编号",
+          trigger: "blur",
         },
         fName: {
           required: true,
-          message: '请提供子项名称',
-          trigger: 'blur'
+          message: "请提供子项名称",
+          trigger: "blur",
         },
         fIndex: {
           required: true,
-          message: '请提供排序索引值',
-          trigger: 'blur'
-        }
-      }
-    }
+          message: "请提供排序索引值",
+          trigger: "blur",
+        },
+      },
+    };
   },
   mounted() {
-    this.loadData()
+    this.loadData();
   },
   methods: {
+    closedialog() {
+      this.subMessage.id = "";
+      this.subMessage.parentId = "";
+      this.subMessage.fNumber = "";
+      this.subMessage.fName = "";
+      this.subMessage.isCancalelation = 0;
+      this.subMessage.fIndex = 100;
+      this.subMessage.fNote = "";
+    },
     // 载入数据
     loadData() {
-      this.subMesTypes = []
+      this.subMesTypes = [];
       apiSettings
         .GetSubMesTypes()
         .then((res) => {
           if (res.code == 200 && res.returnStatus == 1) {
-            this.subMesTypes = res.result
+            this.subMesTypes = res.result;
             // 默认加载第一个分类下的子项
           } else {
-            this.$message.error(JSON.stringify(res.msg))
+            this.$message.error(JSON.stringify(res.msg));
           }
         })
         .catch((err) => {
-          this.$message.error(JSON.stringify(err))
-        })
+          this.$message.error(JSON.stringify(err));
+        });
     },
     // 打开分类编辑对话框
     openSubMesTypeDialog(isAdd, node, data) {
-      this.isAddDialog = isAdd
+      this.isAddDialog = isAdd;
       if (isAdd) {
-        this.subMesType = {}
+        this.subMesType = {};
       } else {
-        this.subMesType.id = data.id
-        this.subMesType.fName = data.fName
+        this.subMesType.id = data.id;
+        this.subMesType.fName = data.fName;
       }
-      this.visibleTypeForm = true
+      this.visibleTypeForm = true;
     },
     // 保存类别
     confirmSubMesType(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.visibleTypeForm = false
+          this.visibleTypeForm = false;
           apiSettings
             .SaveSubMesType(this.subMesType)
             .then((res) => {
               if (res.code == 200 && res.returnStatus == 1) {
                 if (this.isAddDialog) {
-                  this.subMesTypes.push(this.subMesType)
-                  this.subitems = []
-                  this.subitems.rem
+                  this.subMesTypes.push(this.subMesType);
+                  this.subitems = [];
+                  this.subitems.rem;
                 } else {
                   const index = this.subMesTypes.findIndex(
                     (x) => x.id == this.subMesType.id
-                  )
+                  );
                   if (index != -1) {
-                    this.$set(this.subMesTypes, index, this.subMesType)
+                    this.$set(this.subMesTypes, index, this.subMesType);
                   }
                 }
-                this.subMesType = {}
-                this.$message({ message: '保存成功', type: 'success' })
+                this.subMesType = {};
+                this.$message({ message: "保存成功", type: "success" });
               } else {
-                this.$message.error(JSON.stringify(res.msg))
+                this.$message.error(JSON.stringify(res.msg));
               }
             })
             .catch((err) => {
-              this.$message.error(JSON.stringify(err))
-            })
+              this.$message.error(JSON.stringify(err));
+            });
         } else {
-          return false
+          return false;
         }
-      })
+      });
     },
     // 删除分类
     deleteSubMesType(node, data) {
       apiSettings.GetSubMessageList(data.id).then((res) => {
         if (res.code == 200 && res.returnStatus == 1) {
           if (res.result.length) {
-            this.$message.error('不能删除，因为当前分类存在子项')
+            this.$message.error("不能删除，因为当前分类存在子项");
           } else {
-            this.$confirm('确定要删除吗？', '询问', {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
-              type: 'warning'
+            this.$confirm("确定要删除吗？", "询问", {
+              confirmButtonText: "确定",
+              cancelButtonText: "取消",
+              type: "warning",
             })
               .then((r) => {
-                return apiSettings.DeleteSubMesType(data.id)
+                return apiSettings.DeleteSubMesType(data.id);
               })
               .then((ires) => {
                 if (ires.code == 200 && ires.returnStatus == 1) {
-                  this.loadData()
+                  this.loadData();
                 }
               })
               .catch((err) => {
-                this.$message.error(JSON.stringify(err))
-              })
+                this.$message.error(JSON.stringify(err));
+              });
           }
         }
-      })
+      });
     },
     // 打开添加/编辑子项的对话框 (编辑时第2个参数代表index, 第3个参数代表row)
     openSubMessageDialog(isAdd, node, data) {
-      this.isAddItemDialog = isAdd
-      this.itemIndex = node // 修改时node参数为索引(用于更新对应元素)
+      this.isAddItemDialog = isAdd;
+      this.itemIndex = node; // 修改时node参数为索引(用于更新对应元素)
       if (isAdd) {
-        this.subMessage.id = '' // 后端提供uuid值
-        this.subMessage.parentId = data.id
-        this.subMessage.fNumber = ''
-        this.subMessage.fName = ''
-        this.subMessage.isCancalelation = 0
-        this.subMessage.fIndex = 100
-        this.subMessage.fNote = ''
+        this.subMessage.id = ""; // 后端提供uuid值
+        this.subMessage.parentId = data.id;
+        this.subMessage.fNumber = "";
+        this.subMessage.fName = "";
+        this.subMessage.isCancalelation = 0;
+        this.subMessage.fIndex = 100;
+        this.subMessage.fNote = "";
       } else {
-        this.subMessage = data // 行数据
+        this.subMessage = data; // 行数据
       }
-      this.visibleItemForm = true
+      this.visibleItemForm = true;
     },
     // 确认(保存）新增/修改子项
     confirmSubMessage(formName) {
@@ -367,55 +386,55 @@ export default {
         if (valid) {
           apiSettings.SaveSubMessage(this.subMessage).then((res) => {
             if (res.code == 200 && res.returnStatus == 1) {
-              this.visibleItemForm = false
+              this.visibleItemForm = false;
               // 若是添加
               if (this.isAddItemDialog) {
-                this.subMessage.id = res.result.identityKey
-                this.subitems.push(this.subMessage)
+                this.subMessage.id = res.result.identityKey;
+                this.subitems.push(this.subMessage);
               } else {
-                this.$set(this.subitems, this.itemIndex, this.subMessage)
+                this.$set(this.subitems, this.itemIndex, this.subMessage);
               }
-              this.$message({ message: '操作成功', type: 'success' })
+              this.$message({ message: "操作成功", type: "success" });
             }
-          })
+          });
         } else {
-          return false
+          return false;
         }
-      })
+      });
     },
     // 当前选中节点变化时触发的事件
     currentChange(data, node) {
-      this.subMesType = data
+      this.subMesType = data;
       // 显示当前节点下的子项
       apiSettings.GetSubMessageList(this.subMesType.id).then((res) => {
         if (res.code == 200 && res.returnStatus == 1) {
-          this.subitems = res.result
+          this.subitems = res.result;
         }
-      })
+      });
     },
     // 删除子项
     deleteSubMessage(index, row) {
-      this.$confirm('确定要删除吗？', '询问', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消'
+      this.$confirm("确定要删除吗？", "询问", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
       })
         .then((s) => {
-          return apiSettings.DeleteSubMessage(row.id)
+          return apiSettings.DeleteSubMessage(row.id);
         })
         .then((res) => {
           if (res.code == 200 && res.returnStatus == 1) {
-            this.subitems.splice(index, 1)
-            this.$message({ message: '删除成功', type: 'success' })
+            this.subitems.splice(index, 1);
+            this.$message({ message: "删除成功", type: "success" });
           } else {
-            this.$message.error(JSON.stringify(res.result))
+            this.$message.error(JSON.stringify(res.result));
           }
         })
         .catch((err) => {
-          this.$message.error(JSON.stringify(err))
-        })
-    }
-  }
-}
+          this.$message.error(JSON.stringify(err));
+        });
+    },
+  },
+};
 </script>
 
 <style lang='less' scoped>
@@ -439,7 +458,7 @@ export default {
 }
 .btngroup {
   padding: 10px;
-  .btnadd{
+  .btnadd {
     margin-right: 2px;
   }
 }

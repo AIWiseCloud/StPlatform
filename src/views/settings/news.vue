@@ -175,7 +175,7 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
       }).then((r) => {
-        apiNews.deleteNews(newsId).then((res) => {
+        apiNews.DeleteCompanyNews(newsId).then((res) => {
           if (res.code == 200 && res.returnStatus == 1) {
             this.$message.info("删除成功");
             this.newsList.splice(index, 1);

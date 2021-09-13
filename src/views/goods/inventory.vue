@@ -77,27 +77,108 @@
       empty-text="暂无数据"
     >
       <el-table-column label="#" type="index"> </el-table-column>
-      <el-table-column label="商品ID" prop="goodsId"></el-table-column>
+      <el-table-column
+        label="商品ID"
+        prop="goodsId"
+        width="120"
+      ></el-table-column>
       <el-table-column label="商品名称" prop="goodsName"></el-table-column>
-      <el-table-column label="销售单位" prop="unitName"></el-table-column>
-      <el-table-column label="颜色" prop="colorName"></el-table-column>
-      <el-table-column label="规格" prop="specName"></el-table-column>
-      <el-table-column label="库存数量" prop="quantity"></el-table-column>
-      <el-table-column label="锁定数量" prop="lockQuantity"></el-table-column>
-      <el-table-column label="可用库存" prop="activeQuantity"></el-table-column>
-      <el-table-column label="推荐">
-        <template slot-scope="scope"
-          ><el-checkbox v-model="scope.row.isRecommend" disabled></el-checkbox
-        ></template>
-      </el-table-column>
-      <el-table-column label="最新">
-        <template slot-scope="scope"
-          ><el-checkbox v-model="scope.row.isNew" disabled></el-checkbox
-        ></template>
-      </el-table-column>
-      <el-table-column label="下架">
+      <el-table-column label="品牌" prop="brand" width="60"></el-table-column>
+      <el-table-column
+        label="基本单位"
+        prop="unitName"
+        width="70"
+        align="center"
+      ></el-table-column>
+      <el-table-column
+        label="销售单位"
+        prop="saleUnit"
+        width="70"
+        align="center"
+      ></el-table-column>
+      <el-table-column
+        label="转换系数"
+        prop="unitConverter"
+        width="70"
+        align="center"
+      ></el-table-column>
+      <el-table-column
+        label="基本单价"
+        prop="baseUnitPrice"
+        width="70"
+        align="center"
+      ></el-table-column>
+      <el-table-column
+        label="销售单价"
+        prop="price"
+        width="70"
+        align="center"
+      ></el-table-column>
+      <el-table-column
+        label="折扣单价"
+        prop="discountPrice"
+        width="70"
+        align="center"
+      ></el-table-column>
+      <el-table-column
+        label="颜色"
+        prop="colorName"
+        width="60"
+        align="center"
+      ></el-table-column>
+      <el-table-column
+        label="规格"
+        prop="specName"
+        width="90"
+      ></el-table-column>
+      <el-table-column
+        label="库存数量"
+        prop="quantity"
+        width="70"
+        align="center"
+      ></el-table-column>
+      <el-table-column
+        label="锁定数量"
+        prop="lockQuantity"
+        width="70"
+        align="center"
+      ></el-table-column>
+      <el-table-column
+        label="可用库存"
+        prop="activeQuantity"
+        width="70"
+        align="center"
+      ></el-table-column>
+      <el-table-column label="推荐" width="70">
         <template slot-scope="scope">
-          <el-checkbox v-model="scope.row.isUnder" disabled></el-checkbox>
+          <el-switch
+            v-model="scope.row.isRecommend"
+            active-color="rgb(55,55,55)"
+            :active-value="1"
+            :inactive-value="0"
+            disabled
+          />
+        </template>
+      </el-table-column>
+      <!-- <el-table-column label="最新" width="70">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.isNew"
+            active-color="rgb(55,55,55)"
+            :active-value="1"
+            :inactive-value="0"
+            disabled
+        /></template>
+      </el-table-column> -->
+      <el-table-column label="下架" width="70">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.isUnder"
+            active-color="rgb(55,55,55)"
+            :active-value="1"
+            :inactive-value="0"
+            disabled
+          />
         </template>
       </el-table-column>
     </el-table>
@@ -162,12 +243,18 @@ export default {
             return {
               goodsId: x.goodsId,
               goodsName: x.goodsInfo.goodsName,
+              brand: x.goodsInfo.brand,
               unitName: x.goodsInfo.unitName,
-              isUnder: x.goodsInfo.isUnder == 1,
-              isRecommend: x.goodsInfo.isRecommend == 1,
-              isNew: x.goodsInfo.isNew == 1,
-              colorName: x.colorInfo.colorName,
-              specName: x.specInfo.specName,
+              saleUnit: x.goodsSpec.saleUnit,
+              baseUnitPrice: x.goodsSpec.baseUnitPrice,
+              price: x.goodsSpec.price,
+              discountPrice: x.goodsSpec.discountPrice,
+              isUnder: x.goodsInfo.isUnder,
+              isRecommend: x.goodsInfo.isRecommend,
+              isNew: x.goodsInfo.isNew,
+              unitConverter: x.goodsSpec.unitConverter,
+              colorName: x.goodsColor.colorName,
+              specName: x.goodsSpec.specName,
               quantity: x.quantity,
               lockQuantity: x.lockQuantity,
               transitQuantity: x.transitQuantity,
@@ -192,6 +279,8 @@ export default {
         this.goodsCategories = res.result;
       }
     });
+    //载入
+    // this.searchData();
   },
 };
 </script>

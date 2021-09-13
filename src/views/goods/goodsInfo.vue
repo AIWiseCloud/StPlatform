@@ -15,6 +15,7 @@
         <el-step title="颜色及图片" />
         <el-step title="规格及价格" />
         <el-step title="商品介绍图" />
+        <el-step title="发布商品" />
       </el-steps>
 
       <!-- tab区域 -->
@@ -32,18 +33,31 @@
             size="mini"
             label-width="100px"
             label-position="right"
+            :disabled="!canEditBill"
           >
             <el-row>
-              <el-col :span="12">
+              <el-col :span="8">
                 <el-form-item label="商品ID" prop="goodsId">
                   <el-input
                     v-model="goodsInfo.goodsId"
                     disabled
                   /> </el-form-item
               ></el-col>
-              <el-col :span="12">
-                <el-form-item label="销售单位" prop="unitName">
-                  <el-input v-model="goodsInfo.unitName" /> </el-form-item
+              <el-col :span="8">
+                <el-form-item label="产品编号" prop="prodNumber">
+                  <el-input v-model="goodsInfo.prodNumber" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="品牌" prop="brand">
+                  <el-select v-model="goodsInfo.brand" style="width:100%" placeholder="请选择品牌"
+                    ><el-option
+                      v-for="(item, i) in brandoptions"
+                      :key="i"
+                      :label="item.fName"
+                      :value="item.fNumber"
+                    ></el-option>
+                  </el-select> </el-form-item
               ></el-col>
             </el-row>
             <el-row>
@@ -66,8 +80,18 @@
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                <el-form-item label="产品编号" prop="prodNumber">
-                  <el-input v-model="goodsInfo.prodNumber" />
+                <el-form-item label="基本单位" prop="unitName">
+                  <el-select
+                    v-model="goodsInfo.unitName"
+                    placeholder="选择基本单位"
+                  >
+                    <el-option
+                      v-for="(item, i) in unitoptions"
+                      :key="i"
+                      :label="item.fName"
+                      :value="item.fNumber"
+                    ></el-option>
+                  </el-select>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
@@ -77,7 +101,7 @@
               </el-col>
             </el-row>
             <el-form-item label="商品名称" prop="goodsName">
-              <el-input v-model="goodsInfo.goodsName" />
+              <el-input v-model="goodsInfo.goodsName" clearable />
             </el-form-item>
             <el-form-item label="商品描述" prop="goodsDesc">
               <el-input v-model="goodsInfo.goodsDesc" />
@@ -105,11 +129,11 @@
                     v-model="goodsInfo.isUnder"
                     :active-value="1"
                     :inactive-value="0"
+                    disabled
                 /></el-form-item>
               </el-col>
             </el-row>
-            <el-form-item>
-            </el-form-item>
+            <el-form-item> </el-form-item>
           </el-form>
         </el-tab-pane>
         <el-tab-pane label="颜色及图片" name="1">
@@ -122,7 +146,7 @@
             }"
             empty-text="暂无数据"
           >
-            <el-table-column label="颜色" prop="colorId" width="120" />
+            <el-table-column label="颜色" prop="colorName" width="120" />
             <!-- 动态创建四个色的模板，避免重复性工作 -->
             <el-table-column
               v-for="(item, i) in imgrow"
@@ -152,6 +176,7 @@
                   plain
                   icon="el-icon-plus"
                   @click="showColorDialog(true)"
+                  :disabled="!canEditBill"
                   >添加记录</el-button
                 >
               </template>
@@ -159,11 +184,15 @@
                 <el-button
                   type="primary"
                   icon="el-icon-edit"
+                  circle
+                  :disabled="!canEditBill"
                   @click="showColorDialog(false, scope.$index, scope.row)"
                 />
                 <el-button
                   type="danger"
                   icon="el-icon-delete"
+                  circle
+                  :disabled="!canEditBill"
                   @click="deleteGoodsColor(scope.row.id)"
                 />
               </template>
@@ -173,7 +202,7 @@
         <!-- 规格及价格 -->
         <el-tab-pane label="规格及价格" name="2">
           <el-table
-            :data="goodsInfo.goodsSpecs"
+            :data="goodsSpecData"
             border
             :header-cell-style="{
               'text-align': 'center',
@@ -182,38 +211,65 @@
             empty-text="暂无数据"
           >
             <el-table-column type="index" label="#" />
-            <el-table-column label="商品规格">
+            <el-table-column label="规格描述">
+              <template scope="scope">
+                <el-input
+                  v-model="scope.row.specName"
+                  v-if="scope.row.isSet"
+                  placeholder="规格描述"
+                  size="mini"
+                  clearable
+                ></el-input>
+                <span v-else>{{ scope.row.specName }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="销售单位" width="100" align="center">
               <template scope="scope">
                 <span v-if="scope.row.isSet">
                   <el-select
-                    v-model="scope.row.specId"
+                    v-model="scope.row.saleUnit"
                     size="mini"
-                    placeholder="选择商品规格"
+                    placeholder="选择销售单位"
                   >
                     <el-option
-                      v-for="item in specoptions"
+                      v-for="item in unitoptions"
                       :key="item.fNumber"
                       :label="item.fName"
                       :value="item.fNumber"
                     />
                   </el-select>
                 </span>
-                <span v-else>{{ scope.row.specId }}</span>
+                <span v-else>{{ scope.row.saleUnit }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="单价">
+            <el-table-column label="单位转换系数" width="110" align="center">
               <template scope="scope">
-                <span v-if="scope.row.isSet">
-                  <el-input
-                    v-model="scope.row.price"
-                    oninput="value=value.replace(/[^0-9.]/g,'')"
-                    size="mini"
-                  />
-                </span>
-                <span v-else>{{ scope.row.price }}</span>
+                <el-input
+                  v-if="scope.row.isSet"
+                  v-model="scope.row.unitConverter"
+                  placeholder="输入1销售单位等于多少基本单位"
+                  size="mini"
+                ></el-input>
+                <span v-else>{{ scope.row.unitConverter }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="折扣价">
+            <el-table-column
+              :label="'基本单价' + '(元/' + goodsInfo.unitName + ')'"
+              width="160"
+            >
+              <template scope="scope">
+                <el-input
+                  v-if="scope.row.isSet"
+                  v-model="scope.row.baseUnitPrice"
+                  oninput="value=value.replace(/[^0-9.]/g,'')"
+                  size="mini"
+                ></el-input>
+                <span v-else>{{ scope.row.baseUnitPrice }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="销售单价" width="100" prop="price">
+            </el-table-column>
+            <el-table-column label="折扣价" width="100">
               <template scope="scope">
                 <span v-if="scope.row.isSet">
                   <el-input
@@ -225,7 +281,7 @@
                 <span v-else>{{ scope.row.discountPrice }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="排序">
+            <el-table-column label="排序" width="90" align="center">
               <template scope="scope">
                 <span v-if="scope.row.isSet">
                   <el-input
@@ -237,7 +293,7 @@
                 <span v-else>{{ scope.row.findex }}</span>
               </template>
             </el-table-column>
-            <el-table-column width="200">
+            <el-table-column width="160" align="center">
               <template slot="header">
                 <el-button
                   type="success"
@@ -245,6 +301,7 @@
                   icon="el-icon-plus"
                   size="mini"
                   @click="addGoodsSpecRow"
+                  :disabled="!canEditBill"
                   >新增</el-button
                 >
               </template>
@@ -252,11 +309,12 @@
                 <el-button
                   v-if="!scope.row.isSet"
                   type="primary"
-                  plain
+                  icon="el-icon-edit"
                   size="mini"
+                  circle
+                  :disabled="!canEditBill"
                   @click="editGoodsSpecRow(scope.$index, scope.row)"
-                  >编辑</el-button
-                >
+                ></el-button>
                 <el-button
                   v-else
                   type="primary"
@@ -268,11 +326,12 @@
                 <el-button
                   v-if="!scope.row.isSet"
                   type="danger"
-                  plain
+                  icon="el-icon-delete"
                   size="mini"
+                  circle
+                  :disabled="!canEditBill"
                   @click="deleteGoodsSpecRow(scope.row)"
-                  >删除</el-button
-                >
+                ></el-button>
                 <el-button
                   v-else
                   type="danger"
@@ -284,6 +343,11 @@
               </template>
             </el-table-column>
           </el-table>
+          <el-card>
+            <span class="notice" style="color: silver; font-size: 1em"
+              >注：“单位转换系数”指1销售单位等于多少基本单位，比如“销售单位”为“桶”，“基本单位”为“公斤”，1桶为25公斤，25即为单位转换系数</span
+            >
+          </el-card>
         </el-tab-pane>
         <!-- 商品介绍图 -->
         <el-tab-pane label="商品介绍图" name="3">
@@ -296,9 +360,9 @@
             }"
             empty-text="暂无数据"
           >
-            <el-table-column type="index" label="#" />
-            <el-table-column label="排序" width="100">
-              <template scope="scope">
+            <el-table-column type="index" label="#" align="center" />
+            <el-table-column label="排序" width="100" align="center">
+              <template scope="scope" align="center">
                 <span v-if="scope.row.isSet">
                   <el-input
                     v-model="scope.row.fIndex"
@@ -309,7 +373,7 @@
                 <span v-else>{{ scope.row.fIndex }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="图片">
+            <el-table-column label="图片" width="200" align="center">
               <template scope="scope">
                 <el-upload
                   class="avatar-uploader"
@@ -327,10 +391,12 @@
                 </el-upload>
               </template>
             </el-table-column>
-            <el-table-column width="190">
+            <el-table-column label="备注"></el-table-column>
+            <el-table-column width="190" align="center">
               <template slot="header">
                 <el-button
-                  type="success"
+                  type="prmary"
+                  plain
                   size="mini"
                   icon="el-icon-plus"
                   @click="addSpuImgRow"
@@ -342,10 +408,10 @@
                   v-if="!scope.row.isSet"
                   type="primary"
                   size="mini"
-                  plain
+                  circle
+                  icon="el-icon-edit"
                   @click="editSpuImgRow(scope.$index, scope.row)"
-                  >编辑</el-button
-                >
+                ></el-button>
                 <el-button
                   v-else
                   type="primary"
@@ -358,10 +424,10 @@
                   v-if="!scope.row.isSet"
                   type="danger"
                   size="mini"
-                  plain
+                  circle
+                  icon="el-icon-delete"
                   @click="deleteSpuImgRow(scope.row)"
-                  >删除</el-button
-                >
+                ></el-button>
                 <el-button
                   v-else
                   type="danger"
@@ -374,11 +440,46 @@
             </el-table-column>
           </el-table>
         </el-tab-pane>
+        <!-- 发布商品 -->
+        <el-tab-pane label="发布商品" name="4">
+          <div>
+            <el-tag type="info">{{
+              goodsInfo.isUnder == 0 ? "商品已发布" : "商品未发布"
+            }}</el-tag>
+            <el-button
+              v-if="goodsInfo.isUnder == 1"
+              type="success"
+              round
+              :disabled="goodsInfo.isUnder == 0"
+              @click="releaseGoods(true)"
+              >发布商品</el-button
+            >
+            <el-button
+              v-else
+              type="danger"
+              round
+              :disabled="goodsInfo.isUnder == 1"
+              @click="releaseGoods(false)"
+              >取消发布</el-button
+            >
+          </div>
+        </el-tab-pane>
       </el-tabs>
-      <el-button icon="el-icon-plus" plain @click="toAddGoods" size="mini" v-if="activeIndex=='0'"
+      <el-button
+        icon="el-icon-plus"
+        plain
+        @click="toAddGoods"
+        size="mini"
+        v-if="activeIndex == '0'"
         >添加新商品</el-button
       >
-       <el-button icon="el-icon-plus" plain  @click="saveGoodsInfo('goodsform')" size="mini" v-if="activeIndex=='0'"
+      <el-button
+        icon="el-icon-plus"
+        plain
+        @click="saveGoodsInfo('goodsform')"
+        size="mini"
+        v-if="activeIndex == '0'"
+        :disabled="!canEditBill"
         >保存当前商品</el-button
       >
     </el-card>
@@ -402,15 +503,12 @@
               ><el-input v-model="goodsColor.id" disabled /></el-form-item
           ></el-col>
           <el-col :span="8">
-            <el-form-item label="颜色" prop="colorId">
-              <el-select v-model="goodsColor.colorId" placeholder="请选择颜色">
-                <el-option
-                  v-for="item in coloroptions"
-                  :key="item.fNumber"
-                  :label="item.fName"
-                  :value="item.fNumber"
-                />
-              </el-select> </el-form-item
+            <el-form-item label="颜色描述" prop="colorName">
+              <el-input
+                v-model="goodsColor.colorName"
+                placeholder="请录入颜色描述"
+              >
+              </el-input> </el-form-item
           ></el-col>
           <el-col :span="8">
             <el-form-item label="排序索引" prop="findex"
@@ -467,6 +565,7 @@ import common from "@/utils/common";
 import apiGoods from "@/api/goods";
 import apiBase from "@/api/base";
 import apiSettings from "@/api/settings";
+import { mapGetters } from "vuex";
 export default {
   data() {
     return {
@@ -484,13 +583,14 @@ export default {
         categoryId: [],
         prodNumber: "",
         goodsName: "",
+        brand: "",
         goodsDesc: "",
         unitName: "",
         salesTimes: 0,
         isRecommend: 0,
         isNew: 0,
-        isUnder: 0,
-        Creator: "admin",
+        isUnder: 1, //默认为未发布（下架状态）
+        creator: this.userName,
         goodsColors: [],
         goodsSpecs: [],
         spuImgs: [],
@@ -514,27 +614,36 @@ export default {
         },
         unitName: {
           required: true,
-          message: "销售单位不能为空",
+          message: "基本单位不能为空",
+          trigger: "blur",
+        },
+        brand: {
+          required: true,
+          message: "请选择品牌",
           trigger: "blur",
         },
       },
       rulescolor: {
-        colorId: { required: true, message: "请选择颜色", trigger: "blur" },
+        colorName: {
+          required: true,
+          message: "颜色名称不能为空",
+          trigger: "blur",
+        },
         imgFront: { required: true, message: "请选择上传正面图" },
       },
       goodsColor: {
         id: "",
         goodsId: "",
-        colorId: "", // 注：颜色用el-select,必须在这里先定义一下colorId才能将值选上
+        colorName: "",
         imgFront: "", // 这些字段必须这样定义一下，否则图片也选不上
         imgBack: "",
         imgLeft: "",
         imgRight: "",
         findex: 100,
-        Creator: "admin",
+        Creator: this.userName,
       },
-      coloroptions: [], // 颜色选项
-      specoptions: [], // 规格选项
+      unitoptions: [], // 单位选项
+      brandoptions: [], //品牌选项
       spuImgs: {},
       imgrow: [
         { imgfield: "imgFront", label: "正面" },
@@ -563,34 +672,32 @@ export default {
     });
     // 图片服务器
     this.baseUrl = common.getBaseURL();
-    // 常用颜色选项
-    apiSettings.GetSubMessageList("pdcolor").then((res) => {
+    // 常用单位选项
+    apiSettings.GetSubMessageList("commonunit").then((res) => {
       if (res.code == 200 && res.returnStatus == 1) {
-        this.coloroptions = res.result;
+        this.unitoptions = res.result;
       }
     });
-    // 常用规格选项
-    apiSettings.GetSubMessageList("pdspec").then((res) => {
-      this.specoptions = res.result;
+    //常用品牌
+    apiSettings.GetSubMessageList("brand").then((res) => {
+      if (res.code == 200 && res.returnStatus == 1) {
+        this.brandoptions = res.result;
+      }
     });
   },
   methods: {
     // 载入商品信息（含附表数据)
     loadData(goodsId) {
-      apiGoods
-        .GetGoodsInfo(goodsId)
-        .then((res) => {
-          if (res.code == 200 && res.returnStatus == 1) {
-            this.goodsInfo = res.result;
-            this.goodsInfo.goodsSpecs.map((x) => (x.isSet = false));
-            this.goodsInfo.spuImgs.map((x) => (x.isSet = false));
-            this.existGoods = true;
-          } else {
-          }
-        })
-        .catch((error) => {
-          console.log(JSON.stringify(err));
-        });
+      apiGoods.GetGoodsInfo(goodsId).then((res) => {
+        if (res.code == 200 && res.returnStatus == 1) {
+          this.goodsInfo = res.result;
+          this.goodsInfo.goodsSpecs.map((x) => (x.isSet = false));
+          this.goodsInfo.spuImgs.map((x) => (x.isSet = false));
+          this.existGoods = true;
+        } else {
+          this.$message.error(res.msg);
+        }
+      });
     },
     //转到新增页
     toAddGoods() {
@@ -620,7 +727,7 @@ export default {
               this.$message({ message: "保存成功", type: "success" });
               this.activeIndex = "1";
             } else {
-              this.$message.error(JSON.stringify(res.result));
+              this.$message.error(res.msg);
             }
           });
         } else {
@@ -689,23 +796,23 @@ export default {
       if (isAdd) {
         this.goodsColor.id = common.getDigitSerial();
         this.goodsColor.goodsId = this.goodsInfo.goodsId;
-        this.goodsColor.colorId = "";
+        this.goodsColor.colorName = "";
         this.goodsColor.imgFront = "";
         this.goodsColor.imgBack = "";
         this.goodsColor.imgLeft = "";
         this.goodsColor.imgRight = "";
         this.goodsColor.findex = 100;
-        this.goodsColor.Creator = "admin";
+        this.goodsColor.Creator = this.userName;
       } else {
         this.goodsColor.id = row.id;
         this.goodsColor.goodsId = row.goodsId;
-        this.goodsColor.colorId = row.colorId;
+        this.goodsColor.colorName = row.colorName;
         this.goodsColor.imgFront = row.imgFront;
         this.goodsColor.imgBack = row.imgBack;
         this.goodsColor.imgLeft = row.imgLeft;
         this.goodsColor.imgRight = row.imgRight;
         this.goodsColor.findex = row.findex;
-        this.goodsColor.Creator = "admin";
+        this.goodsColor.Creator = this.userName;
       }
     },
     // 提交颜色及图片设置
@@ -755,7 +862,11 @@ export default {
           return apiGoods.DeleteGoodsColor(id);
         })
         .then((res) => {
-          apiGoods.GetGoodsColors(this.goodsInfo.goodsId);
+          if (res.result.status) {
+            apiGoods.GetGoodsColors(this.goodsInfo.goodsId);
+          } else {
+            return Promise.reject(res.result.errorMsg);
+          }
         })
         .catch((err) => {
           this.$message.error(JSON.stringify(err));
@@ -763,8 +874,8 @@ export default {
     },
     // 新增规格定价行
     addGoodsSpecRow() {
-      if(!this.goodsInfo.goodsColors.length){
-        return this.$message.error('请先完成颜色及对应图片添加');
+      if (!this.goodsInfo.goodsColors.length) {
+        return this.$message.error("请先完成颜色及对应图片添加");
       }
       for (const i of this.goodsInfo.goodsSpecs) {
         if (i.isSet) {
@@ -777,11 +888,14 @@ export default {
       const row = {
         id: common.getDigitSerial(),
         goodsId: this.goodsInfo.goodsId,
-        specId: "",
+        specName: "",
+        saleUnit: "",
+        unitConverter: "1",
+        baseUnitPrice: "",
         price: 0,
         discountPrice: 0,
         findex: 100,
-        Creator: "admin",
+        Creator: this.userName,
         isSet: true,
       };
       this.goodsInfo.goodsSpecs.push(row);
@@ -793,8 +907,8 @@ export default {
     },
     // 保存规格定价行
     saveGoodsSpecRow(index, row) {
-      if (!row.specId) {
-        return this.$message({ message: "请选择商品规格", type: "error" });
+      if (!row.specName) {
+        return this.$message({ message: "商品规格不能为空", type: "error" });
       }
       if (row.price == 0 || row.discountPrice == 0) {
         return this.$message({ message: "请完整录入价格信息", type: "error" });
@@ -827,9 +941,13 @@ export default {
       }).then((r) => {
         apiGoods.DeleteGoodsSpec(row.id).then((res) => {
           if (res.code == 200 && res.returnStatus == 1) {
-            this.getGoodsSpecs(row.goodsId);
+            if (res.result.status) {
+              this.getGoodsSpecs(row.goodsId);
+            } else {
+              this.$message.error(res.result.errorMsg);
+            }
           } else {
-            this.$message.error(JSON.stringify(res.msg));
+            this.$message.error(res.msg);
           }
         });
       });
@@ -895,6 +1013,44 @@ export default {
           }
         });
       });
+    },
+    //发布商品（上架、下架)
+    releaseGoods(isRelease) {
+      let oper = isRelease ? "发布" : "取消发布";
+      this.$confirm(`'确定要${oper}吗？'`, "询问", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+      }).then((r) => {
+        apiGoods.ReleaseGoods(isRelease, this.goodsInfo.goodsId).then((res) => {
+          if (res.code == 200 && res.returnStatus == 1) {
+            if (res.result.status) {
+              this.$message.success(`${oper}成功`);
+              this.goodsInfo.isUnder = isRelease ? 0 : 1;
+            } else {
+              this.$message.errorMsg(res.result.errorMsg);
+            }
+          } else {
+            this.$message.error(res.msg);
+          }
+        });
+      });
+    },
+  },
+  computed: {
+    ...mapGetters(["userName"]),
+    goodsSpecData() {
+      for (let i of this.goodsInfo.goodsSpecs) {
+        if (!isNaN(i["unitConverter"] && !isNaN(i["baseUnitPrice"]))) {
+          i["price"] = (i["unitConverter"] * i["baseUnitPrice"]).toFixed(2);
+        } else {
+          i["price"] = 0;
+        }
+      }
+      return this.goodsInfo.goodsSpecs;
+    },
+    //单据是否能编辑
+    canEditBill() {
+      return this.goodsInfo.isUnder == 1; //未发布（未上架时）可编辑
     },
   },
 };

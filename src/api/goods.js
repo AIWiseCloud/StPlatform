@@ -70,6 +70,14 @@ function DeleteGoodsInfo(goodsId) {
   })
 }
 
+//发布（上架）商品
+function ReleaseGoods(isRelease, goodsId){
+  return request({
+    url:`/api/Goods/ReleaseGoods?isRelease=${isRelease}&goodsId=${goodsId}`,
+    method:'PUT'
+  })
+}
+
 // 保存商品颜色及图片
 function SaveGoodsColor(data) {
   return request({
@@ -178,6 +186,7 @@ export default {
   GetGoodsInfo,
   QueryGoods,
   DeleteGoodsInfo,
+  ReleaseGoods,
   SaveGoodsColor,
   GetGoodsColor,
   GetGoodsColors,

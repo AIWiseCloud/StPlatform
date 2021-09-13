@@ -164,10 +164,25 @@
             prop="goodsInfo.goodsName"
           ></el-table-column>
           <el-table-column
-            label="颜色"
-            prop="colorInfo.colorName"
+            label="商品描述"
+            prop="goodsInfo.goodsDesc"
+            width="170"
           ></el-table-column>
-          <el-table-column label="规格" prop="spec.specName"></el-table-column>
+          <el-table-column
+            label="品牌"
+            prop="goodsInfo.brand"
+            width="70"
+          ></el-table-column>
+          <el-table-column
+            label="颜色"
+            prop="goodsColor.colorName"
+            width="80"
+          ></el-table-column>
+          <el-table-column
+            label="规格"
+            prop="goodsSpec.specName"
+            width="100"
+          ></el-table-column>
           <el-table-column label="仓库" width="140">
             <template scope="scope">
               <el-select v-if="isEditStatus" v-model="scope.row.stockNumber">
@@ -182,8 +197,9 @@
             </template>
           </el-table-column>
           <el-table-column
-            label="单位"
-            prop="goodsInfo.unitName"
+            label="销售单位"
+            prop="goodsSpec.saleUnit"
+            align="center"
             width="80"
           ></el-table-column>
           <el-table-column label="数量" prop="quantity" width="120">
@@ -203,7 +219,9 @@
                 size="mini"
                 plain
                 @click="visibleSelectDialog = true"
-                :disabled="!isEditStatus || stockBillData.transTypeId==saletypeId"
+                :disabled="
+                  !isEditStatus || stockBillData.transTypeId == saletypeId
+                "
                 >选择商品</el-button
               >
             </template>
@@ -230,6 +248,7 @@
       <el-dialog title="选择具体商品" :visible.sync="visibleSelectDialog">
         <el-container>
           <el-aside width="240px">
+            <el-tag type="primary">只有发布后的商品才能在此出现</el-tag>
             <el-cascader
               ref="goodscate"
               :options="goodsCategories"
@@ -275,6 +294,10 @@
                   <el-checkbox v-model="scope.row.check"></el-checkbox>
                 </template>
               </el-table-column>
+              <el-table-column
+                label="品牌"
+                prop="goodsInfo.brand"
+              ></el-table-column>
               <el-table-column label="规格" prop="specName"></el-table-column>
               <el-table-column label="颜色" prop="colorName"></el-table-column>
               <el-table-column label="售价" prop="price"></el-table-column>
@@ -342,6 +365,7 @@ import apiGoods from "@/api/goods";
 import apiSettings from "@/api/settings";
 import apiInventory from "@/api/inventory";
 import apiOrder from "@/api/order";
+import { mapGetters } from "vuex";
 export default {
   name: "stockBillDetail",
   data() {
@@ -355,7 +379,7 @@ export default {
       //单据实体
       stockBillData: {
         billId: "",
-        Creator: "",
+        Creator: this.userName,
         transTypeId: "",
         billState: 0,
         orderId: "",
@@ -389,23 +413,10 @@ export default {
     };
   },
   methods: {
-    //保存单据
-    submitBill(ruleform) {
-      this.$refs[ruleform].validate((valid) => {
-        if (valid) {
-          console.log("通过了");
-        } else {
-          return false;
-        }
-      });
-    },
     //显示获取订单对话框
     openOrdersDialog() {
       if (this.stockBillData.transTypeId != this.saletypeId) {
-        this.$message({
-          message: "业务类型请选择“销售出库",
-          type: "info",
-        });
+        this.$message.info("业务类型请选择“销售出库");
       } else {
         this.visibleShipped = true;
       }
@@ -428,18 +439,19 @@ export default {
           this.visibleShipped = false;
           this.stockBillData.orderId = this.selectOrderId;
           this.stockBillData.remark = "由订单生成";
-          this.stockBillData.stockBillDetail = [];//覆盖掉上次的
-          for (let i of res.result.orderList) {``
+          this.stockBillData.stockBillDetail = []; //覆盖掉上次的
+          for (let i of res.result.orderList) {
+            ``;
             this.stockBillData.stockBillDetail.push({
               ...this.rowDefaultInfo, //附上默认信息
               id: this.$common.guid(),
               goodsId: i.goodsId,
               goodsInfo: i.goodsInfo,
               specId: i.specId,
-              spec: i.goodsColorSpec,
+              goodsSpec: i.goodsSpec,
               specName: i.goodsSpec.specName,
               colorId: i.colorId,
-              colorInfo: i.goodsColorSpec,
+              goodsColor: i.goodsColor,
               colorName: i.goodsColor.colorName,
               quantity: i.quantity,
             });
@@ -463,6 +475,7 @@ export default {
             orderWay: "",
           },
         };
+        this.selectList = [];
         apiGoods.QueryGoods(data).then((res) => {
           if (res.code == 200 && res.returnStatus == 1) {
             this.goodsList = res.result.items.map((x) => {
@@ -490,12 +503,12 @@ export default {
                 check: false,
                 goodsId: res.result.goodsId,
                 goodsInfo: res.result,
-                specId: i.specId,
-                spec: i.spec,
-                specName: i.spec.specName,
-                colorId: j.colorId,
-                colorInfo: j.colorInfo,
-                colorName: j.colorInfo.colorName,
+                specId: i.id,
+                goodsSpec: i,
+                specName: i.specName,
+                colorId: j.id,
+                goodsColor: j,
+                colorName: j.colorName,
                 price: i.price,
               });
             }
@@ -579,7 +592,7 @@ export default {
         this.stockBillData.orderId = "";
       }
       for (let i in this.stockBillData.stockBillDetail) {
-        this.stockBillData.stockBillDetail[i].fIndex = i*1 + 1;
+        this.stockBillData.stockBillDetail[i].fIndex = i * 1 + 1;
       }
 
       //去掉不必要跟随提交的数据
@@ -747,6 +760,7 @@ export default {
         quantity: 0,
       };
     },
+    ...mapGetters(["userName"]),
   },
 };
 </script>

@@ -17,7 +17,7 @@
         @click="loadData"
       >刷新列表</el-button>
     </el-button-group>
-    <el-table :data="shopArr" style="width: 100%" border fit :header-cell-style="{ 'text-align': 'center' , background: '#F3F4F7', color: '#555'}">
+    <el-table :data="shopArr" size='small' style="width: 100%" border fit :header-cell-style="{ 'text-align': 'center' , background: '#F3F4F7', color: '#555'}">
       <el-table-column
         width="100"
         prop="shopId"
@@ -42,12 +42,12 @@
         width="200"
         prop="introduction"
         label="店铺简介"
-        align="center"
+        align="left"
       />
       <el-table-column
         prop="announcement"
         label="店铺公告"
-        align="center"
+        align="left"
       />
       <el-table-column
         width="180"
@@ -60,14 +60,14 @@
             size="mini"
             type="primary"
             icon="el-icon-edit"
-            round
+            circle
             @click="openDialog(false, scope.$index, scope.row)"
           ></el-button>
           <el-button
             type="danger"
             size="mini"
             icon="el-icon-delete"
-            round
+            circle
             @click="deleteShop(scope.$index, scope.row)"
           ></el-button>
         </template>

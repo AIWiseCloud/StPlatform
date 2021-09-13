@@ -191,6 +191,24 @@ export const asyncRoutes = [
     ]
   },
   {
+    path: '/user',
+    component: Layout,
+    meta: { title: '用户管理', icon: 'peoples' },
+    children: [
+      {
+        path: 'user', name: 'users',
+        component: () => import('@/views/user/index'),
+        meta: { title: '用户查询', icon: 'user' }
+      },
+      {
+        path: 'certification',
+        name: 'certification',
+        component: () => import('@/views/user/certification'),
+        meta: { title: '认证管理', icon: 'people' }
+      }
+    ]
+  },
+  {
     path: '/error',
     component: Layout,
     redirect: 'noRedirect',

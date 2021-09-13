@@ -19,6 +19,13 @@
               @click="searchGoods"
           /></el-input>
         </el-col>
+        <el-col :span="8">
+          <el-cascader
+            ref="goodscate"
+            :options="allCategories"
+            :show-all-levels="false"
+          ></el-cascader>
+        </el-col>
       </el-row>
       <!-- 商品列表 -->
       <el-table
@@ -35,10 +42,16 @@
         <el-table-column type="index" label="#" />
         <el-table-column label="商品ID" width="140" prop="goodsId" />
         <el-table-column label="商品名称" width="120" prop="goodsName" />
-        <el-table-column label="销售单位" width="100" prop="unitName" />
+        <el-table-column label="品牌" width="60" prop="brand" />
+        <el-table-column label="基本单位" width="70" prop="unitName" />
+        <el-table-column
+          label="销售单位"
+          width="70"
+          prop="goodsSpecs[0].saleUnit"
+        />
         <el-table-column label="商品描述" prop="goodsDesc" />
         <el-table-column label="销量" prop="salesTimes" width="60" />
-        <el-table-column label="推荐商品" width="80"
+        <el-table-column label="推荐商品" width="70"
           ><template slot-scope="scope"
             ><el-switch
               v-model="scope.row.isRecommend"
@@ -47,7 +60,7 @@
               :inactive-value="0"
               disabled /></template
         ></el-table-column>
-        <el-table-column label="最新商品" width="80"
+        <el-table-column label="最新商品" width="70"
           ><template slot-scope="scope">
             <el-switch
               v-model="scope.row.isNew"
@@ -57,13 +70,13 @@
               disabled
           /></template>
         </el-table-column>
-        <el-table-column label="是否下架" prop="isUnder" width="80"
+        <el-table-column label="是否发布" prop="isUnder" width="70"
           ><template slot-scope="scope"
             ><el-switch
               v-model="scope.row.isUnder"
               active-color="rgb(55,55,55)"
-              :active-value="1"
-              :inactive-value="0"
+              :active-value="0"
+              :inactive-value="1"
               disabled /></template
         ></el-table-column>
         <el-table-column label="操作" width="120">
@@ -126,6 +139,7 @@ export default {
         totalCount: 0,
       },
       goodsList: [],
+      allCategories: [], //商品所有分类
     };
   },
   methods: {
@@ -139,6 +153,7 @@ export default {
     loadData() {
       apiGoods.QueryGoods(this.queryInfo).then((res) => {
         if (res.code == 200 && res.returnStatus == 1) {
+          // console.log(JSON.stringify(res.result))
           const { totalCount, items } = res.result;
           this.queryInfo.totalCount = totalCount;
           this.goodsList = items;
@@ -164,13 +179,26 @@ export default {
       }).then((r) => {
         apiGoods.DeleteGoodsInfo(goodsId).then((res) => {
           if (res.code == 200 && res.returnStatus == 1) {
-            this.goodsList.splice(index, 1);
+            if (res.result.status) {
+              this.$message.success("删除成功");
+              this.goodsList.splice(index, 1);
+            } else {
+              this.$message.error(res.result.errorMsg);
+            }
           } else {
-            this.$message.error(JSON.stringify(res.msg));
+            this.$message.error(res.msg);
           }
         });
       });
     },
+  },
+  created() {
+    // 载入商品分类
+    apiGoods.GetGoodsCategories("*").then((res) => {
+      if (res.code == 200 && res.returnStatus == 1) {
+        this.allCategories = res.result;
+      }
+    });
   },
 };
 </script>

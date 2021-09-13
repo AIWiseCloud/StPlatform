@@ -1,3 +1,33 @@
+Skip to content
+Search or jump to…
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@AIWiseCloud 
+AIWiseCloud
+/
+StPlatform
+1
+00
+Code
+Issues
+Pull requests
+Actions
+Projects
+Wiki
+Security
+Insights
+Settings
+StPlatform/src/views/order/index.vue
+@ChinaRoy
+ChinaRoy '版本管理'
+Latest commit bc27a2e 9 days ago
+ History
+ 1 contributor
+689 lines (667 sloc)  21.5 KB
+  
 <template>
   <div class="container">
     <el-collapse v-model="activename">
@@ -583,7 +613,6 @@ export default {
   position: relative;
   width: 100%;
 }
-
 /deep/.el-date-editor {
   width: 100%;
 }
@@ -597,50 +626,40 @@ export default {
   background: #ecf5ff;
   border-color: #b3d8ff;
 }
-
 /deep/.el-card__header {
   background-color: #f5f5f5;
   border: 1px solid #e8e8e8;
 }
-
 /deep/.el-card {
   color: #3c3c3c;
 }
-
 /deep/.el-table .success-row {
   background: #f0f9eb;
 }
-
 /deep/.el-card__header {
   padding: 15px 15px;
 }
-
 // 步骤条完成后，蓝色显示
 /deep/.el-step__head.is-finish {
   color: #409eff;
   border-color: #409eff;
 }
-
 // 步骤条未完成，灰色显示
 /deep/.el-step__head.is-process {
   color: #9ea4af;
 }
-
 /deep/.el-step__icon-inner {
   font-size: 32px;
 }
-
 /deep/.el-dialog__body {
   padding: 10px 20px;
 }
-
 /deep/.video-js {
   height: 100px;
   width: 100px;
   background-color: black;
   margin: 10px;
 }
-
 .HideText {
   // width: 100%;
   display: inline-block;
@@ -648,42 +667,45 @@ export default {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-
 /deep/.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
   color: #409eff;
 }
-
 .magTop {
   margin-top: 8px;
 }
-
 .magBottom {
   margin-top: 8px;
   margin-bottom: 8px;
 }
-
 .el-link.el-link--primary {
   color: #409eff;
 }
-
 .iConMargin {
   margin-top: 5px;
 }
-
 /deep/.el-checkbox.is-bordered.is-checked {
   border-color: #409eff;
 }
-
 /deep/.el-checkbox__input.is-checked + .el-checkbox__label {
   color: #409eff;
 }
-
 /deep/.el-checkbox__input.is-checked .el-checkbox__inner {
   background-color: #409eff;
   border-color: #409eff;
 }
-
 /deep/.el-checkbox.is-bordered.is-disabled {
   border-color: #ebeef5;
 }
 </style>
+© 2021 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Docs
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About

@@ -148,6 +148,11 @@ export default {
   },
   data() {
     return {
+      config: {
+        UEDITOR_HOME_URL: "/ueditor/", // 需要令此处的URL等于对应 ueditor.config.js 中的配置。
+        //多图上传功能配置
+        serverUrl: "/api/UEditor", //上传接口路径   (开始一直出现跨域的问题，原来是我这里搞错了，不能http://127.0.0.1:8031/api/UEditor这样)
+      },
       newsData: {
         newsId: "",
         title: "",
@@ -161,17 +166,6 @@ export default {
         statusId: 0,
         amountReading: 0,
         numberLike: 0,
-      },
-      config: {
-        UEDITOR_HOME_URL: "/ueditor/", // 需要令此处的URL等于对应 ueditor.config.js 中的配置。
-        //多图上传功能配置
-        serverUrl: "/api/UEditor", //上传接口路径   (开始一直出现跨域的问题，原来是我这里搞错了，不能http://127.0.0.1:8031/api/UEditor这样)
-        imageActionName: "",
-        imageMaxSize: 2048000,
-        imageAllowFiles: [".png", ".jpg", ".jpeg", ".gif", ".bmp"],
-        imageFieldName: "file", //上传文件名
-        imagePathFormat: "/upload/image/{yyyy}{mm}{dd}/{filename}", //上传保存路径
-        imageUrlPrefix: "/", //图片访问路径前缀
       },
       ErrorImg: 'this.src="' + require("@/assets/images/blankimg.png") + '"', //图片错误地址
       fileName: "",
@@ -226,7 +220,7 @@ export default {
       apiNews.SubmitAudit(this.newsData.newsId, isSubmit).then((res) => {
         if (res.code == 200 && res.returnStatus == 1) {
           this.newsData.statusId = isSubmit == true ? 1 : 0;
-          this.$message.success('操作成功！');
+          this.$message.success("操作成功！");
         } else {
           this.$message.error(this.res.msg);
         }
