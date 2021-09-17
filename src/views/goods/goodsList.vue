@@ -21,10 +21,19 @@
         </el-col>
         <el-col :span="8">
           <el-cascader
+            v-model="queryInfo.queryValue"
             ref="goodscate"
             :options="allCategories"
             :show-all-levels="false"
-          ></el-cascader>
+            multipe="false"
+            placeholder="选择商品分类"
+            :props="{
+              label: 'categoryName',
+              value: 'categoryId',
+              checkStrictly: 'false',
+            }"
+            @change="searchGoods2"
+          />
         </el-col>
       </el-row>
       <!-- 商品列表 -->
@@ -114,8 +123,7 @@
         :current-page.sync="queryInfo.pageModel.pageNo"
         :page-size="queryInfo.pageModel.pageSize"
         @current-change="loadData"
-      >
-      </el-pagination>
+      />
     </el-card>
   </div>
 </template>
@@ -127,9 +135,9 @@ export default {
   data() {
     return {
       queryInfo: {
-        queryScheme: 0, //0表示按关键字搜索
-        hideUnderGoods: 0, //不隐藏下架商品
-        queryValue: "", //查询值
+        queryScheme: 0, // 0表示按关键字搜索
+        hideUnderGoods: 0, // 不隐藏下架商品
+        queryValue: "", // 查询值
         pageModel: {
           pageNo: 1,
           pageSize: 20,
@@ -139,8 +147,16 @@ export default {
         totalCount: 0,
       },
       goodsList: [],
-      allCategories: [], //商品所有分类
+      allCategories: [], // 商品所有分类
     };
+  },
+  created() {
+    // 载入商品分类
+    apiGoods.GetGoodsCategories("*").then((res) => {
+      if (res.code == 200 && res.returnStatus == 1) {
+        this.allCategories = res.result;
+      }
+    });
   },
   methods: {
     goGoodsInfo(id, isnew) {
@@ -165,6 +181,21 @@ export default {
     // 商品搜索
     searchGoods() {
       // 初始化搜索
+      this.queryInfo.queryScheme = 0;
+      this.queryInfo.pageModel.pageNo = 1;
+      this.queryInfo.pageModel.pageSize = 20;
+      this.queryInfo.totalCount = 0;
+      this.goodsList = [];
+      this.loadData();
+    },
+    // 商品分类搜索
+    searchGoods2() {
+      this.$refs.goodscate.dropDownVisible = false; // 关闭选择框
+      if (Array.isArray(this.queryInfo.queryValue)) {
+        this.queryInfo.queryValue = this.queryInfo.queryValue[0];
+      }
+      // 初始化搜索
+      this.queryInfo.queryScheme = 1;
       this.queryInfo.pageModel.pageNo = 1;
       this.queryInfo.pageModel.pageSize = 20;
       this.queryInfo.totalCount = 0;
@@ -191,14 +222,6 @@ export default {
         });
       });
     },
-  },
-  created() {
-    // 载入商品分类
-    apiGoods.GetGoodsCategories("*").then((res) => {
-      if (res.code == 200 && res.returnStatus == 1) {
-        this.allCategories = res.result;
-      }
-    });
   },
 };
 </script>

@@ -50,7 +50,7 @@
           <template slot-scope="scope">
             <el-popover
               v-if="scope.row.imgUrl"
-              ref="pooover"
+              ref="popover"
               placement="top"
               trigger="hover"
             >

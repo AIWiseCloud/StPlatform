@@ -49,16 +49,21 @@
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                <el-form-item label="品牌" prop="brand">
-                  <el-select v-model="goodsInfo.brand" style="width:100%" placeholder="请选择品牌"
+                <el-form-item label="创建人" prop="creator">
+                  <el-input v-model="goodsInfo.creator" disabled />
+                  <!-- <el-select
+                    v-model="goodsInfo.brand"
+                    style="width: 100%"
+                    placeholder="请选择品牌"
                     ><el-option
                       v-for="(item, i) in brandoptions"
                       :key="i"
                       :label="item.fName"
                       :value="item.fNumber"
-                    ></el-option>
-                  </el-select> </el-form-item
-              ></el-col>
+                    />
+                  </el-select>  -->
+                </el-form-item></el-col
+              >
             </el-row>
             <el-row>
               <el-col :span="8">
@@ -90,7 +95,7 @@
                       :key="i"
                       :label="item.fName"
                       :value="item.fNumber"
-                    ></el-option>
+                    />
                   </el-select>
                 </el-form-item>
               </el-col>
@@ -133,7 +138,7 @@
                 /></el-form-item>
               </el-col>
             </el-row>
-            <el-form-item> </el-form-item>
+            <el-form-item />
           </el-form>
         </el-tab-pane>
         <el-tab-pane label="颜色及图片" name="1">
@@ -175,8 +180,8 @@
                   size="mini"
                   plain
                   icon="el-icon-plus"
-                  @click="showColorDialog(true)"
                   :disabled="!canEditBill"
+                  @click="showColorDialog(true)"
                   >添加记录</el-button
                 >
               </template>
@@ -211,16 +216,53 @@
             empty-text="暂无数据"
           >
             <el-table-column type="index" label="#" />
-            <el-table-column label="规格描述">
+            <el-table-column label="规格描述" min-width="140">
               <template scope="scope">
                 <el-input
-                  v-model="scope.row.specName"
                   v-if="scope.row.isSet"
+                  v-model="scope.row.specName"
                   placeholder="规格描述"
                   size="mini"
                   clearable
-                ></el-input>
+                />
                 <span v-else>{{ scope.row.specName }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="品牌" width="80" align="center">
+              <template scope="scope">
+                <el-select
+                  v-if="scope.row.isSet"
+                  v-model="scope.row.specDes1"
+                  style="width: 100%"
+                  placeholder="选品牌"
+                  ><el-option
+                    v-for="(item, i) in brandoptions"
+                    :key="i"
+                    :label="item.fName"
+                    :value="item.fNumber"
+                  />
+                </el-select>
+                <span v-else>{{ scope.row.specDes1 }}</span>
+              </template>
+            </el-table-column>
+            <!-- <el-table-column label="颜色" width="80" align="center">
+              <template scope="scope">
+                <el-input
+                  v-if="scope.row.isSet"
+                  v-model="scope.row.specDes2"
+                  size="mini"
+                />
+                <span v-else>{{ scope.row.specDes2 }}</span>
+              </template>
+            </el-table-column> -->
+            <el-table-column label="配比" width="80" align="center">
+              <template scope="scope">
+                <el-input
+                  v-if="scope.row.isSet"
+                  v-model="scope.row.specDes3"
+                  size="mini"
+                />
+                <span v-else>{{ scope.row.specDes3 }}</span>
               </template>
             </el-table-column>
             <el-table-column label="销售单位" width="100" align="center">
@@ -249,13 +291,14 @@
                   v-model="scope.row.unitConverter"
                   placeholder="输入1销售单位等于多少基本单位"
                   size="mini"
-                ></el-input>
+                />
                 <span v-else>{{ scope.row.unitConverter }}</span>
               </template>
             </el-table-column>
             <el-table-column
               :label="'基本单价' + '(元/' + goodsInfo.unitName + ')'"
               width="160"
+              align="center"
             >
               <template scope="scope">
                 <el-input
@@ -263,13 +306,12 @@
                   v-model="scope.row.baseUnitPrice"
                   oninput="value=value.replace(/[^0-9.]/g,'')"
                   size="mini"
-                ></el-input>
+                />
                 <span v-else>{{ scope.row.baseUnitPrice }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="销售单价" width="100" prop="price">
-            </el-table-column>
-            <el-table-column label="折扣价" width="100">
+            <el-table-column label="销售单价" width="100" prop="price" align="right" />
+            <el-table-column label="折扣价" width="100" align="right">
               <template scope="scope">
                 <span v-if="scope.row.isSet">
                   <el-input
@@ -293,15 +335,15 @@
                 <span v-else>{{ scope.row.findex }}</span>
               </template>
             </el-table-column>
-            <el-table-column width="160" align="center">
+            <el-table-column width="180" align="center">
               <template slot="header">
                 <el-button
                   type="success"
                   plain
                   icon="el-icon-plus"
                   size="mini"
-                  @click="addGoodsSpecRow"
                   :disabled="!canEditBill"
+                  @click="addGoodsSpecRow"
                   >新增</el-button
                 >
               </template>
@@ -314,7 +356,7 @@
                   circle
                   :disabled="!canEditBill"
                   @click="editGoodsSpecRow(scope.$index, scope.row)"
-                ></el-button>
+                />
                 <el-button
                   v-else
                   type="primary"
@@ -331,7 +373,7 @@
                   circle
                   :disabled="!canEditBill"
                   @click="deleteGoodsSpecRow(scope.row)"
-                ></el-button>
+                />
                 <el-button
                   v-else
                   type="danger"
@@ -391,7 +433,7 @@
                 </el-upload>
               </template>
             </el-table-column>
-            <el-table-column label="备注"></el-table-column>
+            <el-table-column label="备注" />
             <el-table-column width="190" align="center">
               <template slot="header">
                 <el-button
@@ -411,7 +453,7 @@
                   circle
                   icon="el-icon-edit"
                   @click="editSpuImgRow(scope.$index, scope.row)"
-                ></el-button>
+                />
                 <el-button
                   v-else
                   type="primary"
@@ -427,7 +469,7 @@
                   circle
                   icon="el-icon-delete"
                   @click="deleteSpuImgRow(scope.row)"
-                ></el-button>
+                />
                 <el-button
                   v-else
                   type="danger"
@@ -466,20 +508,20 @@
         </el-tab-pane>
       </el-tabs>
       <el-button
+        v-if="activeIndex == '0'"
         icon="el-icon-plus"
         plain
-        @click="toAddGoods"
         size="mini"
-        v-if="activeIndex == '0'"
+        @click="toAddGoods"
         >添加新商品</el-button
       >
       <el-button
+        v-if="activeIndex == '0'"
         icon="el-icon-plus"
         plain
-        @click="saveGoodsInfo('goodsform')"
         size="mini"
-        v-if="activeIndex == '0'"
         :disabled="!canEditBill"
+        @click="saveGoodsInfo('goodsform')"
         >保存当前商品</el-button
       >
     </el-card>
@@ -507,8 +549,7 @@
               <el-input
                 v-model="goodsColor.colorName"
                 placeholder="请录入颜色描述"
-              >
-              </el-input> </el-form-item
+              /> </el-form-item
           ></el-col>
           <el-col :span="8">
             <el-form-item label="排序索引" prop="findex"
@@ -583,14 +624,14 @@ export default {
         categoryId: [],
         prodNumber: "",
         goodsName: "",
-        brand: "",
+        brand: "*",
         goodsDesc: "",
         unitName: "",
         salesTimes: 0,
         isRecommend: 0,
         isNew: 0,
-        isUnder: 1, //默认为未发布（下架状态）
-        creator: this.userName,
+        isUnder: 1, // 默认为未发布（下架状态）
+        creator:  this.userName,
         goodsColors: [],
         goodsSpecs: [],
         spuImgs: [],
@@ -640,10 +681,10 @@ export default {
         imgLeft: "",
         imgRight: "",
         findex: 100,
-        Creator: this.userName,
+        creator: this.userName,
       },
       unitoptions: [], // 单位选项
-      brandoptions: [], //品牌选项
+      brandoptions: [], // 品牌选项
       spuImgs: {},
       imgrow: [
         { imgfield: "imgFront", label: "正面" },
@@ -655,7 +696,7 @@ export default {
   },
   beforeMount() {
     // 获取数据时，要将categoryId转为数组
-    let params = this.$route.params;
+    const params = this.$route.params;
     if (params.goodsId && params.isNew == 0) {
       this.loadData(this.$route.params.goodsId);
     } else {
@@ -664,6 +705,7 @@ export default {
     this.existGoods = !params.isNew;
   },
   created() {
+    this.goodsInfo.creator=this.userName;
     // 载入商品分类
     apiGoods.GetGoodsCategories("*").then((res) => {
       if (res.code == 200 && res.returnStatus == 1) {
@@ -678,7 +720,7 @@ export default {
         this.unitoptions = res.result;
       }
     });
-    //常用品牌
+    // 常用品牌
     apiSettings.GetSubMessageList("brand").then((res) => {
       if (res.code == 200 && res.returnStatus == 1) {
         this.brandoptions = res.result;
@@ -699,7 +741,7 @@ export default {
         }
       });
     },
-    //转到新增页
+    // 转到新增页
     toAddGoods() {
       this.$confirm("确定要离开当前页继续添加商品？", "询问", {
         confirmButtonText: "确定",
@@ -721,6 +763,7 @@ export default {
             newinfo.categoryId =
               this.goodsInfo.categoryId[this.goodsInfo.categoryId.length - 1];
           }
+          this.goodsInfo.creator = this.userName;
           apiGoods.SaveGoodsInfo(newinfo).then((res) => {
             if (res.code == 200 && res.returnStatus == 1) {
               this.existGoods = true;
@@ -802,7 +845,7 @@ export default {
         this.goodsColor.imgLeft = "";
         this.goodsColor.imgRight = "";
         this.goodsColor.findex = 100;
-        this.goodsColor.Creator = this.userName;
+        this.goodsColor.creator = this.userName;
       } else {
         this.goodsColor.id = row.id;
         this.goodsColor.goodsId = row.goodsId;
@@ -812,7 +855,7 @@ export default {
         this.goodsColor.imgLeft = row.imgLeft;
         this.goodsColor.imgRight = row.imgRight;
         this.goodsColor.findex = row.findex;
-        this.goodsColor.Creator = this.userName;
+        this.goodsColor.creator = this.userName;
       }
     },
     // 提交颜色及图片设置
@@ -848,9 +891,9 @@ export default {
         }
       });
     },
-    //选择商品分类
+    // 选择商品分类
     categoryChange() {
-      this.$refs.goodscate.dropDownVisible = false; //关闭选择框
+      this.$refs.goodscate.dropDownVisible = false; // 关闭选择框
     },
     // 删除一条颜色及图片设置记录
     deleteGoodsColor(id) {
@@ -895,7 +938,7 @@ export default {
         price: 0,
         discountPrice: 0,
         findex: 100,
-        Creator: this.userName,
+        creator: this.userName,
         isSet: true,
       };
       this.goodsInfo.goodsSpecs.push(row);
@@ -1014,9 +1057,9 @@ export default {
         });
       });
     },
-    //发布商品（上架、下架)
+    // 发布商品（上架、下架)
     releaseGoods(isRelease) {
-      let oper = isRelease ? "发布" : "取消发布";
+      const oper = isRelease ? "发布" : "取消发布";
       this.$confirm(`'确定要${oper}吗？'`, "询问", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -1039,7 +1082,7 @@ export default {
   computed: {
     ...mapGetters(["userName"]),
     goodsSpecData() {
-      for (let i of this.goodsInfo.goodsSpecs) {
+      for (const i of this.goodsInfo.goodsSpecs) {
         if (!isNaN(i["unitConverter"] && !isNaN(i["baseUnitPrice"]))) {
           i["price"] = (i["unitConverter"] * i["baseUnitPrice"]).toFixed(2);
         } else {
@@ -1048,9 +1091,9 @@ export default {
       }
       return this.goodsInfo.goodsSpecs;
     },
-    //单据是否能编辑
+    // 单据是否能编辑
     canEditBill() {
-      return this.goodsInfo.isUnder == 1; //未发布（未上架时）可编辑
+      return this.goodsInfo.isUnder == 1; // 未发布（未上架时）可编辑
     },
   },
 };

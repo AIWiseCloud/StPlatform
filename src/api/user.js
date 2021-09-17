@@ -21,3 +21,32 @@ export function logout(token) {
     method: 'PUT'
   })
 }
+
+function QueryUsers(data) {
+  return request({
+    url: `/api/User/QueryUsers`,
+    method: 'POST',
+    data
+  })
+}
+
+function QueryCertification(data) {
+  return request({
+    url: `/api/User/QueryCertification`,
+    method: 'POST',
+    data
+  })
+}
+
+function AuditCertificationInfo(unionId, certificationType, authState, reason) {
+  return request({
+    url: `/api/User/AuditCertificationInfo?unionId=${unionId}&certifycationType=${certificationType}&authState=${authState}&reason=${reason}`,
+    method: 'PUT',
+  })
+}
+
+export default {
+  QueryUsers,
+  QueryCertification,
+  AuditCertificationInfo
+}

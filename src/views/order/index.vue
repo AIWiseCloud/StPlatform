@@ -1,39 +1,9 @@
-Skip to content
-Search or jump to…
-Pull requests
-Issues
-Marketplace
-Explore
- 
-@AIWiseCloud 
-AIWiseCloud
-/
-StPlatform
-1
-00
-Code
-Issues
-Pull requests
-Actions
-Projects
-Wiki
-Security
-Insights
-Settings
-StPlatform/src/views/order/index.vue
-@ChinaRoy
-ChinaRoy '版本管理'
-Latest commit bc27a2e 9 days ago
- History
- 1 contributor
-689 lines (667 sloc)  21.5 KB
-  
 <template>
   <div class="container">
     <el-collapse v-model="activename">
       <el-collapse-item name="1">
         <template slot="title">
-          <span>查询条件<i class="el-icon-search" style="color: red"></i></span>
+          <span>查询条件<i class="el-icon-search" style="color: red" /></span>
         </template>
         <el-form
           :model="searchModel"
@@ -48,7 +18,7 @@ Latest commit bc27a2e 9 days ago
                   v-model="searchModel.queryValue"
                   placeholder="订单号\商品ID\商品名称"
                   clear
-                ></el-input>
+                />
               </el-form-item>
             </el-col>
             <el-col :sm="12" :md="8" :lg="6" :xl="4">
@@ -62,7 +32,7 @@ Latest commit bc27a2e 9 days ago
                     :key="i"
                     :label="item.name"
                     :value="item.statusId"
-                  ></el-option>
+                  />
                 </el-select>
               </el-form-item>
             </el-col>
@@ -73,8 +43,7 @@ Latest commit bc27a2e 9 days ago
                   type="datetime"
                   value-format="yyyy-MM-dd HH:mm:ss"
                   placeholder="选择开始日期时间"
-                >
-                </el-date-picker>
+                />
               </el-form-item>
             </el-col>
             <el-col :sm="12" :md="8" :lg="6" :xl="4">
@@ -84,7 +53,7 @@ Latest commit bc27a2e 9 days ago
                   type="datetime"
                   value-format="yyyy-MM-dd HH:mm:ss"
                   placeholder="选择截止日期时间"
-                ></el-date-picker>
+                />
               </el-form-item>
             </el-col>
             <el-col :sm="12" :md="16" :lg="12" :xl="8">
@@ -94,8 +63,7 @@ Latest commit bc27a2e 9 days ago
                 size="small"
                 plain
                 @click="searchData"
-                >查询</el-button
-              >
+              >查询</el-button>
             </el-col>
           </el-row>
         </el-form>
@@ -146,10 +114,10 @@ Latest commit bc27a2e 9 days ago
               </el-table-column>
               <el-table-column label="商品信息">
                 <template slot-scope="scope">
-                  <span style="width: 320px"
-                    >{{ scope.row.goodsInfo.goodsName
-                    }}{{ scope.row.goodsInfo.goodsDesc }}</span
-                  >
+                  <span
+                    style="width: 320px"
+                  >{{ scope.row.goodsInfo.goodsName
+                  }}{{ scope.row.goodsInfo.goodsDesc }}</span>
                 </template>
               </el-table-column>
               <el-table-column label="颜色" width="72px">
@@ -204,11 +172,11 @@ Latest commit bc27a2e 9 days ago
                     v-else-if="ordermain.statusId == -2"
                     type="info"
                     effect="dark"
-                    >已删除</el-tag
-                  >
-                  <el-tag v-else-if="ordermain.statusId == -1" type="info"
-                    >已取消</el-tag
-                  >
+                  >已删除</el-tag>
+                  <el-tag
+                    v-else-if="ordermain.statusId == -1"
+                    type="info"
+                  >已取消</el-tag>
                 </div>
                 <!-- 订单详情 -->
                 <div style="margin-top: 5px">
@@ -217,8 +185,7 @@ Latest commit bc27a2e 9 days ago
                     icon="el-icon-tickets"
                     plain
                     size="mini"
-                    >订单详情</el-button
-                  >
+                  >订单详情</el-button>
                 </div>
               </el-table-column>
               <el-table-column width="135px">
@@ -229,8 +196,7 @@ Latest commit bc27a2e 9 days ago
                     plain
                     icon="el-icon-truck"
                     @click.native="handleDeliver(i, ordermain)"
-                    >去发货</el-button
-                  >
+                  >去发货</el-button>
                 </el-row>
                 <el-row v-show="ordermain.statusId == 2">
                   <el-button
@@ -239,8 +205,7 @@ Latest commit bc27a2e 9 days ago
                     plain
                     icon="el-icon-truck"
                     @click.native="handleCancelDeliver(i, ordermain)"
-                    >取消发货</el-button
-                  >
+                  >取消发货</el-button>
                 </el-row>
                 <el-row>
                   <el-button
@@ -249,8 +214,7 @@ Latest commit bc27a2e 9 days ago
                     size="small"
                     icon="el-icon-printer"
                     @click.native="handlePrint(i, ordermain)"
-                    >打印订单</el-button
-                  >
+                  >打印订单</el-button>
                 </el-row>
               </el-table-column>
             </el-table>
@@ -260,13 +224,12 @@ Latest commit bc27a2e 9 days ago
       <!-- 分页组件 -->
       <div class="block">
         <el-pagination
-          @current-change="loadData"
           :current-page.sync="searchModel.pageModel.pageNo"
           :page-size="searchModel.pageModel.pageSize"
           layout="total, prev, pager, next"
           :total="totalCount"
-        >
-        </el-pagination>
+          @current-change="loadData"
+        />
       </div>
       <!-- 发货对话框 -->
       <el-dialog title="订单发货" :visible.sync="dialogDeliver" width="70%">
@@ -323,9 +286,10 @@ Latest commit bc27a2e 9 days ago
             `买家留言:` + orderInfo.words
           }}</el-link>
         </el-row>
-        <el-row class="magTop" style="font-weight: bold; color: #409eff"
-          >配送信息</el-row
-        >
+        <el-row
+          class="magTop"
+          style="font-weight: bold; color: #409eff"
+        >配送信息</el-row>
         <el-row class="magTop">
           {{ `收货人及电话：${orderInfo.receiver}(${orderInfo.phoneNumber})` }}
         </el-row>
@@ -336,11 +300,9 @@ Latest commit bc27a2e 9 days ago
           发货信息
         </el-row>
         <el-row class="magTop" style="margin-bottom: 20px">
-          <span
-            >配送方式：{{
-              orderInfo.distributionMethod == 1 ? "快递" : "自取"
-            }}</span
-          >
+          <span>配送方式：{{
+            orderInfo.distributionMethod == 1 ? "快递" : "自取"
+          }}</span>
         </el-row>
         <el-form
           v-model="deliveryInfo"
@@ -355,7 +317,7 @@ Latest commit bc27a2e 9 days ago
                   v-model="deliveryInfo.logisticsId"
                   size="mini"
                   placeholder="输入物流公司"
-                ></el-input>
+                />
               </el-form-item>
             </el-col>
             <el-col :sm="12" :md="8" :lg="8" :xl="8">
@@ -364,7 +326,7 @@ Latest commit bc27a2e 9 days ago
                   v-model="deliveryInfo.expressId"
                   size="mini"
                   placeholder="输入物流单号"
-                ></el-input>
+                />
               </el-form-item>
             </el-col>
             <el-col :sm="12" :md="8" :lg="8" :xl="8">
@@ -374,7 +336,7 @@ Latest commit bc27a2e 9 days ago
                   size="mini"
                   placeholder="输入出库单号"
                   disabled
-                ></el-input>
+                />
               </el-form-item>
             </el-col>
           </el-row>

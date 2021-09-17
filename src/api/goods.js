@@ -70,11 +70,11 @@ function DeleteGoodsInfo(goodsId) {
   })
 }
 
-//发布（上架）商品
-function ReleaseGoods(isRelease, goodsId){
+// 发布（上架）商品
+function ReleaseGoods(isRelease, goodsId) {
   return request({
-    url:`/api/Goods/ReleaseGoods?isRelease=${isRelease}&goodsId=${goodsId}`,
-    method:'PUT'
+    url: `/api/Goods/ReleaseGoods?isRelease=${isRelease}&goodsId=${goodsId}`,
+    method: 'PUT'
   })
 }
 
