@@ -53,11 +53,13 @@
         <el-table-column label="商品名称" width="120" prop="goodsName" />
         <el-table-column label="品牌" width="60" prop="brand" />
         <el-table-column label="基本单位" width="70" prop="unitName" />
+        <el-table-column label="单价" width="70" prop="baseUnitPrice" />
         <el-table-column
           label="销售单位"
           width="70"
           prop="goodsSpecs[0].saleUnit"
         />
+        <el-table-column label="配比" width="70" prop="mixture" />
         <el-table-column label="商品描述" prop="goodsDesc" />
         <el-table-column label="销量" prop="salesTimes" width="60" />
         <el-table-column label="推荐商品" width="70"

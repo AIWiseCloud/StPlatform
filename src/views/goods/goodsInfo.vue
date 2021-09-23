@@ -15,7 +15,9 @@
         <el-step title="颜色及图片" />
         <el-step title="规格及价格" />
         <el-step title="商品介绍图" />
-        <el-step title="发布商品" />
+        <el-step title="发布商品" /><el-tag type="danger" size="medium ">{{
+          goodsInfo.goodsName
+        }}</el-tag>
       </el-steps>
 
       <!-- tab区域 -->
@@ -44,14 +46,17 @@
                   /> </el-form-item
               ></el-col>
               <el-col :span="8">
-                <el-form-item label="产品编号" prop="prodNumber">
+                <!-- <el-form-item label="产品编号" prop="prodNumber">
                   <el-input v-model="goodsInfo.prodNumber" />
-                </el-form-item>
+                </el-form-item> -->
+                <el-form-item label="商品配比" prop="mixture"
+                  ><el-input v-model="goodsInfo.mixture"
+                /></el-form-item>
               </el-col>
               <el-col :span="8">
-                <el-form-item label="创建人" prop="creator">
-                  <el-input v-model="goodsInfo.creator" disabled />
-                  <!-- <el-select
+                <el-form-item label="品牌" prop="brand">
+                  <!-- <el-input v-model="goodsInfo.creator" disabled /> -->
+                  <el-select
                     v-model="goodsInfo.brand"
                     style="width: 100%"
                     placeholder="请选择品牌"
@@ -61,9 +66,8 @@
                       :label="item.fName"
                       :value="item.fNumber"
                     />
-                  </el-select>  -->
-                </el-form-item></el-col
-              >
+                  </el-select> </el-form-item
+              ></el-col>
             </el-row>
             <el-row>
               <el-col :span="8">
@@ -100,8 +104,8 @@
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                <el-form-item label="销量" prop="salesTimes"
-                  ><el-input v-model="goodsInfo.salesTimes" disabled
+                <el-form-item label="基本单价" prop="baseUnitPrice"
+                  ><el-input v-model="goodsInfo.baseUnitPrice"
                 /></el-form-item>
               </el-col>
             </el-row>
@@ -228,7 +232,7 @@
                 <span v-else>{{ scope.row.specName }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="品牌" width="80" align="center">
+            <!-- <el-table-column label="品牌" width="80" align="center">
               <template scope="scope">
                 <el-select
                   v-if="scope.row.isSet"
@@ -244,7 +248,7 @@
                 </el-select>
                 <span v-else>{{ scope.row.specDes1 }}</span>
               </template>
-            </el-table-column>
+            </el-table-column> -->
             <!-- <el-table-column label="颜色" width="80" align="center">
               <template scope="scope">
                 <el-input
@@ -255,7 +259,7 @@
                 <span v-else>{{ scope.row.specDes2 }}</span>
               </template>
             </el-table-column> -->
-            <el-table-column label="配比" width="80" align="center">
+            <!-- <el-table-column label="配比" width="80" align="center">
               <template scope="scope">
                 <el-input
                   v-if="scope.row.isSet"
@@ -264,7 +268,7 @@
                 />
                 <span v-else>{{ scope.row.specDes3 }}</span>
               </template>
-            </el-table-column>
+            </el-table-column> -->
             <el-table-column label="销售单位" width="100" align="center">
               <template scope="scope">
                 <span v-if="scope.row.isSet">
@@ -295,7 +299,7 @@
                 <span v-else>{{ scope.row.unitConverter }}</span>
               </template>
             </el-table-column>
-            <el-table-column
+            <!-- <el-table-column
               :label="'基本单价' + '(元/' + goodsInfo.unitName + ')'"
               width="160"
               align="center"
@@ -309,8 +313,13 @@
                 />
                 <span v-else>{{ scope.row.baseUnitPrice }}</span>
               </template>
-            </el-table-column>
-            <el-table-column label="销售单价" width="100" prop="price" align="right" />
+            </el-table-column> -->
+            <el-table-column
+              label="销售单价"
+              width="100"
+              prop="price"
+              align="right"
+            />
             <el-table-column label="折扣价" width="100" align="right">
               <template scope="scope">
                 <span v-if="scope.row.isSet">
@@ -624,14 +633,16 @@ export default {
         categoryId: [],
         prodNumber: "",
         goodsName: "",
-        brand: "*",
+        brand: "",
+        mixture:'',
         goodsDesc: "",
         unitName: "",
+        baseUnitPrice:0,
         salesTimes: 0,
         isRecommend: 0,
         isNew: 0,
         isUnder: 1, // 默认为未发布（下架状态）
-        creator:  this.userName,
+        creator: this.userName,
         goodsColors: [],
         goodsSpecs: [],
         spuImgs: [],
@@ -643,9 +654,9 @@ export default {
           message: "请输入商品名称",
           trigger: "blur",
         },
-        goodsDesc: {
+        mixture: {
           required: true,
-          message: "请输入商品描述",
+          message: "请输入商品配比",
           trigger: "blur",
         },
         categoryId: {
@@ -656,6 +667,11 @@ export default {
         unitName: {
           required: true,
           message: "基本单位不能为空",
+          trigger: "blur",
+        },
+        baseUnitPrice: {
+          required: true,
+          message: "基本单价不能为空",
           trigger: "blur",
         },
         brand: {
@@ -674,9 +690,9 @@ export default {
       },
       goodsColor: {
         id: "",
-        goodsId: "",
+        goodsId: "默认",
         colorName: "",
-        imgFront: "", // 这些字段必须这样定义一下，否则图片也选不上
+        imgFront: "/2021-09-18/20210918110412057.png", // 这些字段必须这样定义一下，否则图片也选不上
         imgBack: "",
         imgLeft: "",
         imgRight: "",
@@ -705,7 +721,7 @@ export default {
     this.existGoods = !params.isNew;
   },
   created() {
-    this.goodsInfo.creator=this.userName;
+    this.goodsInfo.creator = this.userName;
     // 载入商品分类
     apiGoods.GetGoodsCategories("*").then((res) => {
       if (res.code == 200 && res.returnStatus == 1) {
@@ -839,8 +855,8 @@ export default {
       if (isAdd) {
         this.goodsColor.id = common.getDigitSerial();
         this.goodsColor.goodsId = this.goodsInfo.goodsId;
-        this.goodsColor.colorName = "";
-        this.goodsColor.imgFront = "";
+        this.goodsColor.colorName = "默认";
+        this.goodsColor.imgFront = "/2021-09-18/20210918110412057.png";
         this.goodsColor.imgBack = "";
         this.goodsColor.imgLeft = "";
         this.goodsColor.imgRight = "";
@@ -934,7 +950,6 @@ export default {
         specName: "",
         saleUnit: "",
         unitConverter: "1",
-        baseUnitPrice: "",
         price: 0,
         discountPrice: 0,
         findex: 100,
@@ -961,7 +976,7 @@ export default {
           row.isSet = false;
           this.$set(this.goodsInfo.goodsSpecs, index, row);
         } else {
-          this.$message.error(JSON.stringify(res.msg));
+          this.$message.error(res.msg);
         }
       });
     },
@@ -1083,8 +1098,9 @@ export default {
     ...mapGetters(["userName"]),
     goodsSpecData() {
       for (const i of this.goodsInfo.goodsSpecs) {
-        if (!isNaN(i["unitConverter"] && !isNaN(i["baseUnitPrice"]))) {
-          i["price"] = (i["unitConverter"] * i["baseUnitPrice"]).toFixed(2);
+        if (!isNaN(i["unitConverter"] && !isNaN(this.goodsInfo.baseUnitPrice))) {
+          i["price"] = (i["unitConverter"] * this.goodsInfo.baseUnitPrice).toFixed(2);
+          i["discountPrice"] = i["price"];
         } else {
           i["price"] = 0;
         }
