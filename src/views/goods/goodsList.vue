@@ -35,6 +35,22 @@
             @change="searchGoods2"
           />
         </el-col>
+        <el-col :span="8">
+          <el-button
+            plain
+            icon="el-icon-setting"
+            size="mini"
+            @click="openExplain"
+            >更新报价说明</el-button
+          >
+          <el-button
+            plain
+            icon="el-icon-printer"
+            size="mini"
+            @click="printQuotes"
+            >预览报价列表</el-button
+          >
+        </el-col>
       </el-row>
       <!-- 商品列表 -->
       <el-table
@@ -127,13 +143,51 @@
         @current-change="loadData"
       />
     </el-card>
+    <!-- 更新报价说明对话框 -->
+    <el-dialog title="更新报价说明" :visible.sync="dialogexplain">
+      <el-form :model="quoteExplain" label-width="92px" size="mini">
+        <el-form-item label="生效日期">
+          <el-date-picker
+            v-model="quoteExplain.effectiveDate"
+            type="date"
+            value-format="yyyy-MM-dd"
+            placeholder="选择生效日期"
+          />
+        </el-form-item>
+        <el-form-item label="报价说明">
+          <el-input
+            type="textarea"
+            :rows="4"
+            v-model="quoteExplain.quoteDesc"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input
+            type="textarea"
+            :rows="4"
+            v-model="quoteExplain.remark"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="报价员">
+          <el-input v-model="quoteExplain.creator"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="danger" size="mini" @click="updateExplain"
+          >更新</el-button
+        >
+        <el-button @click="dialogexplain = false" size="mini"> 取消 </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import apiGoods from "@/api/goods";
+import apiReport from "@/api/report";
+import openwindow from "@/utils/open-window.js";
 export default {
-  name: "Goodslist",
+  name: "goodslist",
   data() {
     return {
       queryInfo: {
@@ -150,6 +204,15 @@ export default {
       },
       goodsList: [],
       allCategories: [], // 商品所有分类
+      dialogexplain: false,
+      quoteExplain: {
+        id: "",
+        updateDate: "",
+        effectiveDate: "",
+        quoteDesc: "",
+        remark: "",
+        creator: "",
+      },
     };
   },
   created() {
@@ -222,6 +285,60 @@ export default {
             this.$message.error(res.msg);
           }
         });
+      });
+    },
+    //打印预览
+    printQuotes() {
+      apiGoods.GetGoodsQuotes().then((res) => {
+        if (res.code == 200 && res.returnStatus == 1) {
+          // console.log(JSON.stringify(res.result))
+          let data = {
+            reportId: "002",
+            billId: "QE01",
+            source: res.result,
+          };
+          apiReport
+            .StringSaveAsJsonFile(data)
+            .then((res2) => {
+              if (
+                res2.code == 200 &&
+                res2.returnStatus == 1 &&
+                res2.result.status
+              ) {
+                //返回的id作为调用报表的参数
+                openwindow(
+                  this.$common.REPORT_URL + `preview?id=${res2.result.id}`
+                );
+              } else {
+                this.$message.error(res2.msg);
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+      });
+    },
+    //更新报价说明
+    updateExplain() {
+      apiGoods.UpdateQuoteExplain(this.quoteExplain).then((res) => {
+        if (res.code == 200 && res.returnStatus == 1) {
+          this.$message.success("更新成功!");
+          this.dialogexplain = false;
+        } else {
+          this.$message.error(res.msg);
+        }
+      });
+    },
+    //打开更新对话框
+    openExplain() {
+      apiGoods.GetGoodsQuotes().then((res) => {
+        if (res.code == 200 && res.returnStatus == 1) {
+          this.quoteExplain = res.result.quoteTitle;
+          this.dialogexplain = true;
+        } else {
+          this.$message.error(res.msg);
+        }
       });
     },
   },

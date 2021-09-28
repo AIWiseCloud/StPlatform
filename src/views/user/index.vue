@@ -87,7 +87,11 @@
           prop="unionId"
           show-overflow-tooltip
         ></el-table-column>
-        <el-table-column label="用户名" prop="userName" align="center"></el-table-column>
+        <el-table-column
+          label="用户名"
+          prop="userName"
+          align="center"
+        ></el-table-column>
         <el-table-column label="昵称" prop="nickName"></el-table-column>
         <el-table-column label="手机号" prop="phoneNumber"></el-table-column>
         <el-table-column
@@ -131,6 +135,17 @@
             <span>{{ scope.row.createDate.substr(0, 10) }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="操作" align="center" width="60">
+          <template scope="scope">
+            <el-button
+              type="primary"
+              icon="el-icon-user-solid"
+              circle
+              size="mini"
+              @click="openAccountDialog(scope.$index, scope.row)"
+            ></el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </el-card>
     <el-pagination
@@ -141,6 +156,41 @@
       :total="totalCount"
       @current-change="loadData"
     />
+    <!-- 设置账号对话框 -->
+    <el-dialog title="设定用户账号密码" :visible.sync="dialoguser" @close='dialogclose'>
+      <el-form
+        ref="account"
+        :model="account"
+        size="mini"
+        label-width="92px"
+        :rules="rule"
+      >
+        <el-form-item label="用户账号" prop="userName">
+          <el-input
+            v-model="account.userName"
+            clearable
+            placeholder="请输入用户账呈"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="登录密码" prop="password">
+          <el-input
+            v-model="account.password"
+            minlength="6"
+            maxlength="16"
+            show-password
+            placeholder="请设定6位以上长度的登录密码"
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" size="mini" @click="setUserAccount"
+          >确定</el-button
+        >
+        <el-button type="danger" size="mini" @click="dialoguser = false"
+          >取消</el-button
+        >
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -163,6 +213,21 @@ export default {
         },
       },
       userList: [],
+      dialoguser: false,
+      account: {
+        unionId: "",
+        userName: "",
+        password: "",
+        rindex: 0,
+      },
+      rule: {
+        userName: {
+          required: true,
+          message: "用户名不能为空",
+          trigger: "blur",
+        },
+        password: { required: true, message: "密码不能为空", trigger: "blur" },
+      },
     };
   },
   methods: {
@@ -180,6 +245,41 @@ export default {
       this.searchModel.pageModel.pageNo = 1;
       this.loadData();
     },
+    openAccountDialog(i, row) {
+      this.dialoguser = true;
+      this.account.unionId = row.unionId;
+      this.account.userName = row.userName;
+      this.rindex = i;
+    },
+    setUserAccount() {
+      let index = this.account.rindex;
+      this.$refs.account.validate((valid) => {
+        if (valid) {
+          apiUser
+            .SetUserAccount(
+              this.account.unionId,
+              this.account.userName,
+              this.account.password
+            )
+            .then((res) => {
+              if (res.code == 200 && res.returnStatus == 1) {
+                this.userList[index].userName = this.account.userName;
+                this.userList[index].password = this.account.password;
+                this.$set(this.userList, index, this.userList[index]);
+                this.dialoguser = false;
+                this.$message.success("账号设定成功");
+              } else {
+                this.$message.error(res.msg);
+              }
+            });
+        }
+      });
+    },
+    dialogclose(){
+      this.account.unionId='';
+      this.account.userName='';
+      this.account.password='';
+    }
   },
   created() {
     this.searchData();

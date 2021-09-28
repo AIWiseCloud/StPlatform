@@ -45,8 +45,17 @@ function AuditCertificationInfo(unionId, certificationType, authState, reason) {
   })
 }
 
+
+function SetUserAccount(unionId,userName,password){
+  return request({
+    url:`/api/User/SetUserAccount?unionId=${unionId}&userName=${userName}&password=${password}`,
+    method:'PUT'
+  })
+}
+
 export default {
   QueryUsers,
   QueryCertification,
-  AuditCertificationInfo
+  AuditCertificationInfo,
+  SetUserAccount
 }

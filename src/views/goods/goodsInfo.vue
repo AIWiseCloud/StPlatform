@@ -518,14 +518,15 @@
       </el-tabs>
       <el-button
         v-if="activeIndex == '0'"
-        icon="el-icon-plus"
+        icon="el-icon-document-copy"
         plain
         size="mini"
-        @click="toAddGoods"
-        >添加新商品</el-button
+        @click="copyGoodsInfo"
+        >复制商品</el-button
       >
       <el-button
         v-if="activeIndex == '0'"
+        type="success"
         icon="el-icon-plus"
         plain
         size="mini"
@@ -634,10 +635,10 @@ export default {
         prodNumber: "",
         goodsName: "",
         brand: "",
-        mixture:'',
+        mixture: "",
         goodsDesc: "",
         unitName: "",
-        baseUnitPrice:0,
+        baseUnitPrice: 0,
         salesTimes: 0,
         isRecommend: 0,
         isNew: 0,
@@ -757,17 +758,27 @@ export default {
         }
       });
     },
-    // 转到新增页
-    toAddGoods() {
-      this.$confirm("确定要离开当前页继续添加商品？", "询问", {
+    // 复制商品
+    copyGoodsInfo() {
+      this.$confirm("确定要复制当前商品吗？", "询问", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
       }).then((r) => {
-        this.$router.push({
-          name: "goodsInfo",
-          params: { goodsId: this.$common.getDigitSerial(), isNew: 1 },
-        });
-      });
+        let newGoodsId = this.$common.getDigitSerial();
+        apiGoods
+          .CopyGoodsInfo(this.goodsInfo.goodsId, newGoodsId)
+          .then((res) => {
+            if (res.code == 200 && res.returnStatus == 1) {
+              this.$message.success("商品复制成功");
+              this.$router.push({
+                name: "goodsInfo",
+                params: { goodsId: newGoodsId, isNew: 0 },
+              });
+            } else {
+              this.$message.error(res.msg);
+            }
+          });
+      }).catch(e=>{});
     },
     // 保存商品信息
     saveGoodsInfo(infoform) {
@@ -966,7 +977,9 @@ export default {
     // 保存规格定价行
     saveGoodsSpecRow(index, row) {
       if (!row.specName) {
-        return this.$message({ message: "商品规格不能为空", type: "error" });
+        row.specName =
+          row.unitConverter + this.goodsInfo.unitName + "/" + row.saleUnit;
+        // return this.$message({ message: "商品规格不能为空", type: "error" });
       }
       if (row.price == 0 || row.discountPrice == 0) {
         return this.$message({ message: "请完整录入价格信息", type: "error" });
@@ -1098,8 +1111,12 @@ export default {
     ...mapGetters(["userName"]),
     goodsSpecData() {
       for (const i of this.goodsInfo.goodsSpecs) {
-        if (!isNaN(i["unitConverter"] && !isNaN(this.goodsInfo.baseUnitPrice))) {
-          i["price"] = (i["unitConverter"] * this.goodsInfo.baseUnitPrice).toFixed(2);
+        if (
+          !isNaN(i["unitConverter"] && !isNaN(this.goodsInfo.baseUnitPrice))
+        ) {
+          i["price"] = (
+            i["unitConverter"] * this.goodsInfo.baseUnitPrice
+          ).toFixed(2);
           i["discountPrice"] = i["price"];
         } else {
           i["price"] = 0;

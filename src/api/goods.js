@@ -70,6 +70,14 @@ function DeleteGoodsInfo(goodsId) {
   })
 }
 
+//复制商品
+function CopyGoodsInfo(goodsId, newGoodsId, userName) {
+  return request({
+    url: `/api/Goods/CopyGoodsInfo?goodsId=${goodsId}&newGoodsId=${newGoodsId}&userName=${userName}`,
+    method: 'PUT'
+  })
+}
+
 // 发布（上架）商品
 function ReleaseGoods(isRelease, goodsId) {
   return request({
@@ -177,6 +185,23 @@ function DeleteSpuImg(id) {
   })
 }
 
+//获取材料报价表
+function GetGoodsQuotes() {
+  return request({
+    url: `/api/Goods/GetGoodsQuotes`,
+    method: 'GET'
+  })
+}
+
+//更新报价说明
+function UpdateQuoteExplain(data) {
+  return request({
+    url: `/api/Goods/UpdateQuoteExplain`,
+    method: 'POST',
+    data
+  })
+}
+
 export default {
   SaveGoodsCategory,
   GetGoodsCategory,
@@ -186,6 +211,7 @@ export default {
   GetGoodsInfo,
   QueryGoods,
   DeleteGoodsInfo,
+  CopyGoodsInfo,
   ReleaseGoods,
   SaveGoodsColor,
   GetGoodsColor,
@@ -198,5 +224,7 @@ export default {
   SaveSpuImg,
   GetSpuImg,
   GetSpuImgs,
-  DeleteSpuImg
+  DeleteSpuImg,
+  GetGoodsQuotes,
+  UpdateQuoteExplain
 }

@@ -427,13 +427,13 @@ export default {
   font-size: 28px;
   color: #8c939d;
   width: 178px;
-  height: 178px;
-  line-height: 178px;
+  height: 148px;
+  line-height: 148px;
   text-align: center;
 }
 .avatar {
   width: 178px;
-  height: 178px;
+  height: 148px;
   display: block;
 }
 </style>

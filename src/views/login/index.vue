@@ -5,7 +5,6 @@
       <div class="title-container">
         <h3 class="title">盛天商城后台管理系统</h3>
       </div>
-
       <el-form-item prop="username">
         <span class="svg-container">
           <svg-icon icon-class="user" />

@@ -45,11 +45,20 @@ function GetBillId(orderId){
     })
 }
 
+//确认线下到款
+function ConfirmPay(orderId, isconfirm){
+    return request({
+        url: `/api/Order/ConfirmPay?orderId=${orderId}&isconfirm=${isconfirm}`,
+        method:'PUT'
+    })
+}
+
 export default{
     GetOrderInfo,
     DeliveryOrder,
     QueryOrders,
     UpdateOrderAddress,
     UpdateOrderAddress,
-    GetBillId
+    GetBillId,
+    ConfirmPay
 }
