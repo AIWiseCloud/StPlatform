@@ -41,21 +41,21 @@ function QueryCertification(data) {
 function AuditCertificationInfo(unionId, certificationType, authState, reason) {
   return request({
     url: `/api/User/AuditCertificationInfo?unionId=${unionId}&certifycationType=${certificationType}&authState=${authState}&reason=${reason}`,
-    method: 'PUT',
+    method: 'PUT'
   })
 }
 
-
-function SetUserAccount(unionId,userName,password){
+function SetUserRoles(unionId, roles) {
   return request({
-    url:`/api/User/SetUserAccount?unionId=${unionId}&userName=${userName}&password=${password}`,
-    method:'PUT'
+    url: `/api/User/SetUserRoles?unionId=${unionId}&roles=${roles}`,
+    method: 'PUT'
   })
 }
+
 
 export default {
   QueryUsers,
   QueryCertification,
   AuditCertificationInfo,
-  SetUserAccount
+  SetUserRoles,
 }

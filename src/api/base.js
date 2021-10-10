@@ -8,6 +8,14 @@ function UploadFiles(data) {
   })
 }
 
+function GetAdminAreas(level,areaId){
+  return request({
+    url:`/api/Address/GetAdminAreas?level=${level}&areaId=${areaId}`,
+    method:'GET'
+  })
+}
+
 export default {
-  UploadFiles
+  UploadFiles,
+  GetAdminAreas
 }

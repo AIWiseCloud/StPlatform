@@ -70,7 +70,7 @@ function DeleteGoodsInfo(goodsId) {
   })
 }
 
-//复制商品
+// 复制商品
 function CopyGoodsInfo(goodsId, newGoodsId, userName) {
   return request({
     url: `/api/Goods/CopyGoodsInfo?goodsId=${goodsId}&newGoodsId=${newGoodsId}&userName=${userName}`,
@@ -185,7 +185,7 @@ function DeleteSpuImg(id) {
   })
 }
 
-//获取材料报价表
+// 获取材料报价表
 function GetGoodsQuotes() {
   return request({
     url: `/api/Goods/GetGoodsQuotes`,
@@ -193,7 +193,7 @@ function GetGoodsQuotes() {
   })
 }
 
-//更新报价说明
+// 更新报价说明
 function UpdateQuoteExplain(data) {
   return request({
     url: `/api/Goods/UpdateQuoteExplain`,

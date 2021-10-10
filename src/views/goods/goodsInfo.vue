@@ -109,9 +109,18 @@
                 /></el-form-item>
               </el-col>
             </el-row>
-            <el-form-item label="商品名称" prop="goodsName">
-              <el-input v-model="goodsInfo.goodsName" clearable />
-            </el-form-item>
+            <el-row>
+              <el-col :span="16">
+                <el-form-item label="商品名称" prop="goodsName">
+                  <el-input v-model="goodsInfo.goodsName" clearable />
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="分组排序" prop="groupDisplayOrder">
+                  <el-input v-model="goodsInfo.groupDisplayOrder" />
+                </el-form-item>
+              </el-col>
+            </el-row>
             <el-form-item label="商品描述" prop="goodsDesc">
               <el-input v-model="goodsInfo.goodsDesc" />
             </el-form-item>
@@ -619,6 +628,16 @@ import apiSettings from "@/api/settings";
 import { mapGetters } from "vuex";
 export default {
   data() {
+    //自定义检校规则：检查全角字符
+    let check2byte = (rule, value, callback) => {
+      for (let i = 0; i < value.length; i++) {
+        let c = value.charCodeAt(i);
+        if (c > 65248 || c == 12288) {
+          return callback(new Error('不能有全角字符'))
+        }
+      }
+      return callback();
+    };
     return {
       activeIndex: "0", // 当前激活的索引
       allCategories: [], // 商品分类
@@ -632,6 +651,7 @@ export default {
       goodsInfo: {
         goodsId: "",
         categoryId: [],
+        groupDisplayOrder: 2000,
         prodNumber: "",
         goodsName: "",
         brand: "",
@@ -678,6 +698,10 @@ export default {
         brand: {
           required: true,
           message: "请选择品牌",
+          trigger: "blur",
+        },
+        mixture: {
+          validator: check2byte,
           trigger: "blur",
         },
       },
@@ -763,22 +787,24 @@ export default {
       this.$confirm("确定要复制当前商品吗？", "询问", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-      }).then((r) => {
-        let newGoodsId = this.$common.getDigitSerial();
-        apiGoods
-          .CopyGoodsInfo(this.goodsInfo.goodsId, newGoodsId)
-          .then((res) => {
-            if (res.code == 200 && res.returnStatus == 1) {
-              this.$message.success("商品复制成功");
-              this.$router.push({
-                name: "goodsInfo",
-                params: { goodsId: newGoodsId, isNew: 0 },
-              });
-            } else {
-              this.$message.error(res.msg);
-            }
-          });
-      }).catch(e=>{});
+      })
+        .then((r) => {
+          const newGoodsId = this.$common.getDigitSerial();
+          apiGoods
+            .CopyGoodsInfo(this.goodsInfo.goodsId, newGoodsId)
+            .then((res) => {
+              if (res.code == 200 && res.returnStatus == 1) {
+                this.$message.success("商品复制成功");
+                this.$router.push({
+                  name: "goodsInfo",
+                  params: { goodsId: newGoodsId, isNew: 0 },
+                });
+              } else {
+                this.$message.error(res.msg);
+              }
+            });
+        })
+        .catch((e) => {});
     },
     // 保存商品信息
     saveGoodsInfo(infoform) {

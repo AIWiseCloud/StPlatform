@@ -129,6 +129,12 @@ export const asyncRoutes = [
         component: () => import('@/views/settings/newsDetails'),
         meta: { title: '编辑新闻动态', icon: 'table' },
         hidden: true
+      },
+      {
+        name:'projectcase',
+        path:'projectcase',
+        component:()=>import('@/views/settings/projectcase'),
+        meta:{title:'工程案例',icon:'international'}
       }
     ]
   },

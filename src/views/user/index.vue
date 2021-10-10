@@ -3,7 +3,7 @@
     <el-collapse v-model="activeindex">
       <el-collapse-item name="0">
         <template slot="title">
-          <span>查询条件<i class="el-icon-search" style="color: red"></i></span>
+          <span>查询条件<i class="el-icon-search" style="color: red" /></span>
         </template>
         <el-form :model="searchModel" label-width="92px" size="mini">
           <el-row>
@@ -12,7 +12,7 @@
                 <el-input
                   v-model="searchModel.keywords"
                   placeholder="请输入关键字后点查询"
-                ></el-input>
+                />
               </el-form-item>
             </el-col>
             <el-col :sm="24" :md="8" :lg="6" :xl="6">
@@ -65,20 +65,20 @@
           <template slot-scope="scope">
             <el-popover
               v-if="scope.row.avatar"
-              placement="top"
               ref="popover"
+              placement="top"
               trigger="hover"
             >
               <el-image
                 :src="scope.row.avatar"
                 style="width: 150px; height: 150px"
                 fit="scale-down"
-              ></el-image>
+              />
               <el-image
+                slot="reference"
                 :src="scope.row.avatar"
                 style="width: 40px; height: 40px"
-                slot="reference"
-              ></el-image>
+              />
             </el-popover>
           </template>
         </el-table-column>
@@ -86,32 +86,18 @@
           label="用户标识"
           prop="unionId"
           show-overflow-tooltip
-        ></el-table-column>
-        <el-table-column
-          label="用户名"
-          prop="userName"
-          align="center"
-        ></el-table-column>
-        <el-table-column label="昵称" prop="nickName"></el-table-column>
-        <el-table-column label="手机号" prop="phoneNumber"></el-table-column>
-        <el-table-column
-          label="省"
-          prop="province"
-          align="center"
-          width="60"
-        ></el-table-column>
-        <el-table-column
-          label="市"
-          prop="city"
-          width="60"
-          align="center"
-        ></el-table-column>
+        />
+        <el-table-column label="用户名" prop="userName" align="center" />
+        <el-table-column label="昵称" prop="nickName" />
+        <el-table-column label="手机号" prop="phoneNumber" />
+        <el-table-column label="省" prop="province" align="center" width="60" />
+        <el-table-column label="市" prop="city" width="60" align="center" />
         <el-table-column
           label="区/县"
           prop="county"
           align="center"
           width="60"
-        ></el-table-column>
+        />
         <el-table-column label="性别" prop="gender" width="60" align="center">
           <template scope="scope">
             <span>{{ scope.row.gender == 1 ? "男" : "女" }}</span>
@@ -122,9 +108,8 @@
           prop="userState"
           width="60"
           align="center"
-        >
-        </el-table-column>
-        <el-table-column label="角色" prop="roles"></el-table-column>
+        />
+        <el-table-column label="角色" prop="roles" />
         <el-table-column
           label="日期"
           prop="createDate"
@@ -143,7 +128,7 @@
               circle
               size="mini"
               @click="openAccountDialog(scope.$index, scope.row)"
-            ></el-button>
+            />
           </template>
         </el-table-column>
       </el-table>
@@ -157,7 +142,11 @@
       @current-change="loadData"
     />
     <!-- 设置账号对话框 -->
-    <el-dialog title="设定用户账号密码" :visible.sync="dialoguser" @close='dialogclose'>
+    <el-dialog
+      title="设定用户角色"
+      :visible.sync="dialoguser"
+      @close="dialogclose"
+    >
       <el-form
         ref="account"
         :model="account"
@@ -169,21 +158,29 @@
           <el-input
             v-model="account.userName"
             clearable
+            disabled
             placeholder="请输入用户账呈"
-          ></el-input>
+          />
         </el-form-item>
-        <el-form-item label="登录密码" prop="password">
-          <el-input
+        <el-form-item label="用户角色" prop="password">
+          <!-- <el-input
             v-model="account.password"
             minlength="6"
             maxlength="16"
             show-password
             placeholder="请设定6位以上长度的登录密码"
-          ></el-input>
+          /> -->
+          <el-checkbox-group v-model="account.roles">
+            <el-checkbox
+              v-for="(item, i) in allroles"
+              :key="i"
+              :label="item"
+            ></el-checkbox>
+          </el-checkbox-group>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" size="mini" @click="setUserAccount"
+        <el-button type="primary" size="mini" @click="setUserRoles"
           >确定</el-button
         >
         <el-button type="danger" size="mini" @click="dialoguser = false"
@@ -216,8 +213,7 @@ export default {
       dialoguser: false,
       account: {
         unionId: "",
-        userName: "",
-        password: "",
+        roles: [],
         rindex: 0,
       },
       rule: {
@@ -226,9 +222,13 @@ export default {
           message: "用户名不能为空",
           trigger: "blur",
         },
-        password: { required: true, message: "密码不能为空", trigger: "blur" },
+        roles: { required: true, message: "密码不能为空", trigger: "blur" },
       },
+      allroles: ["user", "editor", "finance", "admin"],
     };
+  },
+  created() {
+    this.searchData();
   },
   methods: {
     loadData() {
@@ -249,22 +249,21 @@ export default {
       this.dialoguser = true;
       this.account.unionId = row.unionId;
       this.account.userName = row.userName;
+      this.account.roles = row.roles ? row.roles.split(",") : [];
       this.rindex = i;
     },
-    setUserAccount() {
-      let index = this.account.rindex;
+    setUserRoles() {
+      const index = this.account.rindex;
       this.$refs.account.validate((valid) => {
         if (valid) {
           apiUser
-            .SetUserAccount(
-              this.account.unionId,
-              this.account.userName,
-              this.account.password
-            )
+            .SetUserRoles(this.account.unionId, this.account.roles)
             .then((res) => {
               if (res.code == 200 && res.returnStatus == 1) {
                 this.userList[index].userName = this.account.userName;
-                this.userList[index].password = this.account.password;
+                this.userList[index].roles = this.account.roles.length
+                  ? this.account.roles.join(",")
+                  : "user";
                 this.$set(this.userList, index, this.userList[index]);
                 this.dialoguser = false;
                 this.$message.success("账号设定成功");
@@ -275,14 +274,11 @@ export default {
         }
       });
     },
-    dialogclose(){
-      this.account.unionId='';
-      this.account.userName='';
-      this.account.password='';
-    }
-  },
-  created() {
-    this.searchData();
+    dialogclose() {
+      this.account.unionId = "";
+      this.account.userName = "";
+      this.account.roles = "";
+    },
   },
 };
 </script>

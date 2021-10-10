@@ -63,8 +63,7 @@
                 size="small"
                 plain
                 @click="searchData"
-                >查询</el-button
-              >
+              >查询</el-button>
             </el-col>
           </el-row>
         </el-form>
@@ -100,7 +99,7 @@
                       style="width: 300px; height: 300px"
                       :src="
                         $common.getBaseURL() +
-                        '/2021-09-18/20210918110412057.png'
+                          '/2021-09-18/20210918110412057.png'
                       "
                       fit="scale-down"
                     />
@@ -108,7 +107,7 @@
                       slot="reference"
                       :src="
                         $common.getBaseURL() +
-                        '/2021-09-18/20210918110412057.png'
+                          '/2021-09-18/20210918110412057.png'
                       "
                       style="width: 60px; height: 60px"
                     />
@@ -117,10 +116,10 @@
               </el-table-column>
               <el-table-column label="商品信息">
                 <template slot-scope="scope">
-                  <span style="width: 320px"
-                    >{{ scope.row.goodsInfo.goodsName
-                    }}{{ scope.row.goodsInfo.goodsDesc }}</span
-                  >
+                  <span
+                    style="width: 320px"
+                  >{{ scope.row.goodsInfo.goodsName
+                  }}{{ scope.row.goodsInfo.goodsDesc }}</span>
                 </template>
               </el-table-column>
               <el-table-column label="配比" width="72px">
@@ -139,10 +138,10 @@
                 }}</template>
               </el-table-column>
               <el-table-column label="数量" width="70px">
-                <template slot-scope="scope"
-                  >{{ scope.row.quantity
-                  }}{{ scope.row.goodsInfo.unitName }}</template
-                >
+                <template
+                  slot-scope="scope"
+                >{{ scope.row.quantity
+                }}{{ scope.row.goodsInfo.unitName }}</template>
               </el-table-column>
               <el-table-column label="合计" width="70px">
                 <template slot-scope="scope">{{ scope.row.amount }}</template>
@@ -175,11 +174,11 @@
                   v-else-if="ordermain.statusId == -2"
                   type="info"
                   effect="dark"
-                  >已删除</el-tag
-                >
-                <el-tag v-else-if="ordermain.statusId == -1" type="info"
-                  >已取消</el-tag
-                >
+                >已删除</el-tag>
+                <el-tag
+                  v-else-if="ordermain.statusId == -1"
+                  type="info"
+                >已取消</el-tag>
               </el-table-column>
               <el-table-column min-width="185" label="订单操作" align="center">
                 <template scope="scope">
@@ -189,16 +188,14 @@
                     plain
                     size="mini"
                     style="margin-left: 4px"
-                    >详情</el-button
-                  >
+                  >详情</el-button>
                   <el-button
                     type="blue"
                     plain
                     size="small"
                     icon="el-icon-printer"
                     @click.native="handlePrint(ordermain)"
-                    >打印</el-button
-                  >
+                  >打印</el-button>
                   <el-button
                     v-if="ordermain.statusId == 0 && ordermain.paymentWay == 1"
                     type="danger"
@@ -206,8 +203,7 @@
                     plain
                     icon="el-icon-truck"
                     @click="goConfirmPay(i, ordermain.orderAttach)"
-                    >线下到款确认</el-button
-                  >
+                  >线下到款确认</el-button>
                   <el-button
                     v-if="ordermain.statusId == 1 && ordermain.paymentWay == 1"
                     type="danger"
@@ -215,8 +211,7 @@
                     plain
                     icon="el-icon-truck"
                     @click="cancelConfirmPay(i, ordermain.orderAttach)"
-                    >取消到款确认</el-button
-                  >
+                  >取消到款确认</el-button>
                   <el-button
                     v-if="ordermain.statusId == 1"
                     type="primary"
@@ -224,8 +219,7 @@
                     plain
                     icon="el-icon-truck"
                     @click.native="handleDeliver(i, ordermain)"
-                    >去发货</el-button
-                  >
+                  >去发货</el-button>
                   <el-button
                     v-if="ordermain.statusId == 2"
                     type="danger"
@@ -233,8 +227,7 @@
                     plain
                     icon="el-icon-truck"
                     @click.native="handleCancelDeliver(i, ordermain)"
-                    >取消发货</el-button
-                  >
+                  >取消发货</el-button>
                   <el-button
                     v-if="ordermain.statusId >= 2"
                     type="danger"
@@ -242,8 +235,7 @@
                     plain
                     icon="el-icon-tickets"
                     @click="viewInvoice(ordermain.orderId)"
-                    >发票</el-button
-                  >
+                  >发票</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -319,9 +311,10 @@
             `买家留言:` + orderInfo.words
           }}</el-link>
         </el-row>
-        <el-row class="magTop" style="font-weight: bold; color: #409eff"
-          >配送信息</el-row
-        >
+        <el-row
+          class="magTop"
+          style="font-weight: bold; color: #409eff"
+        >配送信息</el-row>
         <el-row class="magTop">
           {{ `收货人及电话：${orderInfo.receiver}(${orderInfo.phoneNumber})` }}
         </el-row>
@@ -332,11 +325,9 @@
           发货信息
         </el-row>
         <el-row class="magTop" style="margin-bottom: 20px">
-          <span
-            >配送方式：{{
-              orderInfo.distributionMethod == 1 ? "快递" : "自取"
-            }}</span
-          >
+          <span>配送方式：{{
+            orderInfo.distributionMethod == 1 ? "快递" : "自取"
+          }}</span>
         </el-row>
         <el-form
           v-model="deliveryInfo"
@@ -384,7 +375,7 @@
       <el-dialog title="线下到款确认" :visible.sync="dialogpay">
         <el-form :model="orderAttach" size="mini" label-width="92px">
           <el-form-item label="上传日期">
-            <el-input v-model="orderAttach.createDate" disabled></el-input>
+            <el-input v-model="orderAttach.createDate" disabled />
           </el-form-item>
           <el-form-item label="打款凭证">
             <el-image
@@ -395,10 +386,12 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button type="danger" size="mini" @click="confirmPay(1)"
-            >确认到款</el-button
-          >
-          <el-button @click="dialogpay = false" size="mini"> 取消 </el-button>
+          <el-button
+            type="danger"
+            size="mini"
+            @click="confirmPay(1)"
+          >确认到款</el-button>
+          <el-button size="mini" @click="dialogpay = false"> 取消 </el-button>
         </div>
       </el-dialog>
       <!-- 发票对话框 -->
@@ -406,111 +399,111 @@
         <el-form :model="invoiceData" label-width="92px" size="mini">
           <el-row>
             <el-col :span="8">
-              <el-form-item label="订单号"
-                ><el-input v-model="invoiceData.orderId" readonly></el-input
-              ></el-form-item>
+              <el-form-item
+                label="订单号"
+              ><el-input v-model="invoiceData.orderId" readonly /></el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="开票金额"
-                ><el-input v-model="invoiceData.invoAmt" readonly></el-input
-              ></el-form-item>
+              <el-form-item
+                label="开票金额"
+              ><el-input v-model="invoiceData.invoAmt" readonly /></el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="开票状态"
-                ><el-input v-model="invoiceData.statusName" readonly></el-input
-              ></el-form-item>
+              <el-form-item
+                label="开票状态"
+              ><el-input v-model="invoiceData.statusName" readonly /></el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="8">
-              <el-form-item label="申请日期"
-                ><el-input v-model="invoiceData.applyTime" readonly></el-input
-              ></el-form-item>
+              <el-form-item
+                label="申请日期"
+              ><el-input v-model="invoiceData.applyTime" readonly /></el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="开票日期"
-                ><el-input v-model="invoiceData.invoiceTime" readonly></el-input
-              ></el-form-item>
+              <el-form-item
+                label="开票日期"
+              ><el-input v-model="invoiceData.invoiceTime" readonly /></el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="发票类型"
-                ><el-input v-model="invoiceData.invoiceTypeName" readonly></el-input
-              ></el-form-item>
+              <el-form-item
+                label="发票类型"
+              ><el-input v-model="invoiceData.invoiceTypeName" readonly /></el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="8">
-              <el-form-item label="抬头类型"
-                ><el-input v-model="invoiceData.titleTypeName" readonly></el-input
-              ></el-form-item>
+              <el-form-item
+                label="抬头类型"
+              ><el-input v-model="invoiceData.titleTypeName" readonly /></el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="抬头名称"
-                ><el-input v-model="invoiceData.titleName" readonly></el-input
-              ></el-form-item>
+              <el-form-item
+                label="抬头名称"
+              ><el-input v-model="invoiceData.titleName" readonly /></el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="发票内容"
-                ><el-input v-model="invoiceData.contentTypeName" readonly></el-input
-              ></el-form-item>
+              <el-form-item
+                label="发票内容"
+              ><el-input v-model="invoiceData.contentTypeName" readonly /></el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12">
-              <el-form-item label="开户银行"
-                ><el-input v-model="invoiceData.bankName" readonly></el-input
-              ></el-form-item>
+              <el-form-item
+                label="开户银行"
+              ><el-input v-model="invoiceData.bankName" readonly /></el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="银行账号"
-                ><el-input v-model="invoiceData.bankAccount" readonly></el-input
-              ></el-form-item>
+              <el-form-item
+                label="银行账号"
+              ><el-input v-model="invoiceData.bankAccount" readonly /></el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12">
-              <el-form-item label="企业税号"
-                ><el-input v-model="invoiceData.taxId" readonly></el-input
-              ></el-form-item>
+              <el-form-item
+                label="企业税号"
+              ><el-input v-model="invoiceData.taxId" readonly /></el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="注册电话"
-                ><el-input v-model="invoiceData.registerTel" readonly></el-input
-              ></el-form-item>
+              <el-form-item
+                label="注册电话"
+              ><el-input v-model="invoiceData.registerTel" readonly /></el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="24">
-              <el-form-item label="注册地址"
-                ><el-input
-                  v-model="invoiceData.registerAddress"
-                  readonly
-                ></el-input
-              ></el-form-item>
+              <el-form-item
+                label="注册地址"
+              ><el-input
+                v-model="invoiceData.registerAddress"
+                readonly
+              /></el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12">
-              <el-form-item label="收票人"
-                ><el-input v-model="invoiceData.orderId" readonly></el-input
-              ></el-form-item>
+              <el-form-item
+                label="收票人"
+              ><el-input v-model="invoiceData.orderId" readonly /></el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="收票人电话"
-                ><el-input v-model="invoiceData.invoAmt" readonly></el-input
-              ></el-form-item>
+              <el-form-item
+                label="收票人电话"
+              ><el-input v-model="invoiceData.invoAmt" readonly /></el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12">
-              <el-form-item label="收票人邮箱"
-                ><el-input v-model="invoiceData.statusId" readonly></el-input
-              ></el-form-item>
+              <el-form-item
+                label="收票人邮箱"
+              ><el-input v-model="invoiceData.statusId" readonly /></el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="收票人地址"
-                ><el-input v-model="invoiceData.orderId" readonly></el-input
-              ></el-form-item>
+              <el-form-item
+                label="收票人地址"
+              ><el-input v-model="invoiceData.orderId" readonly /></el-form-item>
             </el-col>
           </el-row>
           <el-row>
@@ -528,23 +521,25 @@
                     class="avatar"
                     :src="$common.getBaseURL() + invoiceData.invoiceUrl"
                     :onerror="ErrorImg"
-                  ></el-image>
-                  <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                  />
+                  <i v-else class="el-icon-plus avatar-uploader-icon" />
                 </el-upload>
               </el-form-item>
             </el-col>
             <el-col :span="8">
               <el-form-item label="开票人">
-                <el-input v-model="invoiceData.drawer" readonly></el-input>
+                <el-input v-model="invoiceData.drawer" readonly />
               </el-form-item>
             </el-col>
           </el-row>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button type="danger" size="mini" @click="finishInvoice"
-            >确认已开票</el-button
-          >
-          <el-button @click="dialoginvoice = false" size="mini">
+          <el-button
+            type="danger"
+            size="mini"
+            @click="finishInvoice"
+          >确认已开票</el-button>
+          <el-button size="mini" @click="dialoginvoice = false">
             取消
           </el-button>
         </div>

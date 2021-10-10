@@ -81,7 +81,7 @@ export default {
   components: { SocialSign },
   data() {
     const validateUsername = (rule, value, callback) => {
-       callback()
+      callback()
       // if (!validUsername(value)) {
       //   callback(new Error('Please enter the correct user name'))
       // } else {
@@ -89,7 +89,7 @@ export default {
       // }
     }
     const validatePassword = (rule, value, callback) => {
-      if (value.length <4) {
+      if (value.length < 4) {
         callback(new Error('The password can not be less than 4 digits'))
       } else {
         callback()
@@ -102,7 +102,7 @@ export default {
         password: ''
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', }],// validator: validateUsername
+        username: [{ required: true, trigger: 'blur' }], // validator: validateUsername
         password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       passwordType: 'password',
@@ -164,8 +164,8 @@ export default {
               this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
               this.loading = false
             })
-            .catch((err) => { 
-              this.$message.error(JSON.stringify(err));
+            .catch((err) => {
+              this.$message.error(JSON.stringify(err))
               this.loading = false
             })
         } else {
