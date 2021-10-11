@@ -224,7 +224,7 @@ export default {
         },
         roles: { required: true, message: "密码不能为空", trigger: "blur" },
       },
-      allroles: ["user", "editor", "finance", "admin"],
+      allroles: ["user", "editor", 'cs','salesman', "finance",'programmer', "admin"],
     };
   },
   created() {
