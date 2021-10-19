@@ -51,6 +51,23 @@ function ConfirmPay(orderId, isconfirm) {
   })
 }
 
+//客服确认定金到账
+function ConfirmReceipt(id,userName,isConfirm,paytime){
+  return request({
+    url:`/api/AdvanceMoney/ConfirmReceipt?id=${id}&userName=${userName}&isconfirm=${isConfirm}&paytime=${paytime}`,
+    method:'PUT'
+  })
+}
+
+//分页查询定金
+function QueryAdvanceMoney(data){
+  return request({
+    url:`/api/AdvanceMoney/QueryAdvanceMoney`,
+    method:'POST',
+    data
+  })
+}
+
 export default {
   GetOrderInfo,
   DeliveryOrder,
@@ -58,5 +75,7 @@ export default {
   UpdateOrderAddress,
   UpdateOrderAddress,
   GetBillId,
-  ConfirmPay
+  ConfirmPay,
+  ConfirmReceipt,
+  QueryAdvanceMoney
 }

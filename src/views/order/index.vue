@@ -287,12 +287,12 @@
               </el-row>
               <el-row>
                 {{
-                  `${scope.row.goodsColorSpec.colorName} ${scope.row.goodsColorSpec.specName}`
+                  `${scope.row.goodsInfo.mixture} ${scope.row.goodsInfo.brand}`
                 }}
               </el-row>
             </template>
           </el-table-column>
-          <el-table-column label="单价" width="70px">
+          <el-table-column label="单价" width="90px">
             <template slot-scope="scope">
               {{ `${scope.row.unitPrice}元/${scope.row.goodsInfo.unitName}` }}
             </template>
@@ -300,7 +300,7 @@
           <el-table-column label="数量" width="70px" prop="quantity">
             <template slot-scope="scope">{{ scope.row.quantity }}</template>
           </el-table-column>
-          <el-table-column label="合计" width="70px">
+          <el-table-column label="合计" width="80px">
             <template slot-scope="scope">
               {{ `${scope.row.amount}` }}
             </template>
@@ -774,7 +774,7 @@ export default {
       for (let i of ordermain.orderList) {
         printOrderData.orderList.push({
           lineId: i.lineId,
-          goodsName: `${i.goodsInfo.goodsName} ${i.goodsInfo.goodsDesc} ${i.goodsColorSpec.colorName} ${i.goodsColorSpec.specName}`,
+          goodsName: `${i.goodsInfo.goodsName} ${i.goodsInfo.goodsDesc} ${i.goodsInfo.mixture} ${i.goodsInfo.brand}`,
           localId: "ST-002",
           unitPrice: i.unitPrice,
           quantity: i.quantity,

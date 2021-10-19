@@ -46,8 +46,14 @@
             plain
             icon="el-icon-printer"
             size="mini"
-            @click="printQuotes"
-          >预览报价列表</el-button>
+            @click="printQuotes(1)"
+          >预览报价</el-button>
+            <el-button
+            plain
+            icon="el-icon-document"
+            size="mini"
+            @click="printQuotes(0)"
+          >调整格式</el-button>
         </el-col>
       </el-row>
       <!-- 商品列表 -->
@@ -298,7 +304,7 @@ export default {
       })
     },
     // 打印预览
-    printQuotes() {
+    printQuotes(isPreview) {
       apiGoods.GetGoodsQuotes().then((res) => {
         if (res.code == 200 && res.returnStatus == 1) {
           // console.log(JSON.stringify(res.result))
@@ -317,7 +323,7 @@ export default {
               ) {
                 // 返回的id作为调用报表的参数
                 openwindow(
-                  this.$common.REPORT_URL + `design?id=${res2.result.id}`
+                  this.$common.REPORT_URL + `${isPreview==1?'preview':'design'}?id=${res2.result.id}`
                 )
               } else {
                 this.$message.error(res2.msg)

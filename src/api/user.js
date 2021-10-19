@@ -52,10 +52,36 @@ function SetUserRoles(unionId, roles) {
   })
 }
 
+//从销客获取业务员列表
+function GetEmps(){
+  return request({
+    url:`/api/Xiaoke/GetEmps`,
+    method:'GET'
+  })
+}
 
+//批量汇入业务员到App后台
+function ImportSalesmen(data){
+  return request({
+    url:`/api/Xiaoke/ImportSalesmen`,
+    method:'POST',
+    data
+  })
+}
+
+//从app数据库获取营销人员列表
+function GetSalesmen(keywords, ignoreStop){
+  return request({
+    url:`/api/Xiaoke/GetSalesmen?keywords=${keywords}&ignoreStop=${ignoreStop}`,
+    method:'GET'
+  })
+}
 export default {
   QueryUsers,
   QueryCertification,
   AuditCertificationInfo,
   SetUserRoles,
+  GetEmps,
+  ImportSalesmen,
+  GetSalesmen
 }
