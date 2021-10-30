@@ -17,6 +17,14 @@ function DeliveryOrder(data) {
   })
 }
 
+//取消订单
+function CancelOrder(orderId){
+  return request({
+    url:`/api/Order/CancelOrder?orderId=${orderId}`,
+    method:'PUT'
+  })
+}
+
 // 订单查询
 function QueryOrders(data) {
   return request({
@@ -68,14 +76,33 @@ function QueryAdvanceMoney(data){
   })
 }
 
+//调价
+function AdjustOrderPrice(orderId,lineId,newPrice){
+  return request({
+    url:`/api/Order/AdjustOrderPrice?orderId=${orderId}&lineId=${lineId}&newPrice=${newPrice}`,
+    method:'PUT'
+  })
+}
+
+//调数量
+function AdjustOrderQuantity(orderId,lineId,newQty){
+  return request({
+    url:`/api/Order/AdjustOrderQuantity?orderId=${orderId}&lineId=${lineId}&newQty=${newQty}`,
+    method:'PUT'
+  })
+}
+
 export default {
   GetOrderInfo,
   DeliveryOrder,
+  CancelOrder,
   QueryOrders,
   UpdateOrderAddress,
   UpdateOrderAddress,
   GetBillId,
   ConfirmPay,
   ConfirmReceipt,
-  QueryAdvanceMoney
+  QueryAdvanceMoney,
+  AdjustOrderPrice,
+  AdjustOrderQuantity
 }

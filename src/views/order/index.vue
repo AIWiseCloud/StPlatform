@@ -3,7 +3,7 @@
     <el-collapse v-model="activename">
       <el-collapse-item name="1">
         <template slot="title">
-          <span>查询条件<i class="el-icon-search" style="color: red" /></span>
+          <span>查询条件<i class="el-icon-search" style="color: red" /> ( 权限：{{onlyViewSelfData?'本人':'全部'}})</span>
         </template>
         <el-form
           :model="searchModel"
@@ -17,11 +17,11 @@
                 <el-input
                   v-model="searchModel.queryValue"
                   placeholder="订单号\商品ID\商品名称"
-                  clear
+                  clearable
                 />
               </el-form-item>
             </el-col>
-            <el-col :sm="12" :md="8" :lg="6" :xl="4">
+            <el-col :sm="12" :md="6" :lg="4" :xl="4">
               <el-form-item label="订单状态" title="订单状态">
                 <el-select
                   v-model="searchModel.statusId"
@@ -36,7 +36,7 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :sm="12" :md="8" :lg="6" :xl="4">
+            <el-col :sm="12" :md="6" :lg="6" :xl="4">
               <el-form-item label="开始时间">
                 <el-date-picker
                   v-model="searchModel.startDate"
@@ -46,7 +46,7 @@
                 />
               </el-form-item>
             </el-col>
-            <el-col :sm="12" :md="8" :lg="6" :xl="4">
+            <el-col :sm="12" :md="6" :lg="6" :xl="4">
               <el-form-item label="结束时间">
                 <el-date-picker
                   v-model="searchModel.endDate"
@@ -56,14 +56,15 @@
                 />
               </el-form-item>
             </el-col>
-            <el-col :sm="12" :md="16" :lg="12" :xl="8">
+            <el-col :sm="12" :md="6" :lg="6" :xl="4">
               <el-button
                 type="primary"
                 icon="el-icon-search"
                 size="small"
                 plain
                 @click="searchData"
-              >查询</el-button>
+                >查询</el-button
+              >
             </el-col>
           </el-row>
         </el-form>
@@ -85,6 +86,12 @@
               <span style="margin-left: 10px">{{
                 `订单号：` + ordermain.orderId
               }}</span>
+              <span style="margin-left: 40px">
+                应付金额： <i style="color: red">{{ ordermain.realPay }}</i>
+              </span>
+              <span style="margin-left: 40px">{{
+                `业务员：` + ordermain.salesman
+              }}</span>
             </div>
             <!-- 订单明细 -->
             <el-table
@@ -99,7 +106,7 @@
                       style="width: 300px; height: 300px"
                       :src="
                         $common.getBaseURL() +
-                          '/2021-09-18/20210918110412057.png'
+                        '/2021-09-18/20210918110412057.png'
                       "
                       fit="scale-down"
                     />
@@ -107,7 +114,7 @@
                       slot="reference"
                       :src="
                         $common.getBaseURL() +
-                          '/2021-09-18/20210918110412057.png'
+                        '/2021-09-18/20210918110412057.png'
                       "
                       style="width: 60px; height: 60px"
                     />
@@ -116,10 +123,10 @@
               </el-table-column>
               <el-table-column label="商品信息">
                 <template slot-scope="scope">
-                  <span
-                    style="width: 320px"
-                  >{{ scope.row.goodsInfo.goodsName
-                  }}{{ scope.row.goodsInfo.goodsDesc }}</span>
+                  <span style="width: 320px"
+                    >{{ scope.row.goodsInfo.goodsName
+                    }}{{ scope.row.goodsInfo.goodsDesc }}</span
+                  >
                 </template>
               </el-table-column>
               <el-table-column label="配比" width="72px">
@@ -133,15 +140,19 @@
                 }}</template>
               </el-table-column>
               <el-table-column label="单价" width="70px">
-                <template slot-scope="scope">{{
-                  scope.row.unitPrice
-                }}</template>
+                <template slot-scope="scope">
+                  <span class="price" @click="adjustprice(i, scope.row)">{{
+                    scope.row.unitPrice
+                  }}</span>
+                </template>
               </el-table-column>
-              <el-table-column label="数量" width="70px">
-                <template
-                  slot-scope="scope"
-                >{{ scope.row.quantity
-                }}{{ scope.row.goodsInfo.unitName }}</template>
+              <el-table-column label="数量" width="80px">
+                <template slot-scope="scope">
+                  <span class="price" @click="adjustQuantity(i, scope.row)"
+                    >{{ scope.row.quantity
+                    }}{{ scope.row.goodsInfo.unitName }}</span
+                  >
+                </template>
               </el-table-column>
               <el-table-column label="合计" width="70px">
                 <template slot-scope="scope">{{ scope.row.amount }}</template>
@@ -174,11 +185,11 @@
                   v-else-if="ordermain.statusId == -2"
                   type="info"
                   effect="dark"
-                >已删除</el-tag>
-                <el-tag
-                  v-else-if="ordermain.statusId == -1"
-                  type="info"
-                >已取消</el-tag>
+                  >已删除</el-tag
+                >
+                <el-tag v-else-if="ordermain.statusId == -1" type="info"
+                  >已取消</el-tag
+                >
               </el-table-column>
               <el-table-column min-width="185" label="订单操作" align="center">
                 <template scope="scope">
@@ -188,14 +199,26 @@
                     plain
                     size="mini"
                     style="margin-left: 4px"
-                  >详情</el-button>
+                    @click.native="handlePrintContract(ordermain)"
+                    >合同</el-button
+                  >
                   <el-button
                     type="blue"
                     plain
                     size="small"
                     icon="el-icon-printer"
                     @click.native="handlePrint(ordermain)"
-                  >打印</el-button>
+                    >打印</el-button
+                  >
+                  <el-button
+                    v-if="ordermain.statusId == 0"
+                    type="danger"
+                    size="mini"
+                    plain
+                    icon="el-icon-truck"
+                    @click="cancelOrder(i, ordermain.orderId)"
+                    >取消订单</el-button
+                  >
                   <el-button
                     v-if="ordermain.statusId == 0 && ordermain.paymentWay == 1"
                     type="danger"
@@ -203,7 +226,8 @@
                     plain
                     icon="el-icon-truck"
                     @click="goConfirmPay(i, ordermain.orderAttach)"
-                  >线下到款确认</el-button>
+                    >线下到款确认</el-button
+                  >
                   <el-button
                     v-if="ordermain.statusId == 1 && ordermain.paymentWay == 1"
                     type="danger"
@@ -211,7 +235,8 @@
                     plain
                     icon="el-icon-truck"
                     @click="cancelConfirmPay(i, ordermain.orderAttach)"
-                  >取消到款确认</el-button>
+                    >取消到款确认</el-button
+                  >
                   <el-button
                     v-if="ordermain.statusId == 1"
                     type="primary"
@@ -219,7 +244,8 @@
                     plain
                     icon="el-icon-truck"
                     @click.native="handleDeliver(i, ordermain)"
-                  >去发货</el-button>
+                    >去发货</el-button
+                  >
                   <el-button
                     v-if="ordermain.statusId == 2"
                     type="danger"
@@ -227,7 +253,8 @@
                     plain
                     icon="el-icon-truck"
                     @click.native="handleCancelDeliver(i, ordermain)"
-                  >取消发货</el-button>
+                    >取消发货</el-button
+                  >
                   <el-button
                     v-if="ordermain.statusId >= 2"
                     type="danger"
@@ -235,7 +262,8 @@
                     plain
                     icon="el-icon-tickets"
                     @click="viewInvoice(ordermain.orderId)"
-                  >发票</el-button>
+                    >发票</el-button
+                  >
                 </template>
               </el-table-column>
             </el-table>
@@ -311,10 +339,9 @@
             `买家留言:` + orderInfo.words
           }}</el-link>
         </el-row>
-        <el-row
-          class="magTop"
-          style="font-weight: bold; color: #409eff"
-        >配送信息</el-row>
+        <el-row class="magTop" style="font-weight: bold; color: #409eff"
+          >配送信息</el-row
+        >
         <el-row class="magTop">
           {{ `收货人及电话：${orderInfo.receiver}(${orderInfo.phoneNumber})` }}
         </el-row>
@@ -325,9 +352,11 @@
           发货信息
         </el-row>
         <el-row class="magTop" style="margin-bottom: 20px">
-          <span>配送方式：{{
-            orderInfo.distributionMethod == 1 ? "快递" : "自取"
-          }}</span>
+          <span
+            >配送方式：{{
+              orderInfo.distributionMethod == 1 ? "快递" : "自取"
+            }}</span
+          >
         </el-row>
         <el-form
           v-model="deliveryInfo"
@@ -386,11 +415,9 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button
-            type="danger"
-            size="mini"
-            @click="confirmPay(1)"
-          >确认到款</el-button>
+          <el-button type="danger" size="mini" @click="confirmPay(1)"
+            >确认到款</el-button
+          >
           <el-button size="mini" @click="dialogpay = false"> 取消 </el-button>
         </div>
       </el-dialog>
@@ -399,111 +426,108 @@
         <el-form :model="invoiceData" label-width="92px" size="mini">
           <el-row>
             <el-col :span="8">
-              <el-form-item
-                label="订单号"
-              ><el-input v-model="invoiceData.orderId" readonly /></el-form-item>
+              <el-form-item label="订单号"
+                ><el-input v-model="invoiceData.orderId" readonly
+              /></el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item
-                label="开票金额"
-              ><el-input v-model="invoiceData.invoAmt" readonly /></el-form-item>
+              <el-form-item label="开票金额"
+                ><el-input v-model="invoiceData.invoAmt" readonly
+              /></el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item
-                label="开票状态"
-              ><el-input v-model="invoiceData.statusName" readonly /></el-form-item>
+              <el-form-item label="开票状态"
+                ><el-input v-model="invoiceData.statusName" readonly
+              /></el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="8">
-              <el-form-item
-                label="申请日期"
-              ><el-input v-model="invoiceData.applyTime" readonly /></el-form-item>
+              <el-form-item label="申请日期"
+                ><el-input v-model="invoiceData.applyTime" readonly
+              /></el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item
-                label="开票日期"
-              ><el-input v-model="invoiceData.invoiceTime" readonly /></el-form-item>
+              <el-form-item label="开票日期"
+                ><el-input v-model="invoiceData.invoiceTime" readonly
+              /></el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item
-                label="发票类型"
-              ><el-input v-model="invoiceData.invoiceTypeName" readonly /></el-form-item>
+              <el-form-item label="发票类型"
+                ><el-input v-model="invoiceData.invoiceTypeName" readonly
+              /></el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="8">
-              <el-form-item
-                label="抬头类型"
-              ><el-input v-model="invoiceData.titleTypeName" readonly /></el-form-item>
+              <el-form-item label="抬头类型"
+                ><el-input v-model="invoiceData.titleTypeName" readonly
+              /></el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item
-                label="抬头名称"
-              ><el-input v-model="invoiceData.titleName" readonly /></el-form-item>
+              <el-form-item label="抬头名称"
+                ><el-input v-model="invoiceData.titleName" readonly
+              /></el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item
-                label="发票内容"
-              ><el-input v-model="invoiceData.contentTypeName" readonly /></el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item
-                label="开户银行"
-              ><el-input v-model="invoiceData.bankName" readonly /></el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item
-                label="银行账号"
-              ><el-input v-model="invoiceData.bankAccount" readonly /></el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item
-                label="企业税号"
-              ><el-input v-model="invoiceData.taxId" readonly /></el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item
-                label="注册电话"
-              ><el-input v-model="invoiceData.registerTel" readonly /></el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="24">
-              <el-form-item
-                label="注册地址"
-              ><el-input
-                v-model="invoiceData.registerAddress"
-                readonly
+              <el-form-item label="发票内容"
+                ><el-input v-model="invoiceData.contentTypeName" readonly
               /></el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12">
-              <el-form-item
-                label="收票人"
-              ><el-input v-model="invoiceData.orderId" readonly /></el-form-item>
+              <el-form-item label="开户银行"
+                ><el-input v-model="invoiceData.bankName" readonly
+              /></el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item
-                label="收票人电话"
-              ><el-input v-model="invoiceData.invoAmt" readonly /></el-form-item>
+              <el-form-item label="银行账号"
+                ><el-input v-model="invoiceData.bankAccount" readonly
+              /></el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12">
-              <el-form-item
-                label="收票人邮箱"
-              ><el-input v-model="invoiceData.statusId" readonly /></el-form-item>
+              <el-form-item label="企业税号"
+                ><el-input v-model="invoiceData.taxId" readonly
+              /></el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item
-                label="收票人地址"
-              ><el-input v-model="invoiceData.orderId" readonly /></el-form-item>
+              <el-form-item label="注册电话"
+                ><el-input v-model="invoiceData.registerTel" readonly
+              /></el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="注册地址"
+                ><el-input v-model="invoiceData.registerAddress" readonly
+              /></el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="收票人"
+                ><el-input v-model="invoiceData.orderId" readonly
+              /></el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="收票人电话"
+                ><el-input v-model="invoiceData.invoAmt" readonly
+              /></el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="收票人邮箱"
+                ><el-input v-model="invoiceData.statusId" readonly
+              /></el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="收票人地址"
+                ><el-input v-model="invoiceData.orderId" readonly
+              /></el-form-item>
             </el-col>
           </el-row>
           <el-row>
@@ -534,11 +558,9 @@
           </el-row>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button
-            type="danger"
-            size="mini"
-            @click="finishInvoice"
-          >确认已开票</el-button>
+          <el-button type="danger" size="mini" @click="finishInvoice"
+            >确认已开票</el-button
+          >
           <el-button size="mini" @click="dialoginvoice = false">
             取消
           </el-button>
@@ -554,6 +576,7 @@ import apiOrder from "@/api/order";
 import apiReport from "@/api/report";
 import openwindow from "@/utils/open-window.js";
 import apiInvoice from "@/api/invoice";
+import apiUser from "@/api/user";
 import upload from "@/api/base.js";
 import { mapGetters } from "vuex";
 export default {
@@ -567,9 +590,9 @@ export default {
         queryScheme: 0, //方案0表示按关键字、状态、日期范围搜索
         statDate: "",
         endDate: "",
-        unionId: "*", //*表示后端调用
+        unionId: "*", //*表示后端调用(将根据用户角色来设定，一般用户user只能看自己的)
         queryValue: "",
-        statusId: 1, //1待发货,9表示所有订单状态
+        statusId: 9, //1待发货,9表示所有订单状态
         pageModel: {
           pageNo: 1,
           pageSize: 10,
@@ -674,6 +697,7 @@ export default {
         }
       }
     },
+
     //去发货
     handleDeliver(index, ordermain) {
       this.orderInfo = ordermain;
@@ -752,8 +776,10 @@ export default {
           }
         });
     },
-    //打印订单
-    handlePrint(ordermain) {
+    //获取打印数据
+    async getPrintData(reportId, ordermain) {
+      const { result } = await apiUser.GetSalesman(ordermain.unionId); //获取业务员及企业认证简要信息
+
       let printOrderData = {
         orderId: ordermain.orderId,
         distributionMethod: ordermain == "1" ? "快递" : "自取",
@@ -769,8 +795,23 @@ export default {
         expressId: ordermain.expressId,
         paymentChannel: ordermain.paymentChannel,
         orderTime: ordermain.orderTime,
+        words: ordermain.words,
+        salesman: ordermain.salesman,
+        salesMobile: "",
+        legalPerson: "",
+        corpName: "",
+        corpAddress: "",
         orderList: [],
       };
+      if (typeof result != "undefined") {
+        printOrderData.salesMobile = result.PhoneNumber;
+        printOrderData.legalPerson = result.LegalPerson;
+        printOrderData.corpName = result.CorpName;
+        printOrderData.corpAddress = result.CorpAddress;
+        printOrderData.corpPhone = result.CorpPhone;
+      }
+      // console.log(JSON.stringify(printOrderData));
+      // return;
       for (let i of ordermain.orderList) {
         printOrderData.orderList.push({
           lineId: i.lineId,
@@ -780,13 +821,19 @@ export default {
           quantity: i.quantity,
           amount: i.amount,
           unitName: i.goodsInfo.unitName,
+          packaging: i.packaging,
         });
       }
       let data = {
-        reportId: "001",
+        reportId: reportId,
         billId: ordermain.orderId,
         source: printOrderData,
       };
+      return data;
+    },
+    //执行预览或设计
+    async callPreport(reportId, ordermain, isPreview) {
+      let data = await this.getPrintData(reportId, ordermain);
       // console.log(JSON.stringify(data));
       // return;
       apiReport
@@ -794,13 +841,43 @@ export default {
         .then((res) => {
           if (res.code == 200 && res.returnStatus == 1 && res.result.status) {
             //返回的id作为调用报表的参数
-            openwindow(this.$common.REPORT_URL + `preview?id=${res.result.id}`);
+            openwindow(
+              this.$common.REPORT_URL +
+                `${isPreview ? "preview" : "design"}?id=${res.result.id}`
+            );
           } else {
             this.$message.error(res.msg);
           }
         })
         .catch((err) => {
           console.log(err);
+        });
+    },
+    //打印或设计订单
+    async handlePrint(ordermain) {
+      await this.callPreport("001", ordermain, true);
+    },
+    //打印或设计合同
+    async handlePrintContract(ordermain) {
+      await this.callPreport("003", ordermain, true);
+    },
+    //取消订单
+    cancelOrder(rindex, orderId) {
+      this.$confirm("确定要取消该订单吗？", "询问", {
+        cancelButtonText: "取消",
+        confirmButtonText: "确定",
+      })
+        .then((r) => {
+          return apiOrder.CancelOrder(orderId);
+        })
+        .then((res) => {
+          if (res.code == 200 && res.returnStatus == 1) {
+            this.orderData[rindex].statusId = -1;
+            this.$set(this.orderData, rindex, this.orderData[rindex]);
+            thls.$message.success("订单取消成功");
+          } else {
+            return this.$message.error(res.msg);
+          }
         });
     },
     //去确认线下到款
@@ -907,12 +984,80 @@ export default {
           return false;
         });
     },
+    //调整单价
+    adjustprice(index, row) {
+      // console.log(JSON.stringify(row));
+      if (this.orderData[index].statusId != 0) {
+        return this.$message.error("只有待付款状态的订单才可以调整单价");
+      }
+      this.$prompt("请输入调整单价", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        inputPattern: /(^[1-9]\d*(\.\d{1,2})?$)|(^0(\.\d{1,2})?$)/,
+        inputErrorMessage: "单价格式不正确",
+      })
+        .then((r) => {
+          return apiOrder.AdjustOrderPrice(row.orderId, row.lineId, r.value);
+        })
+        .then((res) => {
+          if (res.code == 200 && res.returnStatus == 1) {
+            this.$message.success("单价调整成功");
+            return apiOrder.GetOrderInfo(this.orderData[index].orderId);
+          } else {
+            return this.$message.error(res.msg);
+          }
+        })
+        .then((res) => {
+          if (res.code == 200 && res.returnStatus == 1) {
+            this.$set(this.orderData, index, res.result); //局部刷新界面对应订单
+          } else {
+            this.$message.error(res.msg);
+          }
+        })
+        .catch((err) => {});
+    },
+    //调整数量
+    adjustQuantity(index, row) {
+      // console.log(JSON.stringify(row));
+      if (this.orderData[index].statusId != 0) {
+        return this.$message.error("只有待付款状态的订单才可以调整数量");
+      }
+      this.$prompt("请输入调整数量", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        inputPattern: /(^[1-9]\d*(\.\d{1,2})?$)|(^0(\.\d{1,2})?$)/,
+        inputErrorMessage: "数量格式不正确",
+      })
+        .then((r) => {
+          return apiOrder.AdjustOrderQuantity(row.orderId, row.lineId, r.value);
+        })
+        .then((res) => {
+          if (res.code == 200 && res.returnStatus == 1) {
+            this.$message.success("数量调整成功");
+            return apiOrder.GetOrderInfo(this.orderData[index].orderId);
+          } else {
+            return this.$message.error(res.msg);
+          }
+        })
+        .then((res) => {
+          if (res.code == 200 && res.returnStatus == 1) {
+            this.$set(this.orderData, index, res.result); //局部刷新界面对应订单
+          } else {
+            this.$message.error(res.msg);
+          }
+        })
+        .catch((err) => {});
+    },
   },
   created() {
+    this.searchModel.unionId=this.onlyViewSelfData?this.unionId:'*'; //普通用户只能查看个人的订单
     this.loadData();
   },
   computed: {
-    ...mapGetters(["userName"]),
+    ...mapGetters(["userName", "roles",'unionId']),
+    onlyViewSelfData() {
+      return this.roles.length == 1 && this.roles[0] == "user" ? true : false;
+    },
   },
 };
 </script>
@@ -1032,16 +1177,11 @@ export default {
 /deep/.el-checkbox.is-bordered.is-disabled {
   border-color: #ebeef5;
 }
+.price {
+  &:hover {
+    cursor: pointer;
+    font-size: 1.5em;
+    color: blue;
+  }
+}
 </style>
-© 2021 GitHub, Inc.
-Terms
-Privacy
-Security
-Status
-Docs
-Contact GitHub
-Pricing
-API
-Training
-Blog
-About

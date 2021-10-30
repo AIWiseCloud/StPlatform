@@ -116,14 +116,24 @@
                 </el-form-item>
               </el-col>
               <el-col :span="8">
+                <el-form-item label="折扣单价" prop="discountUnitPrice">
+                  <el-input v-model="goodsInfo.discountUnitPrice" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="16">
+                <el-form-item label="商品描述" prop="goodsDesc">
+              <el-input v-model="goodsInfo.goodsDesc" />
+            </el-form-item>
+              </el-col>
+              <el-col :span="8">
                 <el-form-item label="分组排序" prop="groupDisplayOrder">
                   <el-input v-model="goodsInfo.groupDisplayOrder" />
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-form-item label="商品描述" prop="goodsDesc">
-              <el-input v-model="goodsInfo.goodsDesc" />
-            </el-form-item>
+           
             <el-row>
               <el-col :sm="8" :md="8" :lg="8" :xl="8">
                 <el-form-item label="推荐商品" prop="isRecommend"
@@ -1007,7 +1017,7 @@ export default {
           row.unitConverter + this.goodsInfo.unitName + "/" + row.saleUnit;
         // return this.$message({ message: "商品规格不能为空", type: "error" });
       }
-      if (row.price == 0 || row.discountPrice == 0) {
+      if (row.price == 0 ) {
         return this.$message({ message: "请完整录入价格信息", type: "error" });
       }
       apiGoods.SaveGoodsSpec(row).then((res) => {
@@ -1143,7 +1153,9 @@ export default {
           i["price"] = (
             i["unitConverter"] * this.goodsInfo.baseUnitPrice
           ).toFixed(2);
-          i["discountPrice"] = i["price"];
+          i["discountPrice"] =  (
+            i["unitConverter"] * this.goodsInfo.discountUnitPrice
+          ).toFixed(2);
         } else {
           i["price"] = 0;
         }

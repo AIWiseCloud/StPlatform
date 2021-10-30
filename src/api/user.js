@@ -76,6 +76,14 @@ function GetSalesmen(keywords, ignoreStop){
     method:'GET'
   })
 }
+
+function GetSalesman(unionId){
+  return request({
+    url:`/api/User/GetSalesman?unionId=${unionId}`,
+    method:'GET'
+  })
+}
+
 export default {
   QueryUsers,
   QueryCertification,
@@ -83,5 +91,6 @@ export default {
   SetUserRoles,
   GetEmps,
   ImportSalesmen,
-  GetSalesmen
+  GetSalesmen, //业务员列表
+  GetSalesman  //业务员信息（userInfo)
 }

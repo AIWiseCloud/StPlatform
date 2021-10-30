@@ -67,8 +67,8 @@ function getBaseURL() {
 }
 
 //报表服务器
-const REPORT_URL = "http://8.134.78.5:8089/";  //报表云服务器地址
-// const REPORT_URL="http://127.0.0.1:8089/";//报表本地服务器地址
+// const REPORT_URL = "http://print.shengtianstore.com/";  //报表云服务器地址
+const REPORT_URL="http://127.0.0.1:8089/";//报表本地服务器地址
 
 
 

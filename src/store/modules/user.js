@@ -4,7 +4,8 @@ import router, { resetRouter } from '@/router'
 
 const state = {
   token: getToken(),
-  name: '', //保存unionId
+  name: '', //
+  unionId:'',
   userName:'', //保存后台登录的用户我
   avatar: '',
   introduction: '',
@@ -14,6 +15,9 @@ const state = {
 const mutations = {
   SET_TOKEN: (state, token) => {
     state.token = token
+  },
+  SET_UNIONID: (state, unionid) => {
+    state.unionId = unionid
   },
   SET_INTRODUCTION: (state, introduction) => {
     state.introduction = introduction
@@ -36,6 +40,7 @@ const actions = {
   // user login
   login({ commit }, userInfo) {
     const { username, password, unionId } = userInfo
+    // console.log(JSON.stringify(userInfo))
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password, unionId: unionId }).then(res => {
         // console.log(JSON.stringify(res))
@@ -63,7 +68,7 @@ const actions = {
         if (!result) {
           reject('Verification failed, please Login again.')
         }
-        const {userName, userRoles, nickName, avatar, province } = result
+        const {userName, userRoles, nickName, avatar, province,unionId } = result
 
         // roles must be a non-empty array
         if (!userRoles || userRoles.length <= 0) {
@@ -71,6 +76,7 @@ const actions = {
         }
 
         commit('SET_ROLES', userRoles)
+        commit('SET_UNIONID', unionId)
         commit('SET_NAME', nickName)
         commit('SET_USERNAME', userName)
         commit('SET_AVATAR', avatar)

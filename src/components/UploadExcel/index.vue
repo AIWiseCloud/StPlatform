@@ -39,13 +39,13 @@ export default {
       if (this.loading) return
       const files = e.dataTransfer.files
       if (files.length !== 1) {
-        this.$message.error('Only support uploading one file!')
+        this.$message.error('仅支持上传单个文件!')
         return
       }
       const rawFile = files[0] // only use files[0]
 
       if (!this.isExcel(rawFile)) {
-        this.$message.error('Only supports upload .xlsx, .xls, .csv suffix files')
+        this.$message.error('仅支持上传 .xlsx, .xls, .csv 后缀的文件')
         return false
       }
       this.upload(rawFile)

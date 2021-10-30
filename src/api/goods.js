@@ -202,6 +202,23 @@ function UpdateQuoteExplain(data) {
   })
 }
 
+//获取所有商品列表（用于下载模板)
+function GetAllGoodsInfo(){
+  return request({ 
+    url:`/api/Goods/GetAllGoodsInfo`,
+    method:'GET'
+  })
+}
+
+//批量更新价格
+function BatchUpdatePrice(data){
+  return request({
+    url:`/api/Goods/BatchUpdatePrice`,
+    method:'POSt',
+    data
+  })
+}
+
 export default {
   SaveGoodsCategory,
   GetGoodsCategory,
@@ -226,5 +243,7 @@ export default {
   GetSpuImgs,
   DeleteSpuImg,
   GetGoodsQuotes,
-  UpdateQuoteExplain
+  UpdateQuoteExplain,
+  GetAllGoodsInfo,
+  BatchUpdatePrice
 }
